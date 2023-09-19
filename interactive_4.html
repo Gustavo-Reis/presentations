@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Interactive</title>
+
+		<meta name="description" content="Aritificial Intelligence Applied to Games - Games">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Team Interactive</h1>
+					<h2>Company Retro</h2>
+						Gustavo Reis, Ashley Prazeres, Fábio Louro, Salvador Miranda
+                </section>
+				<section>
+                    <h2>Previous and Current Work</h2>
+					<p class="fragment">Binaural</p>
+					<p class="fragment">Binaural</p>
+                    <p class="fragment">Binaural</p>
+                    <p class="fragment">Binaural</p>                    
+                </section>
+				<section>
+                    <h2>Previous Work</h2>
+                    <p class="fragment">Search for solutions to generate HRTFs from 3D mesh (head scan)</p>
+                    <p class="fragment">Conclusion of binaural classes refactoring and integration</p>
+                    <p class="fragment">Erradicated legacy custom HRIR dataset format in exchange for SOFA format</p>
+                    <p class="fragment">Implemented SOFA support in plugins for binaural processing with custom dataset</p>
+                    <p class="fragment">Improved tests coverage on modules</p>                    
+                </section>
+
+                <section>
+                    <h2>Previous Work</h2>
+                    <p class="fragment">Improved binaural render performance</p>
+                    <p class="fragment">Added doxygen documentation for SPI classes</p>
+                    <p class="fragment"><a href="https://docs.google.com/spreadsheets/d/1RWTfKoiR-edTTg6tqQAlIIwrzMG6H061QhZbC1Sy7Gc/edit?usp=sharing">Compiled binaural evaluation tests</a></p>
+                </section>
+                <section>
+                    <h2>Current Work</h2>
+                    <p class="fragment">Create plugin versions with binaural only</p>
+                    <p class="fragment">Automated tests for the plugins (in engine tests)</p>
+                    <p class="fragment">UI redesign on the engine plugins (settings, assets, etc.)</p>
+                    <p class="fragment">Pre-pepare the pipeline for the installers/packages</p>
+                    <p class="fragment">Bug fixes</p>
+                    <p class="fragment"><b>Release ready binaural engine</b></p>
+                </section>
+                <section>
+                    <h2>Quadrant subsystem</h2>
+                    <img src="interactive/Sectors.png" width = "60%">
+                </section>
+                <section>
+                    <h2>Patent</h2>
+                    <p class="fragment">SYSTEM AND METHOD FOR INTERPOLATING A HEAD-RELATED TRANSFER FUNCTION</p>
+                </section>
+
+                <section>
+                    <h5>Solutions to generate HRTF dataset from 3D mesh (head scan)</h5>
+                </section>
+                <section>
+                    <h2>Photogrammetry</h2>
+                    <video data-autoplay src="interactive/blenderGugu.mp4"></video>
+                </section>
+                <section>
+                    <h2>3D Scan</h2>
+                    <video data-autoplay src="interactive/scanNuno.mp4"></video>
+                </section>
+
+                <section>
+                    <h2>Digital Waveguide Meshes</h2>
+                     <video data-autoplay src="interactive/waveguide1.mp4"></video>
+                </section>
+                <section>
+                    <h2>Digital Waveguide Meshes</h2>
+                     <video data-autoplay src="interactive/waveguide2.mp4"></video>
+                </section>
+                <section>
+                    <img src="interactive/torso.png">
+                </section>
+                <section>
+                    <img src="interactive/torso_voxel.png">
+                </section>
+                <section>
+                    <img src="interactive/simulate.png">
+                </section>
+                <section>
+                    <h2>Boundary Element Method</h2>
+                    <img src="interactive/BEM.png">
+                </section>
+                <section>
+                    <img src="interactive/comsol1.png">
+                </section>
+                <section>
+                    <img src="interactive/comsol2.png">
+                </section>
+                <section>
+                    <img src="interactive/comsol3.png">
+                </section>
+                <section>
+                    <img src="interactive/comsol4.png">
+                </section>
+                <section>
+                    <img src="interactive/comsol5.png">
+                </section>
+                <section>
+                    <h2>Custom HRTF</h2>
+                    <p class="fragment">Generate HRIRs</p>
+                    <p class="fragment">Compute HRTFs</p>
+                    <p class="fragment">Use those in our binaural engine</p>                    
+                </section>
+
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>

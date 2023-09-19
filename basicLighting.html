@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Colors</title>
+
+		<meta name="description" content="Computer Graphics - Camera">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Basic Lighting</h1>
+					<p>Source:</p>
+					<p><a href="http://learnopengl.com">Learn OpenGL</a></p>
+					<p><a href="http://open.gl">Open.GL</a></p>
+
+				</section>
+				<section>
+					<p>Lighting in the real world is extremely complicated and depends on way too many factors, something we can't afford to calculate on the limited processing power we have.</p>
+					<p>Lighting in OpenGL is therefore based on approximations of reality using simplified models that are much easier to process and look relatively similar.</p>
+					<p>These lighting models are based on the physics of light as we understand it.</p>
+					<p>One of those models is called the <def>Phong lighting model</def>.</p>
+				</section>
+				<section>
+					<p>The major building blocks of the Phong model consist of 3 components: ambient, diffuse and specular lighting.</p>
+					<p>Below you can see what these lighting components actually look like:</p>
+					<img src="basicLighting/basic_lighting_phong.png"/>
+				</section>
+				<section>
+					<img src="basicLighting/basic_lighting_phong.png"/>
+					<p><ul>
+					    <li><def>Ambient lighting</def>: even when it is dark there is usually still some light somewhere in the world (the moon, a distant light) so objects are almost never completely dark.<br> To simulate this we use an ambient lighting constant that always gives the object some color.</li>
+					  </ul>
+					</p>
+				</section>
+				<section>
+					<img src="basicLighting/basic_lighting_phong.png"/>
+					<p><ul>
+					    <li><def>Diffuse lighting</def>: simulates the directional impact a light object has on an object.<br>This is the most visually significant component of the lighting model.<br>The more a part of an object faces the light source, the brighter it becomes.</li>
+					  </ul>
+					</p>
+				</section>
+				<section>
+					<img src="basicLighting/basic_lighting_phong.png"/>
+					<p><ul>
+					    <li><def>Specular lighting</def>: simulates the bright spot of a light that appears on shiny objects.<br>Specular highlights are often more inclined to the color of the light than the color of the object.</li>
+					  </ul>
+					</p>
+				</section>
+				<section>
+
+					<p> To create visually interesting scenes we want to at least simulate these 3 lighting components.</p>
+					<p>We'll start with the simplest one: <em>ambient lighting</em>.  </p>
+				</section>
+				<section>
+					<h1>Ambient lighting</h1>
+					<p> Light usually does not come from a single light source, but from many light sources scattered all around us, even when they're not immediately visible.</p>
+					<p>One of the properties of light is that it can scatter and bounce in many directions reaching spots that aren't in its direct vicinity; light can thus <em>reflect</em> on other surfaces and have an indirect impact on the lighting of an object.</p>
+				</section>
+				<section>
+					<p>Algorithms that take this into consideration are called <def>global illumination</def> algorithms, but these are expensive and/or complicated.  </p>
+
+					<p>Since we're not big fans of complicated and expensive algorithms we'll start by using a very simplistic model of global illumination, namely <def>ambient lighting</def>.</p>
+					<p>As you've seen in the previous section we use a small constant (light) color that we add to the final resulting color of the object's fragments, thus making it look like there is always some scattered light even when there's not a direct light source.</p>
+				</section>
+				<section>
+					<p> Adding ambient lighting to the scene is really easy.</p>
+					<p>We take the light's color, multiply it with a small constant ambient factor, multiply this with the object's color and use it as the fragment's color: </p>
+					<pre><code>void main()
+{
+    float ambientStrength = 0.1;
+    vec3 ambient = ambientStrength * lightColor;
+
+    vec3 result = ambient * objectColor;
+    FragColor = vec4(result, 1.0);
+}  </code></pre>
+
+					<p> If you'd now run your program, you'll notice that the first stage of lighting is now successfully applied to your object.</p>
+				</section>
+				<section>
+					<p>The object is quite dark, but not completely since ambient lighting is applied (note that the light cube is unaffected because we use a different shader).</p>
+					<p>It should look something like this: </p>
+					<img src="basicLighting/ambient_lighting.png"/ width = 50%>
+				</section>
+				<section>
+					<h1>Diffuse lighting</h1>
+					<p> Ambient lighting by itself does not produce the most interesting results, but diffuse lighting will start to give a significant visual impact on the object.</p>
+					<p>Diffuse lighting gives the object more brightness the closer its fragments are aligned to the light rays from a light source.</p>
+				</section>
+				<section>
+					<p>To give you a better understanding of diffuse lighting take a look at the following image: </p>
+					<img src="basicLighting/diffuse_light.png" class="clean"/>
+					<p> To the left we find a light source with a light ray targeted at a single fragment of our object.</p>
+				</section>
+				<section>
+					<img src="basicLighting/diffuse_light.png" class="clean"/>
+					<p>We then need to measure at what angle the light ray touches the fragment.</p>
+					<p>If the light ray is perpendicular to the object's surface the light has the greatest impact.</p>
+				</section>
+				<section>
+					<img src="basicLighting/diffuse_light.png" class="clean"/>
+					<p>To measure the angle between the light ray and the fragment we use something called a <def>normal vector</def> that is a vector  perpendicular to the fragment's surface (here depicted as a yellow arrow); we'll get to that later.</p>
+				</section>
+				<section>
+					<img src="basicLighting/diffuse_light.png" class="clean"/>
+					<p>The angle between the two vectors can then easily be calculated with the dot product.  </p>
+				</section>
+				<section>
+					<img src="basicLighting/diffuse_light.png" class="clean"/>
+					<p> You might remember from the transformations class that the lower the angle  between two unit vectors, the more the dot product is inclined towards a value of <code>1</code>.</p>
+					<p>When the angle between both vectors is <code>90</code> degrees, the dot product becomes 0.</p>
+				</section>
+				<section>
+					<img src="basicLighting/diffuse_light.png" class="clean"/>
+					<p>The same applies to \(\theta\): the larger \(\theta\) becomes, the less of an impact the light should have on the fragment's color.  </p>
+
+					<note>
+					  Note that to get (only) the cosine of the angle between both vectors we will work with <em>unit vectors</em> (vectors of length <code>1</code>) so we need to make sure all the vectors are normalized, otherwise the dot product returns more than just the cosine.
+					</note>
+				</section>
+				<section>
+					<img src="basicLighting/diffuse_light.png" class="clean"/>
+
+					<p> The resulting dot product thus returns a scalar that we can use to calculate the light's impact on the fragment's color, resulting in differently lit fragments, based on their orientation towards the light.  </p> 
+				</section>
+				<section>
+					<p> So, what do we need to calculate diffuse lighting?
+					  <ul>
+					    <li>Normal vector: a vector that is perpendicular to the vertex' surface.</li>
+					    <li>The directed light ray: a direction vector that is the difference vector between the light's position and the fragment's position.</p>
+					<p>To calculate this light ray we need the light's position vector and the fragment's position vector.</li>
+					  </ul>
+					</p>
+				</section>
+				<section>
+					<h2>Normal vectors</h2>
+					<p> A normal vector is a (unit) vector that is perpendicular to the surface of a vertex.</p>
+					<p>Since a vertex by itself has no surface (it's just a single point in space) we retrieve a normal vector by using its surrounding vertices to figure out the surface of the vertex.</p>
+					<p>We can use a little trick to calculate the normal vectors for all the cube's vertices by using the cross product, but since a 3D cube is not a complicated shape we can simply manually add them to the vertex data.</p>
+				</section>
+				<section>
+					<p>The updated vertex data array can be found here:</p>
+					<pre><code>float vertices[] = {
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+};</code></pre>
+					<p>Try to visualize that the normals are indeed vectors perpendicular to the plane's surfaces of the cube (a cube consists of 6 planes).  </p>
+				</section>
+				<section>
+					<p> Since we added extra data to the vertex array we should update the lighting's vertex shader: </p><pre><code>#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+...
+</code></pre>
+
+					<p> Now that we added a normal vector to each of the vertices and updated the vertex shader we should update the vertex attribute pointers as well.</p>
+					<p>Note that the lamp object uses the same vertex array for its vertex data, but the lamp shader has no use of the newly added normal vectors.</p>
+				</section>
+				<section>
+					<p>We don't have to update the lamp's shaders or attribute configurations, but we have to at least modify the vertex attribute pointers to reflect the new vertex array's size: </p>
+
+					<pre><code>glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);</code></pre>
+				</section>
+				<section>
+					<pre><code>glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);</code></pre>
+					
+					<p> We only want to use the first <code>3</code> floats of each vertex and ignore the last <code>3</code> floats so we only need to update the <em>stride</em> parameter to <code>6</code> times the size of a <code>float</code> and we're done.  </p>
+
+					<note>
+					   <p>It may look inefficient using vertex data that is not completely used by the lamp shader, but the vertex data is already stored in the GPU's memory from the container object so we don't have to store new data into the GPU's memory.</p>
+						<p>This actually makes it more efficient compared to allocating a new VBO specifically for the lamp.</p>
+					</note>
+				</section>
+				<section>
+					<p> All the lighting calculations are done in the fragment shader so we need to forward the normal vectors from the vertex shader to the fragment shader. Let's do that: </p>
+					<pre><code>out vec3 Normal;
+void main()
+{
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    Normal = aNormal;
+}</code></pre>
+
+					<p> What's left to do is declare the corresponding input variable in the fragment shader: </p>
+					<pre><code>in vec3 Normal;</code></pre>
+				</section>
+				<section>
+					<h2>Calculating the diffuse color</h2>
+					<p>We now have the normal vector for each vertex, but we still need the light's position vector and the fragment's position vector.</p>
+					<p>Since the light's position is just a single static variable we can simply declare it as a uniform in the fragment shader:</p>
+
+					<pre><code>uniform vec3 lightPos;</code></pre>
+				</section>
+				<section>
+					<p> And then update the uniform in the game loop (or outside since it doesn't change).</p>
+					<p>We use the <var>lightPos</var> vector declared in the previous tutorial as the location of the light source: </p>
+
+					<pre><code>lightingShader.setVec3("lightPos", lightPos);</code></pre>
+
+					<p> Then the last thing we need is the actual fragment's position.</p>
+					<p>We're going to do all the lighting calculations in world space so we want a vertex position that is in world space.</p>
+				</section>
+				<section>
+					<p>We can accomplish this by multiplying the vertex position attribute with the model matrix only (not the view and projection matrix) to transform it to world space coordinates.</p>
+				</section>
+				<section>
+					<p>This can easily be accomplished in the vertex shader so let's declare an output variable and calculate its world space coordinates: </p>
+
+					<pre><code>out vec3 FragPos;  
+out vec3 Normal;  
+void main()
+{
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    FragPos = vec3(model * vec4(aPos, 1.0));
+    Normal = aNormal;
+}</code></pre>
+
+					<p> And lastly add the corresponding input variable to the fragment shader: </p>
+
+					<pre><code>in vec3 FragPos;</code></pre>
+				</section>
+				<section>
+					<p> Now that all the required variables are set we can start with the lighting calculations in the fragment shader.  </p>
+
+					<p> The first thing we need to calculate is the direction vector between the light source and the fragment's position.</p>
+					<p>We mentioned that the light's direction vector is the difference vector between the light's position vector and the fragment's position vector.</p>
+					<p>As you might remember from the <a href="https://learnopengl.com/#!Getting-started/Transformations" target="_blank">transformations</a> tutorial we can easily calculate this difference by subtracting both vectors.</p>
+				</section>
+				<section>					
+					<p>We also want to make sure all the relevant vectors end up as unit vectors so we normalize both the normal and the resulting direction vector: </p>
+
+					<pre><code>vec3 norm = normalize(Normal);
+vec3 lightDir = normalize(lightPos - FragPos);</code></pre>
+
+					<note>
+					<p>When calculating lighting we usually do not care about the magnitude of a vector or their position; we only care about their direction.</p>
+					<p>Because we only care about their direction almost all the calculations are done with unit vectors since it simplifies most calculations (like the dot product).</p>
+					<p>So when doing lighting calculations, make sure you always normalize the relevant vectors to ensure they're actual unit vectors.</p>
+					<p>Forgetting to normalize a vector is a popular mistake.</p>
+					</note>
+				</section>
+				<section>
+					<p> Next we want to calculate the actual diffuse impact the light has on the current fragment by taking the dot product of the <var>norm</var> and <var>lightDir</var> vector.</p>
+					<p>The resulting value is then multiplied with the light's color to get the diffuse component, resulting in a darker diffuse component the greater the angle is between both vectors: </p>
+
+					<pre><code>float diff = max(dot(norm, lightDir), 0.0);
+vec3 diffuse = diff * lightColor;</code></pre>
+</section>
+				<section>
+					<pre><code>float diff = max(dot(norm, lightDir), 0.0);
+vec3 diffuse = diff * lightColor;</code></pre>
+
+					<p> If the angle between both vectors is greater than <code>90</code> degrees then the result of the dot product will actually become negative and we end up with a negative diffuse component.</p>
+					<p>For that reason we use the <fun>max</fun> function that returns the highest of both its parameters to make sure the diffuse component (and thus the colors) never become negative.</p>
+				</section>
+				<section>
+					<p>Lighting for negative colors is not really defined so it's best to stay away from that, unless you're one of those eccentric artists.</p>
+
+					<p> Now that we have both an ambient and a diffuse component we add both colors to each other and then multiply the result with the color of the object to get the resulting fragment's output color: </p>
+
+					<pre><code>vec3 result = (ambient + diffuse) * objectColor;
+FragColor = vec4(result, 1.0);</code></pre>
+				</section>
+				<section>
+
+					<p> If your application (and shaders) compiled successfully you should see something like this: </p>
+
+					<img src="basicLighting/basic_lighting_diffuse.png"/>
+				</section>
+				<section>
+
+					<p> You can see that with diffuse lighting the cube starts to look like an actual cube again.</p>
+					<p>Try visualizing the normal vectors in your head and move around the cube to see that the larger the angle between them and the light's direction, the darker a fragment becomes.  </p>
+
+					<p> Feel free to compare your source code with the complete source code <a href="/code_viewer_gh.php?code=src/2.lighting/2.1.basic_lighting_diffuse/basic_lighting_diffuse.cpp" target="_blank">here</a> if you're stuck.  </p>
+				</section>
+				<section>
+					<h2>One last thing</h2>
+					<p> As of now we've been passing the normal vectors directly from the vertex shader to the fragment shader.</p>
+					<p>However, the calculations we've been doing in the fragment shader are all done in world space coordinates, so shouldn't we transform the normal vectors to world space coordinates as well? Basically yes, but it's not as simple as simply multiplying it with a model matrix.</p>
+
+					<p> First of all, normal vectors are only direction vectors and do not represent a specific position in space.</p>
+				</section>
+				<section>	
+					<p>Also, normal vectors do not have a homogeneous coordinate (the <code>w</code> component of a vertex position).</p>
+					<p>This means that translations do and should not have any effect on the normal vectors.</p>
+					<p>So if we want to multiply the normal vectors with a model matrix we want to remove the translation part of the matrix by taking the upper-left <code>3x3</code> matrix of the model matrix (note that we could also set the <code>w</code> component of a normal vector to <code>0</code> and multiply with the 4x4 matrix; this removes translation as well).</p>
+				</section>
+				<section>
+					<p>The only transformations we want to apply to normal vectors are scale and rotation transformations.</p>
+
+					<p> Second, if the model matrix would perform a non-uniform scale, the vertices would be changed in such a way that the normal vector is not perpendicular to the surface anymore, so we can't transform the normal vectors with such a model matrix.</p>
+				</section>
+				<section>
+					<p>The following image shows the effect such a model matrix (with non-uniform scaling) has on a normal vector: </p>
+
+					<img src="basicLighting/basic_lighting_normal_transformation.png" class="clean"/>
+				</section>
+				<section>
+					<img src="basicLighting/basic_lighting_normal_transformation.png" class="clean"/>					
+
+					<p style="font-size:90%"> Whenever we apply a non-uniform scale (note: uniform scales won't hurt the normals since their directions do not change, just their magnitude which is easily fixed by normalizing them) the normal vectors are not perpendicular to the corresponding surface anymore which distorts the lighting.  </p>
+				</section>
+				<section>
+					<p> The trick of fixing this behavior is to use a different model matrix specifically tailored for normal vectors.</p>
+					<p>This matrix is called the <def>normal matrix</def> and uses a few linear algebraic operations to remove the effect of wrongly scaling the normal vectors.</p>
+					<p>If you want to know how this matrix is actually calculated I suggest the following <a href="http://www.lighthouse3d.com/classes/glsl-tutorial/the-normal-matrix/" target="_blank">article</a>.</p>
+
+					<p> The normal matrix is defined as 'the transpose of the inverse of the upper-left corner of the model matrix'.</p>
+				</section>
+				<section>
+
+					<p>Phew, that's a mouthful and if you don't really understand what that means, don't worry; we haven't discussed inverse and transpose matrices yet.</p>
+					<p>Note that most resources define the normal matrix as these operations applied to the model-view matrix, but since we're working in world space (and not in view space) we only use the model matrix.  </p>
+
+					<p> In the vertex shader we can generate this normal matrix ourselves by using the <fun>inverse</fun> and <fun>transpose</fun> functions in the vertex shader that work on any matrix type.</p>
+				</section>
+				<section>
+					<p>Note that we also cast the matrix to a 3x3 matrix to ensure it loses its translation  properties and that it can multiply with the <code>vec3</code> normal vector: </p>
+
+					<pre><code>Normal = mat3(transpose(inverse(model))) * aNormal;</code></pre>
+
+					<p> In the diffuse lighting section the lighting was just fine because we did not perform any scaling operation on the object itself so there was not really a need to use a normal matrix and could've just multiplied the normals with the model matrix.</p>
+				</section>
+				<section>
+<p>If you are doing a non-uniform scale however, it is essential that you multiply your normal vector with the normal matrix.  </p>
+
+					<warning>
+					<p>Inversing matrices is a costly operation even for shaders so wherever possible, try to avoid doing inverse operations in shaders since they have to be done on each vertex of your scene.</p>
+					<p>For learning purposes this is fine, but for an efficient application you'll likely want to calculate the normal matrix on the CPU and send it to the shaders via a uniform before drawing (just like the model matrix).</p>
+					</warning>
+				</section>
+				<section>
+					<h1>Specular Lighting</h1>
+					<p> If you're not already exhausted by all the lighting calculations we can start finishing the Phong lighting model by adding specular highlights.  </p>
+
+					<p> Just like diffuse lighting, specular lighting is based on the light's direction vector and the object's normal vectors, but this time it is also based on the view direction e.g. from what direction the player is looking at the fragment.</p>
+				</section>
+				<section>
+					<p>Specular lighting is based on the reflective properties of light.</p>
+					<p>If we think of the object's surface as a mirror, the specular lighting is the strongest wherever we would see the light reflected on the surface.</p>
+				</section>
+				<section>					
+					<p>You can see this effect in the following image:  </p>
+
+					<img src="basicLighting/basic_lighting_specular_theory.png" class="clean"/>
+
+					<p> We calculate a reflection vector by reflecting the light direction around the normal vector.</p>
+				</section>
+				<section>					
+					<img src="basicLighting/basic_lighting_specular_theory.png" class="clean"/>
+					<p>Then we calculate the angular distance between this reflection vector and the view direction and the closer the angle between them, the greater the impact of the specular light.</p>
+				</section>
+				<section>					
+					<img src="basicLighting/basic_lighting_specular_theory.png" class="clean"/>
+					<p>The resulting effect is that we see a bit of a highlight when we're looking at the light's direction reflected via the object.</p>
+				</section>
+				<section>					
+					<img src="basicLighting/basic_lighting_specular_theory.png" class="clean"/>
+					<p> The view vector is the one extra variable we need for specular lighting which we can calculate using the viewer's world space position and the fragment's position.</p>
+				</section>
+				<section>					
+					<img src="basicLighting/basic_lighting_specular_theory.png" class="clean"/>
+					<p>Then we calculate the specular's intensity, multiply this with the light color and add this to the resulting ambient and diffuse components.  </p>
+				</section>
+				<section>					
+					<img src="basicLighting/basic_lighting_specular_theory.png" class="clean"/>
+					<note style="font-size:40%"><p>We chose to do the lighting calculations in world space, but most people tend to prefer doing lighting in view space.</p>
+					<p >The added advantage of calculating in view space is that the viewer's position is always at <code>(0,0,0)</code> so you already got the position of the viewer for free.</p>
+					<p>However, I find calculating lighting in world space more intuitive for learning purposes.</p>
+					<p>If you still want to calculate lighting in view space you want to transform all the relevant vectors with the view matrix as well (don't forget to change the normal matrix too).</p>
+					</note>
+				</section>
+				<section>					
+
+					<p> To get the world space coordinates of the viewer we simply take the position vector of the camera object (which is the viewer of course).</p>
+					<p>So let's add another uniform to the fragment shader and pass the corresponding camera position vector to the fragment shader: </p>
+
+					<pre><code>uniform vec3 viewPos;</code></pre>
+
+					<pre><code>lightingShader.setVec3("viewPos", camera.Position);</code></pre>
+
+					<p> Now that we have all the required variables we can calculate the specular intensity.</p>
+				</section>
+				<section>					
+					<p>First we define a specular intensity value to give the specular highlight a medium-bright color so that it doesn't have too much of an impact: </p>
+
+					<pre><code>float specularStrength = 0.5;</code></pre>
+
+					<p> If we would set this to <code>1.0f</code> we'd get a really bright specular component which is a bit too much for a coral cube.</p>
+					<p>In the next ckass we'll talk about properly setting all these lighting intensities and how they affect the objects.</p>
+				</section>
+				<section>					
+					<p>Next we calculate the view direction vector and the corresponding reflect vector along the normal axis: </p>
+
+					<pre><code>vec3 viewDir = normalize(viewPos - FragPos);
+vec3 reflectDir = reflect(-lightDir, norm);</code></pre>
+
+					<p> Note that we negate the <code>lightDir</code> vector.</p>
+					<p>The <code>reflect</code> function expects the first vector to point <strong>from</strong> the light source towards the fragment's position, but the <code>lightDir</code> vector is currently pointing the other way around from the fragment  <strong>towards</strong> the light source (depends on the order of subtraction earlier on when we calculated the <code>lightDir</code> vector).</p>
+				</section>
+				<section>					
+					<p>To make sure we get the correct <code>reflect</code> vector we reverse its direction by negating the <code>lightDir</code> vector first.</p>
+					<p>The second argument expects a normal vector so we supply the normalized <code>norm</code> vector.  </p>
+
+					<p> Then what's left to do is to actually calculate the specular component.</p>
+					<p>This is accomplished with the following formula:</p>
+
+					<pre><code>float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+vec3 specular = specularStrength * spec * lightColor;</code></pre>
+				</section>
+				<section>					
+					<p> We first calculate the dot product between the view direction and the reflect direction (and make sure it's not negative) and then raise it to the power of <code>32</code>.</p>
+					<p>This <code>32</code> value is the <def>shininess</def> value of the highlight.</p>
+					<p>The higher the shininess value of an object, the more it properly reflects the light instead of scattering it all around and thus the smaller the highlight becomes.</p>
+				</section>
+				<section>					
+					<p>Below you can see an image that shows the visual impact of different shininess values: </p>
+
+					<img src="basicLighting/basic_lighting_specular_shininess.png"/>
+
+					<p> We don't want the specular component to be too dominant so we keep the exponent at <code>32</code>.</p>
+				</section>
+				<section>					
+					<p>The only thing left to do is to add it to the ambient and diffuse components and multiply the combined result with the object's color: </p>
+
+					<pre><code>vec3 result = (ambient + diffuse + specular) * objectColor;
+FragColor = vec4(result, 1.0);</code></pre>
+
+					<p> We now calculated all the lighting components of the Phong lighting model.</p>
+				</section>
+				<section>					
+					<p>Based on your point of view you should see something like this: </p>
+
+					<img src="basicLighting/basic_lighting_specular.png"/>
+
+				</section>
+				<section>					
+
+					<note>
+					  <p>In the earlier days of lighting shaders, developers used to implement the Phong lighting model in the vertex shader.</p>
+					<p>The advantage of doing lighting in the vertex shader is that it is a lot more efficient since there are generally a lot less vertices than fragments, so the (expensive) lighting calculations are done less frequently.</p>
+					<p>However, the resulting color value in the vertex shader is the resulting lighting color of that vertex only and the color values of the surrounding fragments are then the result of interpolated lighting colors.</p>
+					<p>The result was that the lighting was not very realistic unless large amounts of vertices were used: </p>
+					  
+					  <img src="basicLighting/basic_lighting_gouruad.png"/>
+					</note>
+				</section>
+				<section>					
+
+					<note>
+					  <img src="basicLighting/basic_lighting_gouruad.png"/>
+					  
+					  <p> When the Phong lighting model is implemented in the vertex shader it is called <def>Gouraud shading</def> instead of <def>Phong shading</def>.</p>
+					<p>Note that due to the interpolation the lighting  looks a bit off.</p>
+					<p>The Phong shading gives much smoother lighting results.  </p>
+					</note>
+				</section>
+				<section>					
+					<p>
+					  By now you should be starting to see just how powerful shaders are.</p>
+					<p>With little information shaders are able to calculate how lighting affects the fragment's colors for all our objects.</p>
+					<p>In the <a href="https://learnopengl.com/#!Lighting/Materials" target="_blank">next</a> classes we'll be delving much deeper into what we can do with the lighting model.  </p>
+				</section>
+				<section>
+				</section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>

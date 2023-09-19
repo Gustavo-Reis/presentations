@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Digital Signal Processing</title>
+
+		<meta name="description" content="Computer Graphics - Camera">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>DSP</h1>
+					<h2>Digital Signal Processing</h2>
+					<h5>Back to the basics :)</h5>
+					<p>
+						<small>&#169; 2020 Sound Particles / Gustavo Reis</small>
+					</p>
+				</section>
+				<section>
+					<h2>Audio: Sound Waves</h2>
+					<p>Everything we call sound are vibrations in a medium, like air.</p>
+					<p>The string of a guitar or even our vocal chords move and create pressure oscillations in the air.</p>
+					<p>One vibration cycle occurs when the air is compressed, rarefacted and returns to its original state.</p>
+					<p>The human ear can hear vibrations occurring between 20 and 20 000 times per second.</p>
+				</section>
+				<section>
+					<p>The graphic with the sound waves or the oscillogram, in many recording computer programs, shows both compression and decompression of air as a function of time.</p>
+					<p>In the vertical axis, the variation of the sound pressure indicates the sound volume.</p>
+					<p>The horizontal axis show the time evolution of the sound wave.</p>
+				</section>
+				<section>
+					<h3>Analog Audio</h3>
+					<p>Microphones have a membrane that moves according to the air vibrations and a circuit to generate an electrical signal.</p>
+					<p>The voltage of tht electrical signal changes according to he vibrations of the membrane.</p>
+					<p>All the sound vibrations that are sensed by the microphone's membrane are transformed into voltage oscillations, which are transmitted to an amplifier.</p>
+				</section>
+				<section>
+					<p>When the electric audio signal arrives into a speaker, the speaker acts on the opposite way of the microphone: its cone vibrates, according to the electric variations, making the air particles to move, creating again the mechanical sound.</p>
+					<p>Between the microphone's membrane and the speaker's cone we have the electrical audio signal or <b>analog sound</b>.</p>
+					<p>It is called <b>analog</b> because it is a continuous function of time and thus denotes an analogy between the air vibrations and voltage oscillations.</p>
+				</section>
+				<section>
+					<h3>Digital Audio</h3>
+					<p>When an analog sound is sent to a computer sound card or to a digital audio mixer, the electrical signal must be digitized, i.e. converted to numeric values.</p>
+					<p>The input of the device where the cable is connected to has an analog/digital converter (ADC) to convert voltage values into numbers.</p>
+					<p>The digital/analog converter (DAC) does exactly the opposite: it recreates the analog sound after being processed by the computer making it possible to reproduce the sound.</p>
+				</section>
+				<section>
+					<img src="dsp/ADC.png"  width="40%">
+					<p>The DAC converts the sound vibrations into numbers by a process of sampling.</p>
+					<p>This process happens thousands of times per second: the current state of the oscillation is converted into a digital number.</p>
+				</section>
+				<section>
+					<p>When that sequence of digital numbers is represented graphically it has the wave shape similar to he original sound. But, if we look closer, we will see that waves of the oscillation vary in a "stair" shape.</p>
+					<img src="dsp/digitizedWave.png"  width="40%">
+				</section>
+				<section>
+					<img src="dsp/ADC.png"  width="40%"><br>
+					<img src="dsp/digitizedWave.png"  width="40%">
+				</section>
+				<section>
+					<p>The digital sound is not continuous in time or amplitude (it is discrete).</p>
+					<p>If we increase the number of samples per second (i.e. the sample rate) a higher density of samples results making the the digitized signal more similar to the original sound.</p>
+				</section>
+				</section>
+
+				<section>
+					<h3>Signal Sampling</h3>
+					<p>Signal sampling is the acquisition of a continuous signal (for instance: an analog sound) in discrete time intervals.</p>
+					<p>The output of the sampler varies only in periodic intervals of time, when it assumes the instant value of the input signal.</p>					
+				</section>
+				<section>
+					<img src="dsp/sampledSignal.png" width = "80%">
+				</section>
+				<section>
+					<p>Any variation that might occur between the sampling intervals is completely ignored.</p>
+					<img src="dsp/lostFrequencies.png" width = "60%">
+				</section>
+				<section>
+					<p>Sampling is the key concept for the real-time digital signal processing.</p>
+				</section>
+				<section>
+					<h4>Sampling Theorem</h4>
+					<p>The sampling theorem, also known as the Nyquist theorem, specifies the sampling rate at which an analog signal should be sampled so that all relevant information in the signal is preserved in the sampling process.</p>
+					<p>This theorem states that:</p>
+					<q>If a low pass-band signal has the highest frequency equal to $F_{max}$, then for its exact reconstruction it must be sampled at least at $F_s$ sample rate, where $F_s$ is equal or greater than the double of $F_{max}.$</q>
+				</section>
+				<section>
+					$F_s \geq 2 F_{max}$
+					<p>Therefore, so that a sound preserves frequencies between 20 Hz and 20 kHz, the sampling rate should be equal or greater than 40 kHz.</p>
+					<p>This is why industry adopted 44.1 kHz (44100 samples per second) for the CD since it covers all the audible spectrum.</p>
+					<p>Nowadays, the technology operates with higher frequency rates to achieve the best possible fidelity to real sound.</p>
+				</section>
+				<section>
+					<h4>Sampling Depth</h4>
+					<p>Each digital sample is a point with the wave or signal value on that instant.</p>
+					<p>From time to time (for example in  CD at each $\frac{1}{44100}$ of second or 0.000023 seconds) the analog/digital converter expresses the wave amplitude with a numeric value.</p>
+					<p>Consecutive values denote the wave variations which typically are represented as vertical variations in a wave graph where the abscissa axis denotes time.</p>
+				</section>
+				<section>
+					<p>The number of possible values (or levels) indicating the amplitude of each wave sample is expressed in bits.</p>
+					<p>A sound sample with 8 bits has 256 possible levels, but the dynamics of the human ear is much more sophisticated since, for example, it can distinguish between the flapping wings of a fly to an airplane's turbine, which is millions of times stronger.</p>
+				</section>
+				<section>
+					<p>With 16 bits - the format use in audio CDs - we have 65,536 possible audio levels, which implies a substantial gain in quality when compared to the 8 bits resolution.</p>
+					<p>The 24 bits used on the DVD gives 16,777,216 amplitude variations.</p>
+				</section>
+				<section>
+					<img src="dsp/lowBitDepth.png" width = "80%">
+				</section>
+				<section>
+					<h2>Digital Signal Processing</h2>
+					<p>Digital Signal Processing consists in the application of several computational methods on digital signals, or digitized versions of natural signals (sound, image, electrocardiogram potentials, seismic vibrations, etc.), to analyze, classify, recognize or even transform them.</p>
+					<p>Nowadays every way of representation and communication of voice, sound and image are digital and apply Digital Signal Processing techniques.</p>
+					<p>JPEG, MPEG, MP3 and GSM are no more than techniques of Digital Signal Processing.</p>
+				</section>
+				<section>
+					<h3>Basic Concepts</h3>
+					<p>A signal is said to be <b>periodic</b> if it repeats itself at a regular time interval: its <b>period</b>.</p>
+					<p>A periodic signal is mathematically defined as a function $\tilde x(t)$, where $t \in \mathbb{R}$, which follows he the following equation, where $T$ is a real number and $m \in \mathbb{Z}$:</p>
+					$\tilde x(t) = \tilde x(t + mT)$.
+				</section>
+				<section>
+					$\tilde x(t) = \tilde x(t + mT)$
+					<p>The lowest value of $T$ where the expression is true is called the period of the fundamental component and is designated as $T_0$.</p>
+					<p>The fundamental angular frequency $\omega_0$ is defined, according to the period of the fundamental by:</p>
+					$\omega_0 = \frac{2\pi}{T_0}$.
+				</section>
+				<section>
+					<img class="plain" src="dsp/periodicSignal.png" width = "80%">
+					<p>A periodic signal $\tilde{x}(t) = \sin(\pi t)$, which has the fundamental angular frequency $\omega_{0} = \pi$, which corresponds to the period $T_{0} = 2$.</p>
+				</section>
+				<section>
+					<p>To identify the period $T_0$, the frequency $f_0 = \frac{1}{T_0}$ or the angular frequency $\omega_0 = 2 \pi F_0 = \frac{2\pi}{T_0}$, it is always helpful to write it in any of the following forms:</p>
+					$\sin(\omega_0 t) = \sin(2 \pi F_0 t) = \sin(\frac{2 \pi t}{T_0}).$
+				</section>
+				<section> Octave demonstration</section>
+				<section>
+					<p>Given the fact that the $F_0$ of a speech or music sound source varies with time, one assumption is made: it is assumed that the signal is <b>stationary</b> in a very short  time duration.</p>
+					<p>This way, the $F_0$ of a non-stationary periodic signal can be determined through the approximation $\tilde{x}(t) \approx \tilde{x}(t+T_0)$ for the concerned duration.</p>
+					<p>If a signal can be approximated by using this method, it is called a <b>quasi-periodic</b> signal.</p>
+				</section>
+				<section>
+					<img class="plain" src="dsp/sax_waveform.png">
+					<p>Waveform of a quasi-periodic signal, generated by a saxophone, with $F_0$ = 237 Hz ($T_0$ = 4.2 ms).</p>
+				</section>
+				<section>
+					<h3>Fourier Analysis</h3>
+					<p>Sinusoids are probably the most important of all periodic signals.</p>
+					<p>In general, a sinusoid is represented by a cosine function with a specific amplitude $A$, frequency $\omega_0$ and initial phase $\phi$:</p>
+					$\tilde{x}(t) = A \cos\left(w_0 t + \phi \right)$.
+				</section>
+				<section>
+					<p>Jean-Baptiste Joseph Fourier (1768-1830) was the first to have the insight to see the potential for representing a signal as a sum of <b>harmonically related sinusoids</b>, where each component is called a <b>harmonic</b> and has a frequency that is a multiple of the fundamental frequency.</p>
+					<p>According to Joseph Fourier, any periodic signal can be represented by a <b>Fourier series</b>.</p>
+				</section>
+				<section>
+					Octave example
+				</section>
+				<section>
+					<pre><code>t = 0:1/100:8;
+f = 2;
+x = sin(2 * pi * f * t);
+x1 = 1/3 * sin(6 * pi * f * t);
+x2 = 1/5 * sin(10 * pi * f * t);
+x3 = 1/7 * sin(14 * pi * f * t);
+plot(t,x,t,x1,t,x2,t,x3)
+figure;
+plot(t,x+x1+x2+x3)</code></pre>
+				</section>
+				<section>
+					<img class = "plain" src="http://www.thepulsar.be/images/generating-sine-wave-from-square-waves/sine2.png">
+				</section>
+				<section>
+					$$f(t) = \frac{4}{\pi}\sum_{n=0}^{\infty} \frac{\sin\left(2 \pi f t (2n + 1)\right)}{2n+1}$$
+				</section>
+				<section>
+					<img class = "plain" src="http://www.thepulsar.be/images/generating-sine-wave-from-square-waves/h0.png">
+				</section>
+				<section>
+					<p>The study of signals and systems using sinusoidal representation is known as <b>Fourier analysis</b>, in honor to Joseph Fourier.</p>
+					<p>Fourier analysis is a family of mathematical techniques based on the sinusoidal signal decomposition (each function is treated as an infinite sum of sines).</p>
+					<p>Signals can be classified according to two criteria: discrete or continuous and periodic or non-periodic.</p>
+				</section>
+				<section>
+					<p>The four elements of the family of the Fourier transforms came from these two criteria, being the most important for this talk the Fourier Series (applies to periodic and continuous signals) - and the Discrete Fourier Transform (applies to periodic signals with discrete time).</p>
+					<p>The Discrete Fourier Transform is the only class of these two representations that can be used in Digital Signal Processing, since computers can only deal with discrete information and with finite size.</p>
+				</section>
+				<section>
+					<h3>Fourier Series</h3>
+					<p>Any periodic signal represented by a real function $\tilde{x}(t)$ can be constructed as a sum of a number (possibly infinite) of harmonically related complex exponentials:</p>
+					$$\tilde{x}(t) = \sum_{k=-\infty}^{\infty}a_k e^{jkw_0t}, k \in \mathbb{Z}$$
+				</section>
+				<section>
+					$$\tilde{x}(t) = a_0 + \sum_{k=1}^{\infty}A_k \cos(kw_0t + \phi_k)$$
+					This equation is commonly used for the Fourier series representation of periodic signals.
+					Any sound that can be represented by this equation is called a <b>harmonic sound.</b>
+				</section>
+				<section>
+					<h3>Fourier Transform</h3>
+					<p>Waveforms are signal representations in the <b>time-domain</b> and, thus, can be used directly for several tasks such as beat detection.</p>
+					<p>Also, by applying correlation to the time-domain signal, it is possible to search for repetitive patterns and, furthermore, detect periodicities on monaural signals.</p>
+					<p>However, the information in time-domain  is not practical for some approaches that require a different kind of information.</p>
+				</section>
+				<section>
+					<p>By using the <b>Fourier transform</b> (FT), a waveform can be mapped (transformed) into the <b>frequency-domain.</b></p>
+					<p>A time-domain graph shows how a signal changes with time, whereas a frequency-domain graph shows how much of the signal lies within each given frequency band over a range of frequencies.</p>
+					<p>The FT decomposes a given signal function into a sum of sinusoids with different frequencies, showing how much of the signal lies within each frequency band.</p>
+					<p>This way, FT is widely used for frequency analysis.</p>
+				</section>
+				<section>
+					<p>The FT is defined for aperiodic continuous waveforms with infinite length as follows:</p>
+					$$\text{FT}_{\tilde{x}}(f) = \tilde{X}(f) = \int_{-\infty}^{+\infty}\tilde{x}(t)e^{-j2\pi ft}dt$$
+				</section>
+				<section>
+					<h3>Discrete Fourier Transform - DFT</h3>
+					<p>When a periodic signal is discrete in time, like in digital signal processing, the FT cannot be applied.</p>
+					<p>Therefore, for analyzing a discrete signal the Discrete Fourier Transform is applied.</p>
+					$$\text{DFT}_{\tilde{x}}[k] = \tilde{X}[k] = \sum_{n=-\infty}^{+\infty}\tilde{x}[n]e^{-j2\pi kn}$$
+					<p>Where $k$ is the spectral bin corresponding to each frequency.</p>
+				</section>
+				<section>
+					<p>Computational problems require signals to have finite length, which stresses the need of a DFT for finite signals.</p>
+					<p>The DFT for finite signals is defined as follows:</p>
+					$$\text{DFT}_{\tilde{x}}[k] = \tilde{X}[k] = \sum_{n=0}^{N-1}\tilde{x}[n]e^{-j\frac{2\pi}{N}kn}, \quad k = 0,\cdots,N-1$$
+					<p>where $N$ is the length of the waveform (number of samples).</p>
+				</section>
+				<section>
+					<p>According to Nyquist-Shannon sampling theorem, the number of useful frequencies of the DFT is limited to the Nyquist frequency $\left( \frac{F_s}{2} \right)$.</p>
+					<p>Given that the $N$ frequency bins are equally distributed, the frequency of each spectral bin $k$ is: $f_k = k\frac{F_s}{N}$.</p>
+					<p>This way, the frequency resolution of the DFT is $\Delta f = \frac{F_s}{N}$.</p>
+				</section>
+				<section>
+					<p>As an example, let us assume that a stationary quasi-periodic signal $\tilde{x}[t]$ has 4096 samples and its sampling rate is 44100 Hz (CD quality).</p>
+					<p>This means that by applying the DFT, the signal $\tilde{x}[t]$ is transformed into the signal $\tilde{X}[k]$, where the frequency resolution of each bin is $\Delta f = \frac{F_s}{N} = \frac{44100}{4096} = 10.77 Hz$.</p>
+					<p>This means that the frequency of each spectral bin $k$ is $f_k = k \times 10.77 Hz$.</p>
+				</section>
+				<section>
+					<h3>Fast Fourier Transform - FFT</h3>
+					<p>The calculation of the DFT for $N$ samples requires $N^{2}$ complex multiplications and $N^{2}-N$ complex additions, to obtain $N$ samples in the frequency-domain.</p>
+					<p>This number of multiplications and additions leads to a prohibitive DFT calculation in real-time.</p>
+					<p>However, if the number of samples $N$ is a structured number such as a power of two, then the DFT can be efficiently computed using a <b>fast Fourier transform</b> (FFT) algorithm.</p>
+				</section>
+				<section>
+					<p>The Fast Fourier Transform is a fast algorithm to implement efficiently the DFT, where a number of $N$ samples of the input signal are transformed in $N$ frequency points.</p>
+					<p>For $N$ structured as a power of two, the required computational effort for this operation is proportional to $N\log_2 N$ in terms of multiplications and additions.</p>
+					<p>This allows DFT computation in real-time.</p>
+				</section>
+				<section>
+					<h2>Power Spectral Density</h2>
+					<p>Although these Fourier transform equations (FT, DFT and FFT) were described in terms of complex exponentials, these Fourier transforms can also be expressed as trigonometric functions, as a consequence of the complex representation according to Euler's formula.</p>
+					<p>Complex numbers are represented in the complex plane as $z = a + jb$, where $a$ is the real part, and $b$ is the imaginary part.</p>
+				</section>
+				<section>
+					<img class="plain" src="dsp/complexPlane.png" width = "60%">
+				</section>
+				<section>
+					<p>The <b>power spectral density</b> (PSD) describes how the energy of a signal is distributed with frequency.</p>
+					<p>PSD is the squared magnitude of the DFT of a signal $\tilde{x}[n]$.</p>
+					<p>In general, it is called the <b>spectrum</b> of the signal.</p>
+					<p>The spectrum is usually represented as a two-dimensional diagram showing the energy of a signal $|\tilde{X}[k]|^2$ as a function of frequency.</p>
+				</section>
+				<section>
+					<img class="plain" src="dsp/power_spectrum_piano.png">
+				</section>				
+				<section>
+					<p>Although the spectrum in the last figures is represented using a linear scale for both magnitude and frequency, the logarithmic scale is also commonly used to show each component.</p>
+					<p> A logarithmic magnitude widely used to represent the magnitudes is the deciBel (dB):</p>
+					$$\text{dB}(|\tilde{X}[k]|) = 20 \log_{10}(|\tilde{X}[k]|) = 10 \log_{10}(|\tilde{X}[k]|^2)$$
+				</section>
+				<section>
+					<h2>Spectral Leakage</h2>
+					<p>The Fourier Transform assumes that the signal is periodic.</p>
+					<p>Therefore, a continuous sine wave is transformed into a single spectral line in the frequency-domain.</p>
+				</section>
+				<section>
+					<img class="plain" src="dsp/pureSineWave.png">
+					<img class="plain" src="dsp/singleSpectralLine.png">
+				</section>
+				<section>
+					<p>However, in the case of the Discrete Fourier Transform a finite section of the signal history is transformed.</p>
+					<p>If a pure sine wave does not repeat exactly within the time window, it is truncated and the windowed section of the signal history is assumed to repeat.</p>
+					
+				</section>
+				<section>
+					<p><img class="plain" src="dsp/windowedSine.png"></p>
+					<p><img class="plain" src="dsp/repeatedWindow.png" width = "70%"></p>
+				</section>
+				<section>
+					<p>This truncation will lead the spectrum to spread out of a single frequency.</p>					 
+					<p>This phenomenon is known as <b>leakage</b> due to the signal energy being leaked from a single frequency bin to adjacent frequency bins.</p>
+					<p>Leakage reduces the accuracy of the spectrum: the measured level of the peaks is less accurate and also the effective frequency resolution of the analysis is strongly affected.</p>
+				</section>
+				<section>
+					<img class="plain" src="dsp/spectralLeakage.png" width = "70%">
+				</section>
+				<section>
+					<h2>Windowing</h2>
+					<p>In order to minimize the spectral leakage effect, caused by the direct truncation of a signal into a single time window (rectangular windowing), the samples in the frame can be multiplied by a smooth window shape, thus, smoothing the abrupt edges.</p>
+					<p>This process is called <b>windowing</b>.</p>
+					<p>The most common windows are rectangular, triangular, Hanning, Hamming, Blackman and Blackman-Harris.</p>
+				</section>
+				<section>
+					<img class = "plain" src="http://paulbourke.net/miscellaneous/windows/hanning1.gif">
+					<p>In general, windows have shapes that are positive, bell shaped and symmetric functions.</p>
+				</section>
+				<section>
+					<p>Windows are used to modify the frequency response of a DFT as a way to reduce the spectral leakage.</p>
+					<p>The output of a DFT applied to a windowed function is the product of two sequences given by the following equation, where $a_{n}$ is the applied window.</p>
+					$$Y_{k} = \sum_{n=0}^{N-1}a_{n}\tilde{x}_{n}W_{N}^{nk}, \quad W=e^{-j2\pi}$$
+				</section>
+				<section>Octave demonstration</section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>

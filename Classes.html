@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Introduction to C++</title>
+
+		<meta name="description" content="Classes">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+		<style type="text/css">
+			.output{
+				font-size:larger;
+				background-color:black;
+				color:lightgrey;
+			}
+		</style>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Classes</h1>
+					<h2>"A tour of C++" - Bjarne Stroustrup</h2>
+					<h2>(Chapter 4)</h2>
+				</section>
+				<section>
+					<section>
+						<h1>Classes</h1>
+						<p class="fragment">The central language feature of C++ is the <b>class</b>.</p>
+						<p class="fragment">A class is a user-defined type provided to represent a concept in the code of a program.</p>
+						<p class="fragment">A program built upon a well chosen set of classes is far easier to understand and get right than one that builds everything directly in terms of the built-in types.</p>
+					</section>
+					<section>
+						<p class="fragment">Most programming techniques rely on the design and implementation of specific kinds of classes.</p>
+						<p class="fragment">The needs and tastes of programmers vary immensely.</p>
+						<p class="fragment">Consequently, the support for classes is extensive.</p>
+						<p class="fragment">We will focus on the basic support for three important kinds of classes:</p>
+						<ul>
+							<li class="fragment">Concrete classes</li>
+							<li class="fragment">Abstract classes</li>
+							<li class="fragment">Classes in class hierarchies</li>
+						</ul>
+					</section>					
+				</section>
+				<section>
+					<section>
+						<h1>Concrete Classes</h1>
+					</section>
+					<section>
+						<p class="fragment">The basic idea of concrete classes is that they behave "just like built-in types."</p>
+						<p class="fragment">For example, a complex number type and an infinite-precision integer are much like built-in <code>int</code>, except of course that <u>they have their own semantics and sets of operations</u>.</p>
+						<p class="fragment">Similarly, a vector and a string are much like built-in arrays, except that they are better behaved.</p>
+						<p class="fragment">The defining characteristic of a concrete type is that its representation is part of its definition.</p>
+						<p class="fragment">In many important cases, such as a vector, that representation is only one or more pointers to more data stored elsewhere, but it is present in each object of a concrete class.</p>
+						<p class="fragment">That allows implementations to be optimally efficient in time and space.</p>
+					</section>
+					<section>
+						<p>In particular, this allows to:</p>
+						<ul>
+							<li class="fragment">place objects of concrete types on the stack, in statically allocated memory, and in other objects;</li>
+							<li class="fragment">refer to objects directly (and not just through pointers or references);</li>
+							<li class="fragment">initialize objects immediately and completely (e.g., using constructors);</li>
+							<li class="fragment">copy objects.</li>
+						</ul>
+					</section>
+					<section>
+						<p class="fragment">The representation can be private and accessible only through the member functions, but it is present.</p>
+						<p class="fragment">Therefore, if the representation changes in any significant way, a user must recompile.</p>
+						<p class="fragment">This is the price to pay for having concrete types behave exactly like built-in types.</p>
+						<p class="fragment">For types that don't change often, and where local variables provide much-needed clarity and efficiency, this is acceptable and often ideal.</p>
+						<p class="fragment">To increase flexibility, a concrete type can keep major parts of its representation on the heap (dynamic memory) and access them through the part stored in the class object itself.</p>
+						<p class="fragment">That's the way <code>vector</code> and <code>string</code> are implemented; they can be considered resource handles with carefully crafted interfaces.</p>
+					</section>
+					<section>
+						<h1>Arithmetic Types</h1>
+						<pre class="stretch"><code style="font-size:larger">class complex {
+    double re, im; // representation: two doubles
+public:
+    complex(double r, double i) :re{r}, im{i} {} // construct complex from two scalars
+    complex(double r) :re{r}, im{0} {}           // construct complex from one scalar
+    complex() :re{0}, im{0} {}                   // default complex:{0,0}    
+
+    
+    double real() const { return re; }
+    void real(double d) { re=d; }
+    double imag() const { return im; }
+    void imag(double d) { im=d; }
+
+    
+    complex& operator+=(complex z) { re+=z.re, im+=z.im; return *this; } // add and im
+                                                                         // and return the result
+    complex& operator-=(complex z) { re-=z.re, im-=z.im; return *this; }
+    
+    complex& operator*=(complex); // defined out-of-class somewhere
+    complex& operator/=(complex); // defined out-of-class somewhere
+};</code></pre>
+						<p class="fragment">This is a slightly simplified version of the standard-library complex. </p>
+						<p class="fragment">The class definition itself contains only the operations requiring access to the representation.</p>
+						<p class="fragment">The representation is simple and conventional. </p>
+					</section>
+					<section>
+						<p class="fragment">In addition to the logical demands, complex must be efficient or it will remain unused.</p>
+						<p class="fragment">This implies that simple operations must be inlined:</p>
+						<ul><li class="fragment"><b>constructors</b>, <code>+=</code>, and <code>imag()</code> must be implemented without function calls in the generated machine code.</li></ul>
+						<p class="fragment">Functions defined in a class are inlined by default.</p>
+						<p class="fragment">A constructor that can be invoked without an argument is called a default constructor.</p>
+						<p class="fragment">Thus, <code>complex()</code> is complex's <b>default constructor</b>.</p>
+						<p class="fragment">By defining a default constructor we eliminate the possibility of uninitialized variables of that type. </p>
+						<p class="fragment">The <code>const</code> specifiers on the functions returning the real and imaginary parts indicate that these functions do not modify the object for which they are called.</p>
+					</section>
+					<section>
+						<p>Many useful operations do not require direct access to the representation of complex, so they can be defined separately from the class definition:</p>
+						<pre class="fragment"><code style="font-size:larger">complex operator+(complex a, complex b) { return a+=b; }
+complex operator-(complex a, complex b) { return a-=b; }
+complex operator-(complex a) { return {-a.real(), -a.imag()}; } // unary minus
+complex operator*(complex a, complex b) { return a*=b; }
+complex operator/(complex a, complex b) { return a/=b; }</code></pre>
+						<p class="fragment">Here, we use the fact that an argument passed by value is copied, so that we can modify an argument without affecting the caller's copy, and use the result as the return value.</p>
+						<p class="fragment">The definitions of == and != are straightforward:</p>
+						<pre class="fragment"><code style="font-size:larger">bool operator==(complex a, complex b) // equal
+{
+    return a.real() == b.real() && a.imag() == b.imag();
+}
+
+bool operator !=(complex a, complex b) // not equal
+{
+    return !(a==b);
+}</code></pre>
+					</section>
+					<section>
+						<p>Class complex can be used like this:</p>
+						<pre class="fragment"><code style="font-size:larger">void f(complex z) {
+    complex a {2.3}; // construct {2.3,0.0} from 2.3
+    complex b {1/a};
+    complex c {a + z * complex{1,2.3}};
+    // ...
+    if (c != b)
+        c = - (b / a) + 2 * b;
+}</code></pre>
+						<p class="fragment">The compiler converts operators involving complex numbers into appropriate function calls.</p>
+						<p class="fragment">For example, <code>c != b</code> means <code>operator!=(c,b)</code> and <code>1/a</code> means <code>operator/(complex{1},a)</code>. </p>
+						<p class="fragment"><b>Overloaded operators</b> should be used cautiously and conventionally.</p>
+						<p class="fragment">The syntax is fixed by the language, so you can't define a unary <code>/</code>.</p>
+						<p class="fragment">Also, it is not possible to change the meaning of an operator for built-in types, so you can't redefine <code>+</code> to subtract <code>int</code>s.</p>
+					</section>
+					<section>
+						<h1>Containers</h1>
+						<p class="fragment">A container is an object holding a collection of elements.</p>
+						<p class="fragment">Therefore, we call Vector a container because it is of the type of objects that are containers.</p>
+						<p class="fragment">As defined in the previous class (<b>Introduction to C++</b>), Vector is a reasonable container of doubles: it is simple to understand, establishes a useful invariant, provides range-checked access, and provides <code>size()</code> to allow us to iterate over its elements.</p>
+						<p class="fragment">However, it does have a fatal flaw: it allocates elements using <code>new</code> but never deallocates them.</p>
+					</section>
+					<section>
+						<p>We need a mechanism to ensure that the memory allocated by the constructor is deallocated: a <b>destructor</b>.</p>
+						<pre class="fragment"><code style="font-size:larger">class Vector {
+private:
+    double* elem; // elem points to an array of sz doubles
+    int sz;
+public:
+    Vector(int s) :elem{new double[s]}, sz{s}  // constructor: acquire resources
+    {
+        for (int i=0; i!=s; ++i) elem[i]=0;    // initialize elements
+    }
+    
+    ~Vector() { delete[] elem; }                // destructor: release resources
+    
+    double& operator[](int i);
+    int size() const;
+};</code></pre>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">class Vector {
+private:
+    double* elem; // elem points to an array of sz doubles
+    int sz;
+public:
+    Vector(int s) :elem{new double[s]}, sz{s}  // constructor: acquire resources
+    {
+        for (int i=0; i!=s; ++i) elem[i]=0;    // initialize elements
+    }
+    
+    ~Vector() { delete[] elem; }                // destructor: release resources
+    
+    double& operator[](int i);
+    int size() const;
+};</code></pre>
+						<p class="fragment">The name of a destructor is the complement operator, ̃, followed by the name of the class: it is the <b>complement of a constructor</b>.</p>
+						<p class="fragment">Vector's constructor allocates some memory on the free store (also called the heap or dynamic store) using the new operator.</p>
+						<p class="fragment">The destructor cleans up by freeing that memory using the delete operator.</p>
+						<p class="fragment">This is all done without intervention by users of <code>Vector</code>.</p>
+						<p class="fragment">The users simply create and use Vectors much as they would variables of built-in types.</p>
+						<p class="fragment">This Vector has been simplified by leaving out error handling.</p>
+					</section><section>
+						<pre><code style="font-size:larger">void fct(int n)
+{
+    Vector v(n);
+    
+    // ... use v ...
+    
+    {
+        Vector v2(2 * n);
+        // ... use v and v2 ...
+    } // v2 is destroyed here
+    
+    // ... use v ..
+    
+} // v is destroyed here</code></pre>
+						<p class="fragment">Vector obeys the same rules for naming, scope, allocation, lifetime, etc., as does a built-in type, such as <code>int</code> and <code>char</code>.</p>
+					</section>
+					<section>
+						<p class="fragment">The constructor/destructor combination is the basis of many elegant techniques.</p>
+						<p class="fragment">In particular, it is the basis for most C++ general resource management techniques.</p>
+						<p class="fragment">Consider the following graphical illustration of a <code>Vector</code>:</p>
+						<span class="fragment"><img src="cpp/VectorInitialized.png" class="plain"></span>
+					</section>
+					<section>
+						<img src="cpp/VectorInitialized.png" class="plain">
+						<p class="fragment">The constructor allocates the elements and initializes the Vector members appropriately.</p>
+						<p class="fragment">The destructor deallocates the elements.</p>
+						<p class="fragment">This handle-to-data model is very commonly used to manage data that can vary in size during the lifetime of an object.</p>
+						<p class="fragment">The technique of acquiring resources in a constructor and releasing them in a destructor, known as <b><u>Resource Acquisition Is Initialization</u></b> or <b><u>RAII</u></b>, allows us to eliminate "naked <code>new</code> operations", that is, to avoid allocations in general code and keep them buried inside the implementation of well-behaved abstractions.</p>
+						<p class="fragment">Similarly, "naked <code>delete</code> operations" should be avoided.</p>
+						<p class="fragment">Avoiding naked <code>new</code> and naked <code>delete</code> makes code less error-prone and far easier to keep free of resource leaks.</p>
+					</section>
+					<section>
+						<h1>Initializing Containers</h1>
+						<p class="fragment">A container exists to hold elements, so obviously we need convenient ways of getting elements into a container.</p>
+						<p class="fragment">We can handle that by creating a Vector with an appropriate number of elements and then assigning to them, but typically other ways are more elegant, like:</p>
+						<ul>
+							<li class="fragment"><b>Initializer-list constructor</b>: initialize with a list of elements;</li>
+							<li class="fragment"><code>push_back()</code>: add a new element at the end (at the back of) the sequence.</li>
+						</ul>
+					</section>
+					<section>
+						<p>These can be declared like this:</p>
+						<pre class="fragment"><code style="font-size:larger">class Vector {
+public:
+    Vector(std::initializer_list&lt;double&gt;); // initialize with a list
+    // ...
+    void push_back(double); // add element at end increasing the size by one
+    // ...
+};</code></pre>
+						<p class="fragment">The <code>push_back</code> is useful for input of arbitrary numbers of elements:</p>
+						<pre class="fragment"><code style="font-size:larger">Vector read(istream& is) {
+    Vector v;
+    for (double d; is>>d;)  // read floating-point values into d
+        v.push_back(d);     // add d to v
+    return v;
+}</code></pre>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">Vector read(istream& is) {
+    Vector v;
+    for (double d; is>>d;)  // read floating-point values into d
+        v.push_back(d);     // add d to v
+    return v;
+}</code></pre>
+						<p class="fragment">The input loop is terminated by an end-of-file or a formatting error.<code></code></p>
+						<p class="fragment">Until that happens, each number read is added to the <code>Vector</code> so that at the end, <code>v</code>'s size is the number of elements read.</p>
+						<p class="fragment">A <code>for</code>-statement was used, rather than the more conventional <code>while</code>-statement to keep the scope of d limited to the loop.</p>
+					</section>
+					<section>
+						<p>The <code>std::initializer_list</code> used to define the initializer-list constructor is a standard-library type known to the compiler: when we use a <code>{}</code>-list, such as <code>{1,2,3,4,5}</code>, the compiler will create an object of type <code>initializer_list</code> to give to the program:</p>
+						<pre class="fragment"><code style="font-size:larger">Vector v1 = {1,2,3,4,5};          // v1 has 5 elements
+Vector v2 = {1.23, 3.45, 6.7, 8}; // v2 has 4 elements
+</code></pre>
+						<p class="fragment"><code>Vector</code>'s <code>initializer-list</code> constructor could be like this:</p>
+						<pre class="fragment"><code style="font-size:larger">Vector::Vector(std::initializer_list&lt;double&gt; lst) // initialize with a list
+:elem{new double[lst.size()]}, sz{lst.size()}
+{
+    copy(lst.begin(), lst.end(), elem); // copy from lst into elem
+}</code></pre>
+					</section>
+				</section>
+				<section>
+					<section><h1>Abstract Types</h1></section>
+					<section>
+						<p class="fragment">Types such as complex and Vector are called concrete types because their representation is part of their definition.</p>
+						<p class="fragment">In that, they resemble built-in types.</p>
+						<p class="fragment">In contrast, an abstract type is a type that completely insulates a user from implementation details.</p>
+						<p class="fragment">To do that, we decouple the interface from the representation and give up genuine local variables.</p>
+						<p class="fragment">Since we don't know anything about the representation of an abstract type (not even its size), we must allocate objects on the heap and access them through references or pointers.</p>
+					</section>
+					<section>
+						<p>First, let us define the interface of a class <code>Container</code> which we will design as a more abstract version of our <code>Vector</code>:<code></code></p>
+						<pre class="fragment"><code style="font-size:larger">class Container {
+public:
+    virtual double& operator[](int) = 0; // pure virtual function
+    virtual int size() const = 0;        // const member function
+    virtual ~Container() {}              // destructor
+};</code></pre>
+						<p class="fragment">This <code>class</code> is a pure interface to specific containers defined later.</p>
+						<p class="fragment">The word <code>virtual</code> means "<b>may be redefined later in a class derived from this one</b>".</p>
+						<p class="fragment">A function declared <code>virtual</code> is called a virtual function.</p>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">class Container {
+public:
+    virtual double& operator[](int) = 0; // pure virtual function
+    virtual int size() const = 0;        // const member function
+    virtual ~Container() {}              // destructor
+};</code></pre>
+						<p class="fragment">A <code>class</code> derived from Container provides an implementation for the Container interface. </p>
+						<p class="fragment">The <code>=0</code> syntax states that the function is <b>pure virtual</b>; that is, some class derived from Container must define the function.</p>
+						<p class="fragment">Thus, it is not possible to define an object that is just a <code>Container</code>; a <code>Container</code> can only serve as the interface to a class that implements its <code>operator[]()</code> and <code>size()</code> functions.</p>
+						<p class="fragment">A class with a pure virtual function is called an <b>abstract class</b>.</p>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">class Container {
+public:
+    virtual double& operator[](int) = 0; // pure virtual function
+    virtual int size() const = 0;        // const member function
+    virtual ~Container() {}              // destructor
+};</code></pre>
+						<p class="fragment">This <code>Container</code> can be used like this:</p>
+						<pre class="fragment"><code style="font-size:larger">void use(Container& c)
+{
+    const int sz = c.size();
+    
+    for (int i=0; i!=sz; ++i)
+        cout << c[i] << '\n';
+}
+</code></pre>
+						<p class="fragment">Note how <code>use()</code> uses the <code>Container</code> interface in complete ignorance of implementation details.</p>
+						<p class="fragment">It uses <code>size()</code> and <code>[]</code> without any idea of exactly which type provides their implementation.</p>
+						<p class="fragment">A class that provides the interface to a variety of other classes is often called a <b>polymorphic type</b>.</p>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">class Container {
+public:
+    virtual double& operator[](int) = 0; // pure virtual function
+    virtual int size() const = 0;        // const member function
+    virtual ~Container() {}              // destructor
+};</code></pre>
+						<p class="fragment">As is common for abstract classes, <code>Container</code> does not have a constructor.</p>
+						<p class="fragment">After all, it does not have any data to initialize.</p>
+						<p class="fragment">On the other hand, <code>Container</code> does have a destructor and that destructor is virtual.</p>
+						<p class="fragment">Again, that is common for abstract classes because they tend to be manipulated through references or pointers, and someone destroying a <code>Container</code> through a pointer has no idea what resources are owned by its implementation.</p>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">class Container {
+public:
+    virtual double& operator[](int) = 0; // pure virtual function
+    virtual int size() const = 0;        // const member function
+    virtual ~Container() {}              // destructor
+};</code></pre>
+						<p class="fragment">A container that implements the functions required by the interface defined by the abstract class <code>Container</code> could use the concrete class <code>Vector</code>:</p>
+						<pre class="fragment"><code style="font-size:larger">class Vector_container : public Container { // Vector_container implements Container
+    Vector v;
+public:
+    Vector_container(int s) : v(s) { } // Vector of s elements
+    ~Vector_container() {}
+
+    double& operator[](int i) { return v[i]; }
+    int size() const { return v.size(); }
+};</code></pre>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">class Vector_container : public Container { // Vector_container implements Container
+    Vector v;
+public:
+    Vector_container(int s) : v(s) { } // Vector of s elements
+    ~Vector_container() {}
+
+    double& operator[](int i) { return v[i]; }
+    int size() const { return v.size(); }
+};</code></pre>
+						<p class="fragment">The <code>:public</code> can be read as "<b>is derived from</b>" or "<b>is a subtype of</b>".</p>
+						<p class="fragment">Class <code>Vector_container</code> is said to be derived from class <code>Container</code>, and class <code>Container</code> is said to be a <b>base</b> of class <code>Vector_container</code>.</p>
+						<p class="fragment">An alternative terminology calls Vector_container and Container <b>subclass</b> and <b>superclass</b>, respectively.</p>
+						<p class="fragment">The derived class is said to <b>inherit</b> members from its base class, so the use of base and derived classes is commonly referred to as <b>inheritance</b>.</p>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">class Vector_container : public Container { // Vector_container implements Container
+    Vector v;
+public:
+    Vector_container(int s) : v(s) { } // Vector of s elements
+    ~Vector_container() {}
+
+    double& operator[](int i) { return v[i]; }
+    int size() const { return v.size(); }
+};</code></pre>
+						<p class="fragment">The members <code>operator[]()</code> and <code>size()</code> are said to override the corresponding members in the base class <code>Container</code>.</p>
+						<p class="fragment">The destructor (<code>~Vector_container()</code>) overrides the base class destructor (<code>~Container()</code>).</p>
+						<p class="fragment">Note that the member destructor (<code>~Vector()</code>) is implicitly invoked by its class's destructor (<code>~Vector_container()</code>).</p>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">class Vector_container : public Container { // Vector_container implements Container
+    Vector v;
+public:
+    Vector_container(int s) : v(s) { } // Vector of s elements
+    ~Vector_container() {}
+
+    double& operator[](int i) { return v[i]; }
+    int size() const { return v.size(); }
+};</code></pre>
+						<p class="fragment">For a function like <code>use(Container&)</code> to use a <code>Container</code> in complete ignorance of implementation details, some other function will have to make an object on which it can operate:</p>
+						<pre class="fragment"><code style="font-size:larger">void g() {
+    Vector_container vc {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    use(vc);
+}</code></pre>
+						<p class="fragment">Since <code>use()</code> doesn't know about <code>Vector_containers</code> but only knows the <code>Container</code> interface, it will work just as well for a different implementation of a <code>Container</code>.</p>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">class List_container : public Container { // List_container implements Container
+    std::list&lt;double&gt; ld; // (standard-library) list of doubles
+public:
+    List_container() { } // empty List
+    List_container(initializer_list&lt;double&gt; il) : ld{il} { }
+    ~List_container() {}
+    double& operator[](int i);
+    int size() const { return ld.size(); }
+};
+
+double& List_container::operator[](int i) {
+    for (auto& x : ld) {
+        if (i==0) return x;
+        −−i; }
+    throw out_of_range("List container");
+}</code></pre>
+						<p class="fragment">Here, the representation is a standard-library list&lt;double&gt;.</p>
+						<p class="fragment">Usually, one should not implement a container with a subscript operation using a <code>list</code>, because performance of <code>list</code> subscripting is very poor, compared to <code>vector</code> subscripting.</p>
+						<p class="fragment">However, here is an implementation that is radically different from the usual one.</p>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">class List_container : public Container { // List_container implements Container
+    std::list&lt;double&gt; ld; // (standard-library) list of doubles
+public:
+    List_container() { } // empty List
+    List_container(initializer_list&lt;double&gt; il) : ld{il} { }
+    ~List_container() {}
+    double& operator[](int i);
+    int size() const { return ld.size(); }
+};
+
+double& List_container::operator[](int i) {
+    for (auto& x : ld) {
+        if (i==0) return x;
+        −−i; }
+    throw out_of_range("List container");
+}</code></pre>
+						<p class="fragment">A funcion can create a <code>List_container</code> and have <code>use()</code> use it:</p>
+						<pre class="fragment"><code style="font-size:larger">void h() {
+    List_container lc = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    use(lc);
+}</code></pre>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">void g() {
+    Vector_container vc {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    use(vc);
+}
+
+void h() {
+    List_container lc = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    use(lc);
+}</code></pre>
+						<p class="fragment">The point is that <code>use(Container& c)</code> has no idea if its argument is a <code>Vector_container</code>, a <code>List_container</code>, or some other kind of container: it doesn't need to know.</p>
+						<p class="fragment">It can use any kind of <code>Container</code>.</p>
+						<p class="fragment">It knows only the interface defined by <code>Container</code>.</p>
+						<p class="fragment">Consequently, <code>use(Container& c)</code> needn't be recompiled if the implementation of <code>List_container</code> changes or a brand-new class derived from <code>Container</code> is used.</p>
+						<p class="fragment">The down side of this flexibility is that objects must be manipulated through pointers or references.</p>
+					</section>
+					<section>
+						<h1>Virtual Functions</h1>
+						<p class="fragment">Lets consider again the user of <code>Container</code>:</p>
+						<pre class="fragment"><code style="font-size:larger">void use(Container& c) {
+    const int sz = c.size();
+    
+    for (int i=0; i!=sz; ++i)
+        cout << c[i] << '\n';
+}
+void g() {
+    Vector_container vc {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    use(vc);
+}
+
+void h() {
+    List_container lc = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    use(lc);
+}</code></pre>
+						<p class="fragment">How is the call <code>c[i]</code> in <code>use()</code> resolved to the right <code>operator[]()</code>?</p>
+						<p class="fragment">When <code>h()</code> calls <code>use()</code>, <code>List_container</code>'s <code>operator[]()</code> must be called.</p>
+						<p class="fragment">When <code>g()</code> calls <code>use()</code>, <code>Vector_container</code>'s <code>operator[]()</code> must be called.</p>
+					</section>
+					<section>
+						<p class="fragment">To achieve this resolution, a <code>Container</code> object must contain information to allow it to select the right function to call at run time.</p>
+						<p class="fragment">The usual implementation technique is for the compiler to convert the name of a virtual function into an index into a table of pointers to functions.</p>
+						<p class="fragment">That table is <b><u>usually called the virtual function</u></b> table or simply the <b>vtbl</b>.</p>
+						<p class="fragment">Each class with virtual functions has its own <b>vtbl</b> identifying its virtual functions.</p>
+					</section>
+					<section>
+						<img src="cpp/vtbl.png" class="plain">
+					</section>
+					<section>
+						<p class="fragment">The functions in the <b>vtbl</b> allow the object to be used correctly even when the size of the object and the layout of its data are unknown to the caller.</p>
+						<p class="fragment">The implementation of the caller needs only to know the location of the pointer to the <b>vtbl</b> in a <code>Container</code> and the index used for each virtual function.</p>
+						<p class="fragment">This virtual call mechanism can be made almost as efficient as the "normal function call" mechanism (within 25%).</p>
+						<p class="fragment">Its space overhead is one pointer in each object of a class with virtual functions plus one <b>vtbl</b> for each such class.</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h1>Class Hierarchies</h1>
+					</section>
+					<section>
+						<p class="fragment">The <code>Container</code> example is a very simple example of a class hierarchy.</p>
+						<p class="fragment">A class hierarchy is a set of classes ordered in a lattice created by derivation (e.g., : <code>public</code>).</p>
+						<p class="fragment">Class hierarchies are used to represent concepts that have hierarchical relationships, such as:</p>
+						<ul>
+							<li class="fragment">"<b>A fire engine is a kind of a truck which is a kind of a vehicle</b>";</li>
+							<li class="fragment">"<b>A smiley face is a kind of a circle which is a kind of a shape</b>".</li>
+						</ul>
+						<p class="fragment">Huge hierarchies, with hundreds of classes, that are both deep and wide are common.</p>
+					</section>
+					<section>
+						<p>Lets consider the following example:</p>
+						<span class="fragment"><img src="cpp/classHierarchy.png" class="plain"></span>
+						<p class="fragment">The arrows represent inheritance relationships.</p>
+						<p class="fragment">For example, class <code>Circle</code> is derived from class <code>Shape</code>.</p>
+					</section>
+					<section>
+						<img src="cpp/classHierarchy.png" class="plain">
+						<p class="fragment">To represent that simple diagram in code, we must first specify a class that defines the general properties of all shapes:</p>
+						<pre class="fragment"><code style="font-size:larger">class Shape {
+public:
+    virtual Point center() const = 0;   // pure virtual
+    virtual void move(Point to) = 0;
+    
+    virtual void draw() const = 0;      // draw on current "Canvas"
+    virtual void rotate(int angle) = 0; // destructor
+    
+    virtual ~Shape() {}
+    // ...
+};</code></pre>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">class Shape {
+public:
+    virtual Point center() const = 0;   // pure virtual
+    virtual void move(Point to) = 0;
+    
+    virtual void draw() const = 0;      // draw on current "Canvas"
+    virtual void rotate(int angle) = 0; // destructor
+    
+    virtual ~Shape() {}
+    // ...
+};</code></pre>
+						<p class="fragment">Naturally, this interface is an abstract class: as far as representation is concerned, nothing (except the location of the pointer to the <b>vtbl</b>) is common for every <code>Shape</code>.</p>
+						<p class="fragment">Given this definition, we can write general functions manipulating vectors of pointers to shapes:</p>
+						<pre class="fragment"><code style="font-size:larger">void rotate_all(vector&lt;Shape∗&gt;& v, int angle) // rotate v's elements by angle degrees
+{
+    for (auto p : v)
+        p−>rotate(angle);
+}</code></pre>
+					</section>
+					<section>
+						<p>To define a particular shape, we must say that it is a <code>Shape</code> and specify its particular properties (including its virtual functions):</p>
+						<pre><code style="font-size:larger">class Circle : public Shape { 
+public:
+    Circle(Point p, int rr); // constructor
+    
+    Point center() const { return x; }
+    void move(Point to) { x=to; }
+    
+    void draw() const;
+    void rotate(int) {}
+private:
+    Point x; // center
+    int r; // radius
+};</code></pre>
+					</section>
+					<section>
+						<pre class="stretch"><code style="font-size:larger">class Smiley : public Circle { // use the circle as the base for a face public:
+    Smiley(Point p, int r) : Circle{p,r}, mouth{nullptr} { }
+    
+    ~Smiley() {
+        delete mouth;
+        for (auto p : eyes) delete p;
+    }
+    
+    void move(Point to);
+    
+    void draw() const;
+    void rotate(int);
+    
+    void add_eye(Shape∗ s) { eyes.push_back(s); }
+    void set_mouth(Shape∗ s);
+    virtual void wink(int i); // wink eye number i
+    
+    // ...
+    
+private:
+    vector&lt;Shape∗&gt; eyes; // usually two eyes
+    Shape∗ mouth;
+};</code></pre>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">void add_eye(Shape∗ s) { eyes.push_back(s); }</code></pre>
+						<p class="fragment">The <code>push_back()</code> member function adds its argument to the vector (here, <code>eyes</code>), increasing that <code>vector</code>'s size by one. </p>
+						<p class="fragment">We can now define <code>Smiley::draw()</code> using calls to <code>Smiley</code>'s base and member <code>draw()</code>s:</p>
+						<pre class="fragment"><code style="font-size:larger">void Smiley::draw() {
+    Circle::draw();
+    for (auto p : eyes)
+        p−>draw();
+    mouth−>draw();
+}</code></pre>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">~Smiley() {
+    delete mouth;
+    for (auto p : eyes) delete p;
+}</code></pre><code></code>
+    					<p class="fragment">Note the way that <code>Smiley</code> keeps its eyes in a standard-library vector and deletes them in its destructor.</p>
+    					<p class="fragment"><code>Shape</code>'s destructor is virtual and <code>Smiley</code>'s destructor overrides it.</p>
+    					<p class="fragment">A virtual destructor is essential for an abstract class because an object of a derived class is usually manipulated through the interface provided by its abstract base class.</p>
+    					<p class="fragment">In particular, it may be deleted through a pointer to a base class.</p>
+    					<p class="fragment">Then, the virtual function call mechanism ensures that the proper destructor is called.</p>
+    					<p class="fragment">That destructor then implicitly invokes the destructors of its bases and members.</p>
+    					<p class="fragment">We can add data members, operations, or both as we define a new class by derivation.</p>
+    					<p class="fragment">This gives great flexibility with corresponding opportunities for confusion and poor design.</p>
+					</section>
+					<section>
+						<h1>Explicit Overriding</h1>
+						<p class="fragment">A function in a derived class overrides a virtual function in a base class <u>if that function has exactly the same name and type</u>.</p>
+						<p class="fragment">In large hierachies, it is not always obvious if overriding was intended.</p>
+						<p class="fragment">A function with a slightly different name or a slightly different type may be intended to override or it may be intended to be a separate function.</p>
+						<p class="fragment">To avoid confusion in such cases, a programmer can explicitly state that a function is meant to override.</p>
+					</section>
+					<section>
+						<pre class="stretch"><code style="font-size:larger">class Smiley : public Circle { // use the circle as the base for a face
+public:
+    Smiley(Point p, int r) : Circle{p,r}, mouth{nullptr} { }
+    
+    ~Smiley() {
+        delete mouth;
+        for (auto p : eyes)
+            delete p;
+    }
+    
+    void move(Point to) override;
+    
+    void draw() const override;
+    void rotate(int) override;
+    
+    void add_eye(Shape∗ s) { eyes.push_back(s); }
+    void set_mouth(Shape∗ s);
+    virtual void wink(int i); // wink eye number i
+    // ...
+private:
+    vector&lt;Shape∗&gt; eyes; // usually two eyes Shape∗ mouth;
+};</code></pre>
+						<p class="fragment">Now, had I mistyped <code>move</code> as <code>mve</code>, I would have gotten an error because no base of <code>Smiley</code> has a virtual function called <code>mve</code>.</p>
+						<p class="fragment">Similarly, if I added override to the declaration of <code>wink()</code>, I would have gotten an error message.</p>
+					</section>
+					<section>
+						<h1>Benefits from Hierarchies</h1>
+						<p class="fragment">A class hierarchy offers two kinds of benefits:</p>
+						<ul>
+							<li class="fragment"><b>Interface inheritance</b>: An object of a derived class can be used wherever an object of a base class is required.</li>
+							<ul>
+								<li class="fragment">That is, the base class acts as an interface for the derived class.</li>
+								<li class="fragment">The <code>Container</code> and <code>Shape</code> classes are examples.</li>
+								<li class="fragment">Such classes are often abstract classes.</li>
+							</ul>
+							<li class="fragment"><b>Implementation inheritance</b>: A base class provides functions or data that simplifies the implementation of derived classes.</li>
+							<ul>
+								<li class="fragment"><code>Smiley</code>'s uses of <code>Circle</code>'s constructor and of <code>Circle::draw()</code> are examples.</li>
+								<li class="fragment">Such base classes often have data members and constructors.</li>
+							</ul>
+						</ul>
+					</section>
+					<section>
+						<p><b>Concrete classes</b> - especially classes with small representations - are much like built-in types:</p>
+						<ul><li class="fragment">we define them as local variables, access them using their names, copy them around, etc.</li></ul>
+						<p class="fragment">Classes in class hierarchies are different: we tend to allocate them on the heap using <code>new</code>, and we access them through pointers or references.</p>
+					</section>
+					<section>
+						<p>Consider a function that reads data describing shapes from an input stream and constructs the appropriate Shape objects:</p>
+						<pre class="stretch"><code style="font-size:larger">enum class Kind { circle, triangle, smiley };
+
+Shape* read_shape(istream& is) // read shape descriptions from input stream is
+{
+    // ... read shape header from is and find its Kind k ...
+    switch (k) {
+        case Kind::circle:
+            // read circle data {Point,int} into p and r
+            return new Circle{p,r};
+        case Kind::triangle:
+            // read triangle data {Point,Point,Point} into p1, p2, and p3
+            return new Triangle{p1,p2,p3};
+        case Kind::smiley:
+            // read smiley data {Point,int,Shape,Shape,Shape} into p, r, e1 ,e2, and m
+            Smiley∗ ps = new Smiley{p,r};
+            ps−>add_eye(e1);
+            ps−>add_eye(e2);
+            ps−>set_mouth(m);
+        return ps;
+    }
+}</code></pre>
+					</section>
+					<section>
+						<p>A program may use that shape reader like this:</p>
+						<pre class="fragment"><code style="font-size:larger">void user() {
+    std::vector&lt;Shape∗&gt; v;
+    while (cin)
+        v.push_back(read_shape(cin));
+    draw_all(v); // call draw() for each element
+    rotate_all(v,45); // call rotate(45) for each element
+    for (auto p : v) delete p; // remember to delete elements
+}</code></pre>
+						<p class="fragment">Obviously, the example is simplified – especially with respect to error handling – but it vividly illustrates that <code>user()</code> has absolutely no idea of which kinds of shapes it manipulates.</p>
+						<p class="fragment">The <code>user()</code> code can be compiled once and later used for new Shapes added to the program.</p>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">void user() {
+    std::vector&lt;Shape∗&gt; v;
+    while (cin)
+        v.push_back(read_shape(cin));
+    draw_all(v); // call draw() for each element
+    rotate_all(v,45); // call rotate(45) for each element
+    for (auto p : v) delete p; // remember to delete elements
+}</code></pre>
+						<p class="fragment">Note that there are no pointers to the shapes outside <code>user()</code>, so <code>user()</code> is responsible for deallocating them.</p>
+						<p class="fragment">This is done with the <code>delete</code> operator and relies critically on Shape's virtual destructor.</p>
+						<p class="fragment">Because that destructor is <code>virtual</code>, <code>delete</code> invokes the destructor for the most derived class.</p>
+						<p class="fragment">This is crucial because a derived class may have acquired all kinds of resources (such as file handles, locks, and output streams) that need to be released.</p>
+						<p class="fragment">In this case, a <code>Smiley</code> deletes its <code>eyes</code> and <code>mouth</code> objects.</p>
+					</section>
+					<section>
+						<h1>Hierarchy Navigation</h1>
+						<p class="fragment">The <code>read_shape()</code> function returns <code>Shape*</code> so that we can treat all <code>Shape</code>s alike.</p>
+						<p class="fragment">However, what can we do if we want to use a member function that is only provided by a particular derived class, such as <code>Smiley</code>'s <code>wink()</code>?</p>
+						<p class="fragment">We can ask "<b>is this Shape a kind of Smiley?</b>" using the <code>dynamic_cast</code> operator.</p>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">Shape∗ ps {read_shape(cin)};
+
+if (Smiley∗ p = dynamic_cast&lt;Smiley∗&gt;(ps)) {
+    // ... is the Smiley pointer to by p ...
+}
+else {
+    // ... not a Smiley, try something else ...
+}</code></pre>
+						<p class="fragment">If the object pointed to by the argument of <code>dynamic_cast (ps)</code> is not of the expected type (<code>Smiley</code>) or a class derived from the expected type, <code>dynamic_cast</code> returns <code>nullptr</code>.</p>
+						<p class="fragment">We use <code>dynamic_cast</code> to a pointer type when a pointer to an object of a different derived class is a valid argument.</p>
+						<p class="fragment">We then test whether the result is <code>nullptr</code>.</p>
+						<p class="fragment">This test can often conveniently be placed in the initialization of a variable in a condition.</p>
+					</section>
+					<section>
+						<p>When a different type is unacceptable, we can simply <code>dynamic_cast</code> to a reference type. If the object is not of the expected type, <code>bad_cast</code> is thrown:</p>
+						<pre class="fragment"><code style="font-size:larger">Shape∗ ps {read_shape(cin)};
+Smiley& r {dynamic_cast&lt;Smiley&&gt;(∗ps)}; // somewhere, catch std::bad_cast</code></pre>
+						<p class="fragment">Code is cleaner when <code>dynamic_cast</code> is used with restraint.<code></code></p>
+						<p class="fragment">If we can avoid using type information, we can write simpler and more efficient code, but occasionally type information is lost and must be recovered.</p>
+						<p class="fragment">This typically happens when we pass an object to some system that accepts an interface specified by a base class.</p>
+						<p class="fragment">When that system later passes the object back to use, we might have to recover the original type.</p>
+						<p class="fragment">Operations similar to <code>dynamic_cast</code> are known as "<b>is kind of</b>" and "<b>is instance of</b>" operations.</p>
+					</section>
+					<section>
+						<h1>Avoiding Resource Leaks</h1>
+						<p class="fragment">Notice that we left open two obvious opportunities for mistakes:</p>
+						<ul>
+							<li class="fragment">A user might fail to <code>delete</code> the pointer returned by <code>read_shape()</code>.</li>
+							<li class="fragment">The owner of a container of <code>Shape</code> pointers might not delete the objects pointed to.</li>
+						</ul>
+						<p class="fragment">In that sense, functions returning a pointer to an object allocated on the heap are dangerous. </p>
+						<p class="fragment">One solution to both problems is to return a standard-library unique_ptr rather than a "<b>naked pointer</b>" and store <code>unique_ptrs</code> in the container.</p>
+					</section>
+					<section>
+						<pre class="stretch"><code style="font-size:larger">unique_ptr&lt;Shape&gt; read_shape(istream& is) // read shape descriptions from input stream is
+{
+    // read shape header from is and find its Kind k
+    
+    switch (k) {
+        case Kind::circle:
+            // read circle data {Point,int} into p and r
+            return unique_ptr&lt;Shape&gt;{new Circle{p,r}};
+            // ...
+    }
+}
+
+void user() {
+    vector&lt;unique_ptr&lt;Shape&gt;&gt; v;
+    while (cin)
+        v.push_back(read_shape(cin));
+    draw_all(v); // call draw() for each element
+    rotate_all(v,45); // call rotate(45) for each element
+} // all Shapes implicitly destroyed</code></pre>
+						<p class="fragment">Now the object is owned by the <code>unique_ptr</code> which will delete the object when it is no longer needed, that is, when its <code>unique_ptr</code> goes out of scope. </p>
+						<p class="fragment">For the <code>unique_ptr</code> version of <code>user()</code> to work, we need versions of <code>draw_all()</code> and <code>rotate_all()</code> that accept <code>vector&lt;unique_ptr&lt;Shape&gt;&gt;</code>s.</p>
+					</section>
+				</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				width: 1920,
+				height: 1080,
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				transition: 'convex',
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>

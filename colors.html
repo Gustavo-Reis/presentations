@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Colors</title>
+
+		<meta name="description" content="Computer Graphics - Camera">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Colors</h1>
+					<p>Source:</p>
+					<p><a href="http://learnopengl.com">Learn OpenGL</a></p>
+					<p><a href="http://open.gl">Open.GL</a></p>
+
+				</section>
+				<section>
+					<h1>Colors</h1>
+					<p>We briefly mentioned how to work with colors in OpenGL in the previous classes, but so far only touched the surface of colors.</p>
+					<p>During the next classes we'll extensively discuss what colors are and start building the scene for lighting.</p>
+				</section>
+				<section>
+					<p>In the real world, colors can take practically any known color value with each object having its own color(s).</p>
+					<p>In the digital world we need to map the (infinite) real colors to (limited) digital values and therefore not all real-world colors can be represented digitally.</p>
+				</section>
+				<section>
+					<p>We can however represent so many colors that you probably won't notice the difference anyways. Colors are digitally represented using a <code>red</code>, <code>green</code> and <code>blue</code> component commonly abbreviated as <code>RGB</code>.</p>
+					<p>Using different combinations of just those 3 values we can represent almost any color there is. For example, to get a <em>coral</em> color we define a color vector as:</p>
+
+					<pre><code>glm::vec3 coral(1.0f, 0.5f, 0.31f);</code></pre>
+				</section>
+				<section>
+					<p>The colors we see in real life are not the colors the objects actually have, but are the colors <def>reflected</def> from the object; the colors that are not absorbed (rejected) by the objects are the colors we perceive of them.</p>
+					<p>For example, the light of the sun is perceived as a white light that is the combined sum of many different colors.</p>
+					<p>So if we would shine the white light on a blue toy, it absorbs all the white color's sub-colors except the blue color.</p>
+				</section>
+				<section>
+					<p>Since the toy does not absorb the blue value, it is reflected and this reflected light enters our eye, making it look like the toy has a blue color.</p>
+					<p>The following image shows this for a coral colored toy where it reflects several colors with varying intensity:</p>
+					<img src="colors/light_reflection.png" width="35%">
+				</section>
+				<section>
+					<img src="colors/light_reflection.png" width="35%">
+					<p>You can see that the white sunlight is actually a collection of all the visible colors and the object absorbs a large portion of those colors.</p>
+					<p>It only reflects those colors that represent the object's color and the combination of those is what we perceive (in this case a coral color).</p>
+
+				</section>
+				<section>
+					<p>These rules of color reflection apply directly in graphics-land.</p>
+					<p>When we define a light source in OpenGL we want to give this light source a color.</p>
+					<p>In the previous slide we had a white color so we'll give the light source a white color as well.</p>
+					<p>If we would then multiply the light source's color  with an object's color value, the resulting color is the reflected color of the object (and thus its perceived color).</p>
+				</section>
+				<section>
+					<p>Let's revisit our toy (this time with a coral value) and see how we would calculate its perceivable color in graphics-land.</p>
+					<p>We retrieve the resulting color vector by doing a component-wise multiplication on both color vectors:</p>
+					<pre><code>glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+glm::vec3 toyColor(1.0f, 0.5f, 0.31f);
+glm::vec3 result = lightColor * toyColor; // = (1.0f, 0.5f, 0.31f);
+</code></pre>
+				</section>
+				<section>						
+					<pre><code>glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+glm::vec3 toyColor(1.0f, 0.5f, 0.31f);
+glm::vec3 result = lightColor * toyColor; // = (1.0f, 0.5f, 0.31f);
+</code></pre>
+					<p>We can see that the toy's color <em>absorbs</em> a large portion of the white light, but reflects several red, green and blue values based on its own color value.</p>
+					<p>This is a representation of how colors would work in real life.</p>
+					<p>We can thus define an object's color as <em>the amount of each color component it reflects from a light source</em>.</p>
+				</section>
+				<section>						
+					<p>Now what would happen if we used a green light?</p>
+					<pre><code>glm::vec3 lightColor(0.0f, 1.0f, 0.0f);
+glm::vec3 toyColor(1.0f, 0.5f, 0.31f);
+glm::vec3 result = lightColor * toyColor; // = (0.0f, 0.5f, 0.0f);
+</code></pre>
+					<p>As we can see, the toy has no red and blue light to absorb and/or reflect the toy also absorbs half of the light's green value, but also still reflects half of the light's green value.</p>
+					<p>The toy's color we perceive would then be a dark-greenish color:</p>
+					<svg width="20%">
+					<rect width="100%" height="40%" style="fill:#008000;" />
+					</svg>
+				</section>
+				<section>
+					<p>We can see that if we use a green light, only the green color components can be reflected and thus perceived; no red and blue colors are perceived.</p>
+					<p>The result is that the coral object suddenly becomes a dark-greenish object.</p>
+					<p>Let's try one more example with a dark olive-green light:</p>
+					<pre><code>glm::vec3 lightColor(0.33f, 0.42f, 0.18f);
+glm::vec3 toyColor(1.0f, 0.5f, 0.31f);
+glm::vec3 result = lightColor * toyColor; // = (0.33f, 0.21f, 0.06f);
+</code></pre>
+				</section>
+				<section>
+					<pre><code>glm::vec3 lightColor(0.33f, 0.42f, 0.18f);
+glm::vec3 toyColor(1.0f, 0.5f, 0.31f);
+glm::vec3 result = lightColor * toyColor; // = (0.33f, 0.21f, 0.06f);
+</code></pre>
+					<p>As you can see, we can get unexpected colors from objects by using different light colors.</p>
+					<p>It's not hard to get creative with colors.</p>
+					<p>But enough about colors, let's start building a scene where we can experiment in.</p>
+				</section>
+				<section>
+					<h1>A lighting scene</h1>
+					<p>In the upcoming classes we'll be creating interesting visuals by simulating real-world lighting making extensive use of colors.</p>
+					<p>Since now we'll be using light sources we want to display them as visual objects in the scene and add at least one object to simulate the lighting on.</p>
+					<p>The first thing we need is an object to cast the light on and we'll use the infamous container cube from the previous classes.</p>
+				</section>
+				<section>
+					<p>We will also be needing a light object to show where the light source is located in the 3D scene.</p>
+					<p>For simplicity's sake we'll represent the light source with a cube as well. Here is the vertex data:</p>
+					<pre><code>float vertices[] = {
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+
+		-0.5f, -0.5f,  0.5f,
+		0.5f, -0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+
+		0.5f,  0.5f,  0.5f, 
+		0.5f,  0.5f, -0.5f, 
+		0.5f, -0.5f, -0.5f, 
+		0.5f, -0.5f, -0.5f, 
+		0.5f, -0.5f,  0.5f, 
+		0.5f,  0.5f,  0.5f, 
+
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f, 
+		0.5f, -0.5f,  0.5f, 
+		0.5f, -0.5f,  0.5f, 
+		-0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+
+		-0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f, 
+		0.5f,  0.5f,  0.5f, 
+		0.5f,  0.5f,  0.5f, 
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+	};</code></pre>
+				</section>
+				<section>
+					<p>The first thing we will actually need is a vertex shader to draw the container.</p>
+					<p>We'll be using a stripped down version of the vertex shader from the last classes:</p>
+					<pre><code>#version 330 core
+in vec3 position;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+    gl_Position = projection * view * model * vec4(position, 1.0);
+}  
+</code></pre>
+				</section>
+				<section>
+					<p>Make sure to update your vertex data and attribute pointers to correspond with the new vertex shader.</p>
+					<pre><code>GLint posAttrib = glGetAttribLocation(shader.ID, "position");
+glEnableVertexAttribArray(posAttrib);
+glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);</code></pre>
+				</section>
+				<section>
+					<p>Because we are also going to create a lamp cube, we want to generate a new VAO specifically for the lamp.</p>
+					<p>We could also represent a lamp using the same VAO and then simply do some transformations on the model matrix, but in the upcoming tutorials we'll be changing the vertex data and attribute pointers of the container object quite often and we don't want these changes to propagate to the lamp object (we only care about the lamp's vertex positions), so we'll create a new VAO.</p>
+				</section>
+				<section>
+					<pre><code>unsigned int lightVAO;
+glGenVertexArrays(1, &lightVAO);
+glBindVertexArray(lightVAO);
+// we only need to bind to the VBO, the container's VBO's data already contains the correct data.
+glBindBuffer(GL_ARRAY_BUFFER, vbo);
+// set the vertex attributes (only position data for our lamp)
+glEnableVertexAttribArray(posAttrib);
+glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);</code></pre>
+				</section>
+				<section>
+					<p>Now that we created both the container and the lamp cube there is one thing left to define and that is the fragment shader:</p>
+					<pre><code>#version 330 core
+out vec4 FragColor;
+  
+uniform vec3 objectColor;
+uniform vec3 lightColor;
+
+void main()
+{
+    FragColor = vec4(lightColor * objectColor, 1.0);
+}</code></pre>
+					<p>The fragment shader accepts both an object color and a light color from a uniform variable. Here we multiply the light's color with the object's (reflected) color.</p>
+				</section>
+				<section>
+					<p>Let's set the object's color to the last section's coral color with a white light:</p>
+					<pre><code>Shader lightingShader{ "vertexShaderLight.glsl", "reflectedColorFragmentShader.glsl" };
+// don't forget to 'use' the corresponding shader program first (to set the uniform)
+lightingShader.use();
+lightingShader.set3Float("objectColor", 1.0f, 0.5f, 0.31f);
+lightingShader.set3Float("lightColor", 1.0f, 1.0f, 1.0f);
+</code></pre>
+				</section>
+				<section>
+					<p>One thing left to note is that when we start to change the vertex and fragment shaders, the lamp cube will change as well and this is not what we want.</p>
+					<p>We don't want the lamp object's color to be affected by the lighting calculations in the upcoming tutorials, but rather keep the lamp isolated from the rest.</p>
+					<p>We want the lamp to have a constant bright color, unaffected by other color changes (this makes it look like the lamp really is the source of the light).</p>
+				</section>
+				<section>
+					<p>To accomplish this we actually need to create a second set of shaders that we will use to draw the lamp, thus being safe from any changes to the lighting shaders.</p>
+					<p>The vertex shader is the same as the current vertex shader so you can simply copy the source code for the lamp's vertex shader.</p>
+				</section>
+				<section>
+					<p>The fragment shader of the lamp ensures the lamp's color stays bright by defining a constant white color on the lamp:</p>
+					<pre><code>#version 330 core
+out vec4 FragColor;
+
+void main()
+{
+    FragColor = vec4(1.0); // set all 4 vector values to 1.0
+}
+</code></pre>
+					<p>When we want to draw our objects, we want to draw the container object (or possibly many other objects) using the lighting shader we just defined and when we want to draw the lamp, we use the lamp's shaders.</p>
+				</section>
+				<section>
+					<p>During the next classes we'll gradually be updating the lighting shaders to slowly achieve more realistic results.</p>
+					<p>The main purpose of the lamp cube is to show where the light comes from.</p>
+					<p>We usually define a light source's position somewhere in the scene, but this is simply a position that has no visual meaning.</p>
+				</section>
+				<section>
+					<p>To show the actual lamp we draw the lamp cube at the same location of the light source. This is accomplished by drawing the lamp object with the lamp shader, ensuring the lamp cube always stays white, regardless of the light conditions of the scene.</p>
+					<p>So let's declare a global <code>vec3</code> variable that represents the light source's location in world-space coordinates:</p>
+					<pre><code>glm::vec3 lightPos(1.2f, 1.0f, 2.0f);</code></pre>
+				</section>
+				<section>
+					<p>We then want to translate the lamp's cube to the light source's position before drawing it and we'll also scale it down a bit to make sure the lamp isn't too dominant:</p>
+					<pre><code>model = glm::mat4(1.0f);
+model = glm::translate(model, lightPos);
+model = glm::scale(model, glm::vec3(0.2f)); 
+</code></pre>
+
+					<p>The resulting drawing code for the lamp should then look something like this:</p>
+					<pre><code>lampShader.use();
+// set the model, view and projection matrix uniforms
+...
+// draw the lamp object
+glBindVertexArray(lightVAO);
+glDrawArrays(GL_TRIANGLES, 0, 36);			
+</code></pre>
+				</section>
+				<section>
+					<p>Injecting all the code fragments at their appropriate locations would then result in a clean OpenGL application properly configured for experimenting with lighting.</p>
+					<p>If everything compiles it should look like this:</p>
+					<img src="colors/finalScreenshot.png" width="40%">
+				</section>
+				<section>
+					<p>Initialization code:</p>
+					<pre><code>unsigned int lightVAO;
+glGenVertexArrays(1, &lightVAO);
+glBindVertexArray(lightVAO);
+// we only need to bind to the VBO, the container's VBO's data already contains the correct data.
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+// set the vertex attributes (only position data for our lamp)
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);
+
+// don't forget to 'use' the corresponding shader program first (to set the uniform)
+lightingShader.use();
+lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+
+glm::vec3 lightPos(1.2f, 1.0f, 0.0f);</code></pre>
+				</section>
+				<section>
+					<p>Game loop code:</p>
+					<pre><code>glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+lightingShader.use();
+lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+
+// view/projection transformations
+glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 100.0f);
+glm::mat4 view = glm::lookAt(glm::vec3(1.0, 2.0, 3.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+lightingShader.setMat4("projection", projection);
+lightingShader.setMat4("view", view);
+
+// world transformation
+glm::mat4 model = glm::mat4(1.0f);
+lightingShader.setMat4("model", model);
+
+// render the cube
+glBindVertexArray(VAO);
+glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+// also draw the lamp object
+lampShader.use();
+lampShader.setMat4("projection", projection);
+lampShader.setMat4("view", view);
+model = glm::mat4(1.0f);
+model = glm::translate(model, lightPos);
+model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+lampShader.setMat4("model", model);
+
+glBindVertexArray(lightVAO);
+glDrawArrays(GL_TRIANGLES, 0, 36);</code></pre>
+				</section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>

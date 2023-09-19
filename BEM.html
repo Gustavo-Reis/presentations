@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>BEMPP</title>
+
+		<meta name="description" content="Computer Graphics - Camera">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>BEMPP</h1>
+					<h2>Boundary Element Method</h2>
+					<h5>Introduction</h5>
+					<p>
+						<small>&#169; 2022 Sound Particles / Gustavo Reis</small>
+					</p>
+				</section>
+				<section>
+					<h2>Introduction</h2>
+					<img src="bempp/bemppintroduction.png" class="plain">
+					<p class="fragment">Say what???</p>
+					<p class="fragment">$u(\textbf{x}), \Delta u(\textbf{x}), \Gamma, \Omega$??? (...)</p>
+				</section>
+				<section>
+					<p class="fragment">OK... First things, first...</p>
+					<p class="fragment">What do we (Nuno) want?</p>
+				</section>
+				<section>
+                    <img src="interactive/comsol1.png">
+                </section>
+                <section>
+                    <img src="interactive/comsol2.png">
+                </section>
+                <section>
+                    <img src="interactive/comsol3.png">
+                </section>
+                <section>
+                    <img src="interactive/comsol4.png">
+                </section>
+                <section>
+                    <img src="interactive/comsol5.png">
+                </section>
+                <section>
+                    <h2>Custom HRTF</h2>
+                    <p class="fragment">Generate HRIRs</p>
+                    <p class="fragment">Compute HRTFs</p>
+                    <p class="fragment">Use those in our binaural engine</p>                    
+                </section>
+                <section>
+                	<h2>Compute HRTFs</h2>
+                	<p class="fragment">Use Boundary Element Method (BEM)</p>
+                	<p class="fragment">Acoustic scattering</p>
+                	<p class="fragment">Reciprocity principle</p>
+                	<p class="fragment">Green's functions</p>
+                	<p class="fragment">Helmoltz equations</p>
+                	<p class="fragment">Neumann boundary conditions</p>
+                	<p class="fragment">Sommerfield radiation condition</p>
+                </section>
+                <section>
+                	<h2>Vector Fields</h2>
+                	<p class="fragment">A two-dimensional vector field is a function $f$ that maps each point $(x,y)$ in $\R^{2}$ to a two-dimensional vector $\langle u,v\rangle$, and similarly a three-dimensional vector field maps $(x,y,z)$ to $\langle u,v,w \rangle$.</p>
+                	<p class="fragment">Since a vector has no position, we typically indicate a vector field in graphical form by placing the vector $f(x,y)$ with its tail at $(x,y)$.</p>
+                </section>
+                <section>
+                	<img src="bempp/vfield.png" class="plain">
+                </section>
+                <section>
+                	<img src="bempp/vfieldexamples.png" class="plain">
+                </section>
+                <section>
+                	<h2>Boundary Element Method (BEM)</h2>
+                </section>
+                <section>
+                	<h2>Green's function</h2>
+                	<p class="fragment">The Green’s function is the fundamental solution to the inhomogeneous acoustic wave equation and the Helmholtz equation for a point source, which satisfies the boundary condition of the impedance surface.</p>
+                	<p class="fragment">Physically, it is the impulse response of a system caused by the application of a unit point source.</p>
+                </section>
+                <section>
+                	<p class="fragment">In terms of sound propagation, it represents the propagation of sound from the source to the receiver in an acoustic medium, which can either be air or water.</p>
+                	<p class="fragment">The Green’s functions equally represent the fundamental acoustic pressure at a measuring point in an acoustic domain, which is exerted by an acoustic source located at different points within the same domain.</p>
+                </section>
+                <section>
+                	<p class="fragment">Once the Green’s function which satisfies a specific boundary condition is known, the pressure level at any other point except at the source point (to avoid singularity) can easily be calculated.</p>
+                	<p class="fragment">The Green’s functions are utilized in Boundary Element Method (BEM), in beamforming, in Near-field Acoustic Holography (NAH),in duct acoustic, etc. </p>
+                </section>
+                <section>
+                	<p class="fragment">In solving problems in radiation and scattering, Green’s functions provide a concise mathematical expression, which eases the computation of such problems.</p>
+                	<p class="fragment">In any acoustic system, the Green’s function relates the source (cause) and the response (effect) for that system.</p>
+                </section>
+                <section>
+                	<h2>Reciprocity property</h2>
+                	<p class="fragment">This property implies that the Green's function obtained for a source positioned at $\textbf{y}$ and the observer at $\textbf{x}$, is the same when the two locations are switched.</p>
+                	<p class="fragment">It is also referred to as the symmetry property between a source point and the observation point in a sound field.</p>
+                	<p class="fragment">The sound pressure level measured when an observer is located at point $\textbf{x}$ and source positioned at point $\textbf{y}$, is the same as when the observer is now positioned at $\textbf{y}$ and while the source is located at $\textbf{x}$.</p>                	
+                </section>
+                <section>
+                	<p class="fragment">This reciprocity property of the Green's function is denoted as:</p>
+                	<p class="fragment">$$G(\textbf{x},t|\textbf{y},\tau) = G(\textbf{y},-\tau|\textbf{x},-t)$$</p>
+                	<p class="fragment">where $G(\textbf{x},t|\textbf{y},\tau)$ is the time-domain Green's function, $\textbf{x}=(x,y,z)$ is the observer point, $\textbf{y}=(x_0,y_0,z_0)$ is the source point and while $t$ and $\tau$ are the time at the observer point and source point, respectively.</p>
+                </section>
+                <section>
+                	<h2>Recap</h2>
+                	<p class="fragment">Once the Green’s function which satisfies a specific <b>boundary condition</b> is known, the pressure level at any other point except at the source point (to avoid singularity) can easily be calculated.</p>
+                </section>
+                <section>
+                	<h2>Boundary conditions</h2>
+                	<p class="fragment">In mathematics, in the field of differential equations, a <b>boundary value problem</b> is a differential equation together with a set of additional constraints, called the <b>boundary conditions</b>.</p>
+                	<p class="fragment">A solution to a boundary value problem is a solution to the differential equation which also satisfies the boundary conditions.</p>
+                 </section>
+                <section>
+               	<p class="fragment">Boundary conditions are constraints on the domain boundary that must be satisfied for a specific solution to be obtained in any Boundary Value Problem (BVP).</p>
+                	<p class="fragment">BVP of acoustic problems can be divided into two categories, namely, <b>interior</b> (finite) value problem and <b>exterior</b> (infinite) value problem.</p>
+                </section>
+                <section>                	
+                	<p class="fragment">Interior value problems are sound problems within an enclosed domain, and its behavior can either be solved by an approach based on a differential equation or an integral equation.</p>
+                	<img src="bempp/finitevalueproblem.png" class="plain" class="fragment" width="40%">
+                </section>
+                <section>                	
+                	<p class="fragment">While for exterior value problem, the sound radiation moves outwardly to infinite.</p>
+                	<p class="fragment">The radiation condition (<b>Sommerfeld radiation condition</b>) at infinity needs to be satisfied which is adverse to the approach based on a differential equation.</p>
+                	<p class="fragment">$$\frac{\partial u^s}{\partial r}(x) - iku^s(x) = o\left(r^{-\left(d-1\right)/2}\right)$$</p>
+                	<p class="fragment">as $r:=|x| \to \infty$</p>
+                </section>
+                <section>
+                	<p class="fragment">$$\frac{\partial u^s}{\partial r}(x) - iku^s(x) = o\left(r^{-\left(d-1\right)/2}\right)$$</p>
+                	<p class="fragment">as $r:=|x| \to \infty$</p>
+                	<p class="fragment">When working in $\R^3$ ($d=3$): </p>                	
+                	<p class="fragment">$$\frac{\partial u^s}{\partial r}(x) - iku^s(x) = o\left(r^{-\left(3-1\right)/2}\right)$$</p>
+                	<p class="fragment">$$\frac{\partial u^s}{\partial r}(x) - iku^s(x) = o\left(r^{-1}\right)$$</p>
+                </section>
+                <section>
+                	<p class="fragment">Sommerfeld radiation condition is a criterion which ensures that every outgoing wave radiates to infinity and that no wave originating from infinity can move inwardly to the boundary surface for any exterior BVP.</p>
+                	<p class="fragment">This is necessary because every solution to the Helmholtz equation must represent only outward sound propagation, as having an inward reflection from infinite will have no physical meaning.</p>
+                	<p class="fragment">Thus, this criterion will lead to a well-posed problem and guarantee a unique solution.</p>
+                </section>
+                <section>                	
+                	<p class="fragment"><b></b>There are different types of boundary conditions which are applicable to acoustic problems, they include <b>Dirichlet</b> boundary condition, <b>Neumann</b> boundary condition and <b>mixed</b> boundary conditions.</p>
+                </section>
+                <section>                	
+                	<p class="fragment">These boundary conditions are termed homogeneous boundary conditions when any of them is equal to zero on the body surface.</p>
+                		<p class="fragment">If not, they are termed as the inhomogeneous boundary condition.</p>
+                		<p class="fragment">Here, we will focus on homogenous boundary conditions, while the governing equation will be inhomogeneous, because whenever a source is present, either the governing equation or the boundary condition needs to be inhomogeneous in order to represent the problem.</p>
+                </section>
+                <section>
+                	<p class="fragment">The homogenous <b>Dirichlet</b> boundary conditions are boundary conditions for which the pressure or velocity potential is equal to zero on the body surface,</p>
+                	<p class="fragment">$$\hat p(x)=0, \hat \varphi(x)=0, \forall x \in S_b$$</p>
+                	<p class="fragment">where $\hat p(x)$ and $\hat \varphi(x)$ are the spatial factor of sound pressure and velocity potential at position $x$, respectively, and $S_b$ is the body surface.</p>
+                </section>
+                <section>
+                	<p class="fragment">While the homogenous <b>Neumann</b> boundary conditions are boundary conditions for which the normal derivative of pressure or velocity potential is zero on the body surface.</p>
+                	<p class="fragment">$$\frac{\partial \hat p}{\partial n}(x)=0, \frac{\partial \hat \varphi}{\partial n}(x)=0, \forall x \in S_b$$</p>
+                	<p class="fragment">where $\partial / \partial n$ is the derivative along the direction of the normal n. The mixed homogenous boundary condition is a combination of the Dirichlet and the Neumann boundary conditions on the body surface. </p>
+                </section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>

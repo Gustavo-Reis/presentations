@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Discrete-Time Signals and Systems</title>
+
+		<meta name="description" content="Computer Graphics - Camera">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Discrete-Time Signals and Systems</h1>
+					<h5>Back to the basics :)</h5>
+					<p>
+						<small>&#169; 2020 Sound Particles / Gustavo Reis</small>
+					</p>
+				</section>
+				<section>
+					<h1>Recap</h1>
+				</section>
+				<section>
+					<h5>Continuous Signal</h5>
+					<img class="plain" src="dsp/continuousSignal.gif" width="90%">
+				</section>
+				<section>
+					<h5>Discrete Time Signal</h5>
+					<img class="plain" src="dsp/discreteTimeSignal.png" width="90%">
+				</section>
+				<section>
+					<h2>Signals</h2>
+					<h5>Continuous Signal</h5>
+					$$x(t)$$
+					<h5>Discrete Signal</h5>
+					$$x[n]$$
+				</section>
+				<section>
+					<h2>Fourier Transform</h2>
+					<h5>Continuous Signal</h5>
+					$$\text{FT}_{\tilde{x}}(f) = \tilde{X}(f) = \int_{-\infty}^{+\infty}\tilde{x}(t)e^{-j2\pi ft}dt$$
+					<h5>Discrete Signal</h5>
+					$$\text{DFT}_{\tilde{x}}[k] = \tilde{X}[k] = \sum_{n=-\infty}^{+\infty}\tilde{x}[n]e^{-j2\pi kn}$$
+				</section>
+				<section>
+					<h2>Energy</h2>
+					<h5>Continuous Signal</h5>
+					$$E_x \triangleq \int_{-\infty}^{+\infty}\left|x(t)\right|^{2}dt$$
+					<h5>Discrete Signal</h5>
+					$$E_x \triangleq \sum_{n=-\infty}^{+\infty}\left|x[n]\right|^{2}$$
+				</section>
+				<section>
+					<h2>Discrete Time Signals</h2>
+					<p>$x[n]$ can be represented graphically by "stem" plot.</p>
+					<p>$x[n]$ is not defined for noninteger $n$.</p>
+					<p>We call $x[n]$ the n<b>th sample</b> of the signal.</p>
+					<p>The <b>sum</b> and <b>product</b> of two signals $x[n]$ and $y[n]$ are defined as the sample-by-sample sum and product, respectively.</p>
+					<p>Multiplication of $x[n]$ by $a$ is defined as the multiplication of each sample value by $a$.</p>
+				</section>
+				<section><h5>Octave demonstration</h5></section>
+				<section>
+					<p>A signal $y[n]$ is a <b>delayed</b> or <b>shifted</b> version of $x[n]$ if</p>
+					$$y[n] = x[n -n_0],$$
+					<p>with $n_0$ an integer.</p>
+				</section>	
+				<section>
+					<h3>Unit Sample Sequence</h3>
+					<h5>Unit Impulse, Kronecker delta function</h5>
+					$$\delta[n] = \begin{cases}
+					1, & n = 0\\
+					0, & n \neq 0
+					\end{cases}$$
+					<img class = "plain" src="dsp/dirac.png" width = "50%">
+				</section>
+				<section>
+					<h6>Shifted</h6>
+					$$\delta[n - k] = \begin{cases}
+					1, & n = k\\
+					0, & n \neq k
+					\end{cases}$$
+					<img class = "plain" src="dsp/shiftedDirac.png" width = "50%">
+				</section>	
+				<section>
+					<p>An important aspect of the impulse sequence is that an arbitrary sequence can be represented as a sum of scaled delayed impulses.</p>
+					<img class = "plain" src="dsp/signalSequence.png" width = "40%">
+					<p>Can be represented as:</p>
+					$$x[n] = a_{-4}\delta[n+4] + a_{-3}\delta[n+3] + a_{-2}\delta[n+2] + a_{-1}\delta[n+1] + a_{0}\delta[n]\\ + a_{1}\delta[n-1] + a_{2}\delta[n-2] + a_{3}\delta[n-3] + a_{4}\delta[n-4]$$
+				</section>
+				<section>
+					<h6>Unit Step Sequence</h6>
+					$$u[n] = \begin{cases}
+					1, & n \geq 0\\
+					0, & n \lt 0
+					\end{cases}$$
+					<img class = "plain" src="dsp/unitStep.png" width = "50%">
+				</section>
+				<section>
+					<img class = "plain" src="dsp/unitStep.png" width = "50%">
+					<p>The unit step is related to the impulse by:</p>
+					$$u[n] = \sum_{k = -\infty}^n \delta[k]$$
+				</section>
+				<section>
+					$$u[n] = \sum_{k = -\infty}^n \delta[k]$$
+					<p>Alternatively, this can be expressed as:</p>
+					$$u[n] = \delta[n] + \delta[n-1] + \delta[n-2] + ... = \sum_{k = -\infty}^n \delta[k]$$
+				</section>
+				<section>
+					<img class = "plain" src="dsp/unitStep.png" width = "50%">
+					<p>Conversely, the unit sample sequence can be expressed as the first backward difference of the unit step sequence:</p>
+					$$\delta[n] = u[n] - u[n-1].$$
+				</section>
+				<section>
+					<h2>Discrete-time systems</h2>
+					<p>A discrete-time system is defined as a transformation of mapping operator that maps an input signal $x[n]$ to an output signal $y[n]$.</p>
+					<p>This can be denoted as:</p>
+					$$y[n] = T\left\{x[n]\right\}$$
+				</section>
+				<section>
+					<p><b>Example: Ideal delay</b>: $y[n] = x[n-n_d]$</p>
+					<img class = "plain" src="dsp/delay.png" width = "50%">
+					<p>This operation shifts input signal later by $n_d$ samples.</p>
+				</section>
+				<section>
+					<p><b>Example: Moving average</b></p>
+					$$y[n] = \frac{1}{M_1+M_2+1}\sum_{k=-M_1}^{M_2}x[n-k]$$
+				</section>
+				<section>
+					<p>For $M_1$ = 1 and $M_2$ = 1, the input sequence</p>
+					<img class = "plain" src="dsp/movingAverage.png" width = "50%">
+				</section>
+				<section>					
+					<p>results in the following output signal:</p>
+					$$\vdots\\
+					y[2] = \frac{1}{3}\left(x[1] + x[2] + x[3]\right)\\
+					y[3] = \frac{1}{3}\left(x[2] + x[3] + x[4]\right)\\
+					\vdots$$
+				</section>
+				<section>
+					<h5>Memoryless systems</h5>
+					<p>A system is <b>memoryless</b> if the output $y[n]$ depends only on $x[n]$ at the same $n$.</p>
+					<p>$y[n] = (x[n]^2)$ is memoryless.</p>
+					<p>But the ideal delay $y[n] = x[n- n_d]$ is not unless<br> $n_d$ = 0.</p>
+				</section>
+				<section>
+					<h5>Linear Systems</h5>
+					<p>A system is linear if the principle of superposition applies.</p>
+					<p>If $y_1[n]$ is the response of the system to the input $x_1[n]$, and $y_2$[n] the response to $x_2[n]$, then linearity implies <b>additivity</b> and <b>scaling.</b>					
+				</section>
+				<section>
+					<h5>Additivity:</h5>
+					$$T\{x_1[n] + x_2[n]\} = T\{x_1[n]\} + T\{x_2[n]\} = y_1[n] + y_2[n]$$
+					<h5>Scaling:</h5>
+					$$T\{ax_1[n]\} = aT\{x_1[n]\} = ay_1[n]$$
+				</section>
+				<section>
+					<p>These properties combine to form the general principle of superposition</p>
+					$$T\{ax_1[n] + bx_2[n]\} = aT\{x_1[n]\} + bT\{x_2[n]\} = ay_1[n] + by_2[n] $$
+					<p>This property generalizes to many inputs, so the response of a linear system to $x[n] = \sum_k a_kx_k[n]$ will be $y[n] = \sum_k a_ky_k[n]$.</p>
+				</section>
+				<section>
+					<h5>Time-invariant systems</h5>
+					<p>A system is time invariant if a time shift or delay of the input sequence causes a corresponding shift in the output sequence.</p>
+					<p>That is, if $y[n]$ is the response to $x[n]$, then $y[n-n_0]$ is the response to $x[n-n_0]$.</p>
+					<p>The accumulator system $y[n] = \sum_{k=-\infty}^{n}x[k]$ is time invariant.</p>
+					<p>The compressor $y[n] = x[Mn]$, for M a positive integer (which selects every $m$th sample from a sequence) is not.</p>
+				</section>
+				<section>
+					<h5>Causality</h5>
+					<p>A system is causal if the output at $n$ depends only on the input <b>at $n$ and earlier inputs</b>.</p>
+					<p>The backward difference system  $y[n] = x[n] - x[n-1]$ is casual.</p>
+					<p>The forward difference system $y[n] = x[n + 1] - x[n]$ is not.</p>
+				</section>
+				<section>
+					<h5>Stability</h5>
+					<p>A system is stable if every bounded input sequence produces a bounded output sequence:</p>
+					<p><b>Bounded input</b>: $|x[n]| \leq B_x \lt \infty$</p>
+					<p><b>Bounded output</b>: $|y[n]| \leq B_y \lt \infty$</p>
+				</section>
+				<section>
+					<p>The accumulator</p>
+					$$y[n] = \sum_{k=-\infty}^{n} x[n]$$
+					<p>is an example of an unbounded system, since its response to the unit step $u[n]$ is</p>
+					$$y[n] = \sum_{k=-\infty}^{n} u[n] = \begin{cases}
+					0, & n \lt 0\\
+					n+1, & n \geq 0
+					\end{cases}$$
+					<p>which as no finite upper bound.</p>
+				</section>
+				<section>
+					<h2>Linear time-invariant systems</h2>
+					<p>If the linearity property is combined with the representation of a general sequence as a linear combination of delayed impulses, then it follows that a linear time-invariant (LTI) system can be completely characterized by its <b>impulse response</b>.</p>
+				</section>
+				<section>
+					<p>Suppose $h_k[n]$ is the response of a linear system to the impulse $\delta[n-k]$ at $n = k$. Since</p>
+					$$y[n] = T \left\{\sum_{k=-\infty}^{\infty}x[k]\delta[n-k]\right\}$$
+					<p>the principle of superposition means that</p>
+					$$y[n] = \sum_{k=-\infty}^{\infty}x[k]T \left\{\delta[n-k]\right\} = \sum_{k=-\infty}^{\infty}x[k]h_k[n]$$
+				</section>
+				<section>
+					<p>If the system is additionally time invariant, the the response to $\delta[n-k]$ is $h[n-k]$. The previous equation becomes:</p>
+					$$y[n] = \sum_{k=-\infty}^{\infty}x[k]h[n - k]$$
+					<p>This expression is called the <b>convolution sum.</b></p>
+				</section>
+				<section>
+					<p>Therefore, a LTI system has the property that given $h[n]$, we can find $y[n]$ for any input $x[n]$.</p>
+					<p>Alternatively, $y[n]$ is the <b>convolution</b> of $x[n]$ with $h[n]$, denoted as follows:</p>
+					$$y[n] = x[n] * h[n]$$
+				</section>
+				<section>
+					<img class = "plain" src="dsp/convolution.png" width = "70%">
+				</section>
+				<section><h5>Octave demonstration</h5></section>
+
+				<section>
+					<h2>Convolution</h2>
+					$$(f*g)(t)\triangleq \ \int _{-\infty }^{\infty }f(\tau )g(t-\tau )\,d\tau$$
+					$$(f*g)[n] = \sum_{m=-\infty}^{\infty}f[n-m]g[m]$$
+				</section>
+				<section>
+					<h2>Convolution Theorem</h2>
+					<p>If $\mathcal{F}$ denotes the Fourier transform operator, then $\mathcal {F}\{f\}$ and $\mathcal {F}\{g\}$ are the Fourier transforms of $f$ and $g$, respectively. Then</p>
+					$$\mathcal{F}\{f*g\} = \mathcal{F}\{f\} . \mathcal{F}\{g\}$$
+					<p>where $\cdot$  denotes point-wise multiplication. It also works the other way around:</p>
+					$$\mathcal{F}\{f\cdot g\} = \mathcal{F}\{f\} * \mathcal{F}\{g\}$$
+				</section>
+				<section>
+					<p>By applying the inverse Fourier transform $\mathcal{F}^{-1}$, we can write:</p>
+					$$f*g = \mathcal{F}^{-1}\{\mathcal{F}\{f\} . \mathcal{F}\{g\}\}$$
+					<p>and</p>
+					$$f\cdot g = \mathcal{F}^{-1}\{\mathcal{F}\{f\} * \mathcal{F}\{g\}\}$$
+				</section>
+				<section>
+					<pre><code>a = [1 2 3 4 5 6 7 8]
+b = [0 1 1.1 0 0 0 0 0]
+A = [a zeros(1,length(b) - 1]
+A = fft([a zeros(1,length(b) - 1)])
+B = fft([b zeros(1,length(a) - 1)])
+ft = A.*B
+ifft(ft)
+conv(a,b)</code></pre>
+				</section>
+				
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
