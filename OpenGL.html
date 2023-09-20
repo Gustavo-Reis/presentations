@@ -1,0 +1,1424 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>OpenGL</title>
+
+		<meta name="description" content="Computer Graphics - OpenGL">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<img src="images/OpenGL/Opengl-logo.svg" width="100%" class="plain">
+						<p><center><small>Source:</small></center></p>
+						<p><center><small><a href="http://learnopengl.com">Learn OpenGL</a></small></center></p>
+						<p><center><small><a href="http://open.gl">Open.GL</a></small></center></p>
+				</section>
+				<section>				
+					<section>
+						<h1>OpenGL</h1>
+						<p class="fragment">OpenGL® is the most widely adopted 2D and 3D graphics API in the industry, bringing thousands of applications to a wide variety of computer platforms.</p>
+						<p class="fragment">It is window-system and operating-system independent as well as network-transparent.</p>
+					</section>
+					<section>
+						<h1>OpenGL</h1>
+						<p class="fragment">OpenGL enables developers of software for PC, workstation, and supercomputing hardware to create high-performance, visually compelling graphics software applications, in markets such as CAD, content creation, energy, entertainment, game development, manufacturing, medical, and virtual reality.</p>
+						<p class="fragment">OpenGL exposes all the features of the latest graphics hardware.</p>						
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>Core-profile vs Immediate Mode</h2>
+						<p class="fragment">In the old days, using OpenGL meant developing in immediate mode (often referred to as the fixed function pipeline) which was an easy-to-use method for drawing graphics.</p>
+						<p class="fragment">Most of the functionality of OpenGL was hidden in the library and developers did not have much freedom at how OpenGL does its calculations.</p>
+					</section>
+					<section>
+						<h3>Core-profile vs Immediate Mode</h2>
+						<p class="fragment">Developers eventually got hungry for more flexibility and over time the specifications became more flexible; developers gained more control over their graphics.</p>
+						<p class="fragment">The immediate mode is really easy to use and understand, but it is also extremely inefficient.</p>
+					</section>
+					<section>
+						<p class="fragment">For that reason the specification started to deprecate immediate mode functionality from version 3.2 and started motivating developers to develop in OpenGL's core-profile mode which is a division of OpenGL's specification that removed all old deprecated functionality.</p>
+						<p class="fragment">When using OpenGL's core-profile, OpenGL forces us to use modern practices. Whenever we try to use one of OpenGL's deprecated functions, OpenGL raises an error and stops drawing.</p>
+					</section>
+					<section>
+						<p class="fragment">The advantage of learning the modern approach is that it is very flexible and efficient, but unfortunately is also more difficult to learn.</p>
+						<p class="fragment">The immediate mode abstracted quite a lot from the actual operations OpenGL performed and while it was easy to learn, it was hard to grasp how OpenGL actually operates.</p>
+					</section>
+					<section>
+						<p class="fragment">The modern approach requires the developer to truly understand OpenGL and graphics programming and while it is a bit difficult, it allows for much more flexibility, more efficiency and most importantly a much better understanding of graphics programming.</p>
+						<p class="fragment">This is also the reason why our classes are geared at CoreProfile OpenGL version 3.3. Although it is more difficult, it is greatly worth the effort.</p>	
+					</section>
+					
+				</section>
+				<section>
+					<section>
+						<h2>Creating a Window and an OpenGL Context</h2>
+						<p class="fragment">Before you can start drawing things, you need to initialize OpenGL.</p>
+						<p class="fragment">This is done by creating an OpenGL context, which is essentially a state machine that stores all data related to the rendering of your application.</p>
+						<p class="fragment">When your application closes, the OpenGL context is destroyed and everything is cleaned up.</p>
+					</section>
+					<section>
+						<p class="fragment">The problem is that creating a window and an OpenGL context is not part of the OpenGL specification.</p>
+						<p class="fragment">That means it is done differently on every platform out there!</p>
+						<p class="fragment">Developing applications using OpenGL is all about being portable, so this is the last thing we need.</p>
+						<p class="fragment">Luckily there are libraries out there that abstract this process, so that you can maintain the same codebase for all supported platforms.</p>
+					</section>
+					<section>
+						<p class="fragment">While the available libraries out there all have advantages and disadvantages, they do all have a certain program flow in common.</p>
+						<p class="fragment">You start by specifying the properties of the game window, such as the title and the size and the properties of the OpenGL context, like the anti-aliasing level.</p>
+					</section>
+					<section>
+						<p class="fragment">Your application will then initiate the event loop, which contains an important set of tasks that need to be completed over and over again until the window closes.</p>
+						<p class="fragment">These tasks usually handle window events like mouse clicks, updating the rendering state and then drawing.</p>
+					</section>
+					<section>
+						<h2>Normalized Device Coordinates (NDC)</h2>
+						<img src="images/OpenGL/c2_dc.png" class="plain" width="80%">
+					</section>
+					<section>
+						<h2>Normalized Device Coordinates (NDC)</h2>
+						<img src="images/OpenGL/c2_dc2.png" class="plain" width="80%">
+					</section>
+					<section>
+						<h3>Setup</h3>
+						<p class="fragment"><b>Windows</b>: Add <code>opengl32.lib</code> to your linker</p>
+						<p class="fragment"><b>Linux</b>: Include <code>-IGL</code> toin your compiler options</p>
+						<p class="fragment"><b>OS X</b>: Add <code>-framework OpenGL</code> to your compiler options</p>
+					</section>
+					<section>
+						<h3>SDL 2</h3>
+						<pre><code>#ifdef __APPLE__
+#include &lt;SDL2/SDL.h&gt;
+#elif _WIN32
+#include &lt;SDL.h&gt;
+#endif
+int main(int argc, char **argv)
+{
+	SDL_Init(SDL_INIT_VIDEO);
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+	SDL_Window* window = SDL_CreateWindow("OpenGL", 100, 100, 800, 600, SDL_WINDOW_OPENGL);
+	SDL_GLContext context = SDL_GL_CreateContext(window);
+	SDL_Event windowEvent;
+	while (true)
+	{
+		if (SDL_PollEvent(&windowEvent))
+		{
+			if (windowEvent.type == SDL_QUIT) break;
+		}
+		SDL_GL_SwapWindow(window);
+	}
+	SDL_GL_DeleteContext(context);
+	SDL_DestroyWindow(window);
+
+	SDL_Quit();
+	return 0;
+}</code></pre>
+					</section>
+					<section>
+						<h3>OpenGL Context Creation</h3>
+						<pre><code>
+SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+SDL_Window* window = SDL_CreateWindow("OpenGL", 100, 100, 800, 600, SDL_WINDOW_OPENGL);
+SDL_GLContext context = SDL_GL_CreateContext(window);
+</code></pre>
+					</section>
+					<section>
+						<h3>GLAD</h3>
+						<p class="fragment">We're still not quite there yet, since there is one other thing we still need to do.</p>
+						<p class="fragment">Since OpenGL is a standard/specification it is up to the driver manufacturer to implement the specification to a driver that the specific graphics card supports.</p>
+						<p class="fragment">Since there are many different versions of OpenGL drivers, the location of most of its functions is not known at compile-time and needs to be queried at run-time.</p>
+					</section>
+					<section>
+						<p class="fragment">It is then the task of the developer to retrieve the location of the functions he needs and store them in function pointers for later use.</p>
+						<p class="fragment">GLAD is an open source library that manages all that cumbersome work we talked about.</p>
+						<p class="fragment">GLAD has a slightly different configuration setup than most common open source libraries.</p>
+					</section>
+					<section>
+						<p class="fragment">GLAD uses a web service where we can tell GLAD for which version of OpenGL we'd like to define and load all relevant OpenGL functions according to that version.</p>
+						<pre class = "fragment"><code>#include &lt;glad/glad.h&gt;</code></pre>
+					</section>
+					<section>
+						<pre><code>// define the function's prototype
+typedef void (*GL_GENBUFFERS) (GLsizei, GLuint*);
+// find the function and assign it to a function pointer
+GL_GENBUFFERS glGenBuffers = (GL_GENBUFFERS)SDL_GL_GetProcAddress("glGenBuffers");
+
+// function can now be called as normal
+unsigned int buffer;
+glGenBuffers(1, &buffer);
+printf("%u\n", buffer);
+</code></pre>
+					</section>
+					<section>
+						<pre><code>#include &lt;iostream&gt;
+#include &lt;glad/glad.h&gt;
+#ifdef __APPLE__
+#include &lt;SDL2/SDL.h&gt;
+#elif _WIN32
+#include &lt;SDL.h&gt;
+#endif
+int main(int argc, char **argv)
+{
+	SDL_Init(SDL_INIT_VIDEO);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	
+	SDL_Window* window = SDL_CreateWindow("OpenGL", 100, 100, 800, 600, SDL_WINDOW_OPENGL);
+	if(window == nullptr)
+	{
+		std::cout &lt;&lt; "Failed to create SDL Window" &lt;&lt; std::endl;
+		SDL_Quit();
+		return -1;
+	}
+	
+	SDL_GLContext context = SDL_GL_CreateContext(window);
+	
+	if(!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
+	{
+		std::cout &lt;&lt; "Failed to initialize GLAD" &lt;&lt; std::endl;
+		SDL_Quit();
+		return -2;
+	}
+
+	SDL_Event windowEvent;
+	while (true)
+	{
+		if (SDL_PollEvent(&windowEvent))
+		{
+			if (windowEvent.type == SDL_QUIT) break;
+		}
+
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		SDL_GL_SwapWindow(window);
+	}
+
+	SDL_GL_DeleteContext(context);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+	return 0;
+}
+</code></pre>		
+					</section>
+					<section><img src="images/OpenGL/screenshot.png" class="plain" width="80%">			
+</section>
+				</section>
+				<section>
+					<section>
+						<h1>The Graphics Pipeline</h1>
+					</section>
+					<section>
+						<img src="images/OpenGL/c2_pipeline.png" class="plain">
+						<center><small>Image taken from: <a href="https://open.gl/drawing">https://open.gl/drawing</a></small></center>
+					</section>
+					<section>
+						<h2>Vertex Shader</h2>
+						<p class="fragment">The vertex shader is a small program running on your graphics card that processes every one of these input vertices individually.</p>
+						<p class="fragment">This is where the perspective transformation takes place, which projects vertices with a 3D world position onto your 2D screen!</p>
+						<p class="fragment">It also passes important attributes like color and texture coordinates further down the pipeline.</p>
+					</section>
+					<section>
+						<p class="fragment">After the input vertices have been transformed, the graphics card will form triangles, lines or points out of them.</p>
+						<p class="fragment">These shapes are called primitives because they form the basis of more complex shapes.</p>
+						<p class="fragment">There are some additional drawing modes to choose from, like triangle strips and line strips.</p>
+						<p class="fragment">These reduce the number of vertices you need to pass if you want to create objects where each next primitive is connected to the last one, like a continuous line consisting of several segments.</p>
+					</section>
+					<section>
+						<h2>Geometry Shader</h2>
+						<p class="fragment">The following step, the geometry shader, is completely optional and was only recently introduced.</p>
+						<p class="fragment">Unlike the vertex shader, the geometry shader can output more data than comes in.</p>
+						<p class="fragment">It takes the primitives from the shape assembly stage as input and can either pass a primitive through down to the rest of the pipeline, modify it first, completely discard it or even replace it with other primitive(s).</p>
+					</section>
+					<section>
+						<p class="fragment">Since the communication between the GPU and the rest of the PC is relatively slow, this stage can help you reduce the amount of data that needs to be transferred.</p>
+						<p class="fragment">With a voxel game for example, you could pass vertices as point vertices, along with an attribute for their world position, color and material and the actual cubes can be produced in the geometry shader with a point as input!</p>
+					</section>
+					<section>
+						<h2>Fragment Shader</h2>
+						<p class="fragment">After the final list of shapes is composed and converted to screen coordinates, the rasterizer turns the visible parts of the shapes into pixel-sized fragments.</p>
+						<p class="fragment">The vertex attributes coming from the vertex shader or geometry shader are interpolated and passed as input to the fragment shader for each fragment.</p>
+						<p class="fragment">As you can see in the image, the colors are smoothly interpolated over the fragments that make up the triangle, even though only 3 points were specified.</p>
+					</section>
+					<section>
+						<p class="fragment">The fragment shader processes each individual fragment along with its interpolated attributes and should output the final color.</p>
+						<p class="fragment">This is usually done by sampling from a texture using the interpolated texture coordinate vertex attributes or simply outputting a color.</p>
+						<p class="fragment">In more advanced scenarios, there could also be calculations related to lighting and shadowing and special effects in this program.</p>
+					</section>
+					<section>
+						<p class="fragment">The shader also has the ability to discard certain fragments, which means that a shape will be see-through there.</p>
+						<p class="fragment">Finally, the end result is composed from all these shape fragments by blending them together and performing <b>depth</b> and <b>stencil testing</b>.</p>
+					</section>
+					<section>
+						<p class="fragment">All you need to know about these last two right now, is that they allow you to use additional rules to throw away certain fragments and let others pass.</p>
+						<p class="fragment">For example, if one triangle is obscured by another triangle, the fragment of the closer triangle should end up on the screen.</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h1>Hello Triangle</h1>
+					</section>
+					<section>
+						<h2>Vertex Input</h2>
+						<p class="fragment">To start drawing something we have to first give OpenGL some input vertex data.</p>
+						<p class="fragment">OpenGL is a 3D graphics library so all coordinates that we specify in OpenGL are in 3D (x, y and z coordinate).</p>
+						<p class="fragment">OpenGL doesn't simply transform all your 3D coordinates to 2D pixels on your screen:</p>
+						<ul class="fragment">
+							<li>OpenGL only processes 3D coordinates when they're in a specific range between -1.0 and 1.0 on all 3 axes (x, y and z).</li>
+						</ul>
+					</section>
+					<section>
+						<p class="fragment">All coordinates within this so called normalized device coordinates range will end up visible on your screen (and all coordinates outside this region won't).</p>
+						<p class="fragment">Because we want to render a single triangle we want to specify a total of three vertices with each vertex having a 3D position.</p>
+						<p class="fragment">We define them in normalized device coordinates (the visible region of OpenGL) in a float array:</p>
+						<pre  class="fragment"><code>float vertices[] = {
+ 0.0f,  0.5f, // Vertex 1 (X, Y)
+ 0.5f, -0.5f, // Vertex 2 (X, Y)
+-0.5f, -0.5f  // Vertex 3 (X, Y)
+};</code></pre>
+					</section>
+					<section>
+						<h2>Normalized Device Coordinates (NDC)</h2>
+						<p class="fragment">Once your vertex coordinates have been processed in the vertex shader, they should be in normalized device coordinates which is a small space where the x, y and z values vary from -1.0 to 1.0.</p>
+						<p class="fragment">Any coordinates that fall outside this range will be discarded/clipped and won't be visible on your screen.</p>
+					</section>
+					<section>
+						<p class="fragment">Below you can see the triangle we specified within normalized device coordinates (ignoring the z axis):</p>
+						<p class="fragment"><img class ="plain" src="images/OpenGL/ndc.png" width="100%"></p>
+					</section>
+					<section>
+						<p class="fragment">With the vertex data defined we'd like to send it as input to the first process of the graphics pipeline: the vertex shader.</p>
+						<p class="fragment">This is done by creating memory on the GPU where we store the vertex data, configure how OpenGL should interpret the memory and specify how to send the data to the graphics card.</p>
+						<p class="fragment">The vertex shader then processes as much vertices as we tell it to from its memory.</p>
+					</section>
+					<section>
+						<p class="fragment">We manage this memory via so called vertex buffer objects (VBO) that can store a large number of vertices in the GPU's memory.</p>
+						<p class="fragment">The advantage of using those buffer objects is that we can send large batches of data all at once to the graphics card without having to send data a vertex a time.</p>
+						<p class="fragment">Sending data to the graphics card from the CPU is relatively slow, so wherever we can we try to send as much data as possible at once.</p>
+					</section>
+					<section>
+						<p class="fragment">Once the data is in the graphics card's memory the vertex shader has almost instant access to the vertices making it extremely fast.</p>
+						<p class="fragment">A vertex buffer object is our first occurrence of an OpenGL object.</p>
+					</section>
+					<section>
+						<p class="fragment">Just like any object in OpenGL this buffer has a unique ID corresponding to that buffer, so we can generate one with a buffer ID using the glGenBuffers function:</p>
+						<pre class="fragment"><code>GLuint vbo;
+glGenBuffers(1, &vbo); // Generate 1 buffer</code></pre>
+						<p class="fragment">or</p>
+						<pre class="fragment"><code>unsigned int vbo;
+glGenBuffers(1, &vbo); // Generate 1 buffer</code></pre>
+					</section>
+					<section><pre><code>GLuint vbo;
+glGenBuffers(1, &vbo); // Generate 1 buffer</code></pre>
+						<p class="fragment">The memory is managed by OpenGL, so instead of a pointer you get a positive number as a reference to it.</p>
+						<p class="fragment"><code>GLuint</code> is simply a cross-platform substitute for <code>unsigned int</code>, just like <code>GLint</code> is one for <code>int</code>.</p>
+						<p class="fragment">You will need this number to make the VBO active and to destroy it when you're done with it.</p>
+					</section>
+					<section>
+						<p class="fragment">OpenGL has many types of buffer objects and the buffer type of a vertex buffer object is <code>GL_ARRAY_BUFFER</code>.</p>
+						<p class="fragment">OpenGL allows us to bind to several buffers at once as long as they have a different buffer type.</p>
+						<p class="fragment">We can bind the newly created buffer to the <code>GL_ARRAY_BUFFER</code> target with the <code>glBindBuffer</code> function:</p>
+						<pre class="fragment"><code>glBindBuffer(GL_ARRAY_BUFFER, vbo);</code></pre>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment">From that point on any buffer calls we make (on the <code>GL_ARRAY_BUFFER</code> target) will be used to configure the currently bound buffer, which is <code>vbo</code>.</p>
+						<p class="fragment">Then we can make a call to <code>glBufferData</code> function that copies the previously defined vertex data into the buffer's memory:</p>
+						<pre class="fragment"><code>glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);</code></pre>
+					</section>
+					<section>
+						<pre><code>glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);</code></pre>
+						<p class="fragment"><code>glBufferData</code> is a function specifically targeted to copy user-defined data into the currently bound buffer.</p>
+						<p class="fragment">Its first argument is the type of the buffer we want to copy data into: the vertex buffer object currently bound to the <code>GL_ARRAY_BUFFER</code> target.</p>
+						<p class="fragment">The second argument specifies the size of the data (in bytes) we want to pass to the buffer; a simple sizeof of the vertex data suffices.</p>
+						<p class="fragment">The third parameter is the actual data we want to send.</p>
+					</section>
+					<section>
+						<pre><code>glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);</code></pre>
+						<p class="fragment">The fourth parameter specifies how we want the graphics card to manage the given data. This can take 3 forms:</p>
+						<ul class="fragment">
+							<li><code>GL_STATIC_DRAW</code>: the data will most likely not change at all or very rarely.</li>
+							<li><code>GL_DYNAMIC_DRAW</code>: the data is likely to change a lot.</li>
+							<li><code>GL_STREAM_DRAW</code>: the data will change every time it is drawn.</li>
+						</ul>
+					</section>
+					<section>
+						<p class="fragment">The position data of the triangle does not change and stays the same for every render call so its usage type should best be <code>GL_STATIC_DRAW</code>.</p>
+						<p class="fragment">If, for instance, one would have a buffer with data that is likely to change frequently, a usage type of <code>GL_DYNAMIC_DRAW</code> or <code>GL_STREAM_DRAW</code> ensures the graphics card will place the data in memory that allows for faster writes.</p>
+					</section>
+					<section>
+						<p class="fragment">As of now we stored the vertex data within memory on the graphics card as managed by a vertex buffer object named <code>vbo</code>.</p>
+						<p class="fragment">Next we want to create a vertex and fragment shader that actually processes this data.</p>
+					</section>
+					<section>
+						<h2>Vertex Shader</h2>
+						<p class="fragment">The vertex shader is a program on the graphics card that processes each vertex and its attributes as they appear in the vertex array.</p>
+						<p class="fragment">Its duty is to output the final vertex position in device coordinates and to output any data the fragment shader requires.</p>
+						<p class="fragment">That's why the 3D transformation should take place here.</p>
+					</section>
+					<section>
+						<p class="fragment">The fragment shader depends on attributes like the color and texture coordinates, which will usually be passed from input to output without any calculations.</p>
+						<p class="fragment">Since our vertex position is already specified as device coordinates and no other attributes exist, the vertex shader will be quite simple:</p>
+						<pre class="fragment"><code>#version 330 core
+layout (location = 0) in vec2 position;
+void main()
+{
+	gl_Position = vec4(position, 0.0, 1.0);
+}</code></pre>
+					</section>
+					<section><pre><code>#version 330 core
+layout (location = 0) in vec2 position;
+void main()
+{
+	gl_Position = vec4(position, 0.0, 1.0);
+}</code></pre>
+						<p class="fragment">As you can see, GLSL (OpenGL Shading Language) looks similar to C.</p>
+						<p class="fragment">Each shader begins with a declaration of its version.</p>
+						<p class="fragment">Since OpenGL 3.3 and higher the version numbers of GLSL match the version of OpenGL (GLSL version 420 corresponds to OpenGL version 4.2 for example).</p>
+					</section>
+					<section><pre><code>#version 330 core
+layout (location = 0) in vec2 position;
+void main()
+{
+	gl_Position = vec4(position, 0.0, 1.0);
+}</code></pre>
+						<p class="fragment">Next, we declare all the input vertex attributes in the vertex shader with the in keyword.</p>
+						<p class="fragment">Right now we only care about position data so we only need a single vertex attribute.</p>
+						<p class="fragment">GLSL has a vector datatype that contains 1 to 4 floats based on its postfix digit.</p>
+					</section>
+					<section><pre><code>#version 330 core
+layout (location = 0) in vec2 position;
+void main()
+{
+	gl_Position = vec4(position, 0.0, 1.0);
+}</code></pre>
+						<p class="fragment">Since each vertex has a 2D coordinate we create a <code>vec2</code> input variable with the name <code>aPos</code>.</p>
+						<p class="fragment">We also specifically set the location of the input variable via <code>layout (location = 0)</code> and you'll later see that why we're going to need that location.</p>
+					</section>
+					<section>
+						<p class="fragment">Apart from the regular C types, GLSL has built-in vector and matrix types identified by <code>vec</code>* and <code>mat</code>* identifiers.</p>
+						<p class="fragment">The type of the values within these constructs is always a <code>float</code>.</p>
+						<p class="fragment">The number after vec specifies the number of components (x, y, z, w) and the number after <code>mat</code> specifies the number of rows /columns.</p>
+						<p class="fragment">Since the position attribute consists of only an X and Y coordinate, <code>vec2</code> is perfect.</p>
+					</section>
+					<section>
+						<p class="fragment">You can be quite creative when working with these vertex types. In the example above a shortcut was used to set the first two components of the <code>vec4</code> to those of <code>vec2</code>.</p>
+						<p class="fragment">These two lines are equal:</p>
+						<pre class="fragment"><code>gl_Position = vec4(position, 0.0, 1.0);
+gl_Position = vec4(position.x, position.y, 0.0, 1.0);</code></pre>
+						<p class="fragment">When you're working with colors, you can also access the individual components with r, g, b and a instead of x, y, z and w.</p>
+						<p class="fragment">This makes no difference and can help with clarity.</p>
+					</section>
+					<section>
+						<p class="fragment">The final position of the vertex is assigned to the special <code>gl_Position</code> variable, because the position is needed for primitive assembly and many other built-in processes.</p>
+						<p class="fragment">For these to function correctly, the last value <code>w</code> needs to have a value of <code>1.0f</code></p>
+						<p class="fragment">Other than that, you're free to do anything you want with the attributes and we'll see how to output those when we add color to the triangle later on.</p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+
+				</section>
+					<section>						
+						  <video autoplay="true" loop="true" muted="true" width="600" height="450" loop>
+						    <source src="camera/camera_circle.mp4" type="video/mp4"/>
+						  </video>
+						
+					</section>
+				</section>
+				<section>
+					<section>
+						<h1>Walk Around</h1>
+						<p>Swinging the camera around a scene is fun, but it's more fun to do all the movement by ourselves! First we need to set up a camera system, so it is useful to define some camera variables at the top of our program:</p>
+						<pre><code>glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);</code></pre>
+						<p>The <code>LookAt</code> function becomes:</p>
+						<pre><code>view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);</code></pre>
+					</section>
+					<section>
+						<p>First we set the camera position to the previously defined <var>cameraPos</var>. The direction is the current position + the direction vector we just defined.</p>
+						<p>This ensures that however we move, the camera keeps looking at the target direction. Let's play a bit with these variables by updating the <var>cameraPos</var> vector when we press some keys.</p>
+					</section>
+					<section>
+						<p>Define a <fun>processInput</fun> function to manage any of SDL's keyboard state:</p>
+						<pre><code>void processKeyboard()
+{
+	float cameraSpeed = 0.05f; // adjust accordingly
+	const Uint8* keyState;
+	keyState = SDL_GetKeyboardState(NULL);
+	if (keyState[SDL_SCANCODE_W])
+		cameraPos += cameraSpeed * cameraFront;
+	if (keyState[SDL_SCANCODE_S])
+		cameraPos -= cameraSpeed * cameraFront;
+	if (keyState[SDL_SCANCODE_A])
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (keyState[SDL_SCANCODE_D])
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;	
+}</code></pre>
+					</section>
+					<section>												
+						<p>Whenever we press one of the WASD keys, the camera's position is updated accordingly.</p>
+						<p>If we want to move forward or backwards we add or subtract the direction vector from the position vector.</p>
+						<p>If we want to move sidewards we do a cross product to create a right vector and we move along the right vector accordingly.</p>
+						<p>This creates the familiar strafe effect when using the camera.</p>
+					</section>
+					<section>
+						<note>Note that we normalize the resulting right vector. If we wouldn't normalize this vector, the resulting cross product might return differently sized vectors based on the cameraFront variable. If we would not normalize the vector we would either move slow or fast based on the camera's orientation instead of at a consistent movement speed.</note>
+						<pre><code>void processInput(SDL_Event ev)
+{
+	float cameraSpeed = 0.05f; // adjust accordingly
+	const Uint8* keyState;
+	keyState = SDL_GetKeyboardState(NULL);
+	if (keyState[SDL_SCANCODE_W])
+		cameraPos += cameraSpeed * cameraFront;
+	if (keyState[SDL_SCANCODE_S])
+		cameraPos -= cameraSpeed * cameraFront;
+	if (keyState[SDL_SCANCODE_A])
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (keyState[SDL_SCANCODE_D])
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;	
+}</code></pre>					
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Movement Speed</h2>
+						<p>Currently we used a constant value for movement speed when walking around.</p>
+						<p>In theory this seems fine, but in practice people have different processing powers and the result of that is that some people are able to draw much more frames than others each second.</p>
+						<p>Whenever a user draws more frames than another user he also calls processInput more often.</p>
+					</section>
+					<section>
+						<p>The result is that some people move really fast and some really slow depending on their setup.</p>
+						<p>When shipping your application you want to make sure it runs the same on all kinds of hardware.</p>
+						<p>Games usually keep track of a <var>deltaTime</var> variable that stores the time it takes to render the last frame.</p>
+						<p>We then multiply all velocities with this <var>deltaTime</var> value.</p>
+					</section>
+					<section>
+						<p>The result is that when we have a large <var>deltaTime</var> in a frame, meaning that the last frame took longer than average, the velocity for that frame will also be a bit higher to balance it all out.</p>
+						<p>When using this approach it does not matter if you have a very fast or slow pc, the velocity of the camera will be balanced out accordingly so each user will have the same experience.</p>
+					</section>
+					<section>
+						<p>To calculate the <var>deltaTime</var> value we keep track of 2 variables:</p>
+						<pre><code>float deltaTime = 0.0f;	// Time between current frame and last frame
+float lastFrameTime = SDL_GetTicks(); // Time of last frame</code></pre>
+						<p>Within each frame we then calculate the new deltaTime value for later use:</p>
+						<pre><code>int now = SDL_GetTicks();
+float deltaTime = (now - lastFrameTime) / 1000.0f;
+lastFrameTime = now;</code></pre>
+					</section>
+					<section>
+						<p>Now that we have <var>deltaTime</var> we can take it into account when calculating the velocities</p>
+						<pre><code>void processKeyboard(float deltaTime)
+{
+	float cameraSpeed = 2.5f * deltaTime;
+	...
+}</code></pre>
+					</section>					
+					<section>
+					<p>Together with the previous section we should now have a much smoother and more consistent camera system for moving around the scene:</p>						
+						  <video autoplay="true" loop="true" muted="true" width="600" height="450" loop>
+						    <source src="camera/camera_smooth.mp4" type="video/mp4"/>
+						  </video>
+						
+					</section>
+				</section>
+				<section>
+					<section>
+						<h1>Look around</h1>
+						<p>Only using the keyboard keys to move around isn't that interesting. </p>
+						<p>Especially since we can't turn around making the movement rather restricted.</p>
+						<p>That's where the mouse comes in!</p>
+					</section>
+					<section>
+						<p>To look around the scene we have to change the cameraFront vector based on the input of the mouse.</p>
+						<p>However, changing the direction vector based on mouse rotations is a little complicated and requires some trigonemetry.</p>
+					</section>
+					<section>
+						<h2>Euler angles</h2>
+						<p>Euler angles are 3 values that can represent any rotation in 3D, defined by Leonhard Euler somewhere in the 1700s. There are 3 Euler angles: <em>pitch</em>, <em>yaw</em> and <em>roll</em>. The following image gives them a visual meaning:</p>
+						<img src="camera/camera_pitch_yaw_roll.png">
+					</section>
+					<section>
+						<p>The <def>pitch</def> is the angle that depicts how much we're looking up or down as seen in the first image.</p>
+						<p>The second image shows the <def>yaw</def> value which represents the magnitude we're looking to the left or to the right.</p>
+						<p>The roll represents how much we <def>roll</def> as mostly used in space-flight cameras. Each of the Euler angles are represented by a single value and with the combination of all 3 of them we can calculate any rotation vector in 3D.</p>
+					</section>
+					<section>
+						<p>For our camera system we only care about the yaw and pitch values so we won't discuss the roll value here. Given a pitch and a yaw value we can convert them into a 3D vector that represents a new direction vector. The process of converting yaw and pitch values to a direction vector requires a bit of trigonemetry and we start with a basic case:</p>
+						<img src="camera/camera_triangle.png">
+					</section>
+					<section>
+						<p>
+						 If we define the hypotenuse to be of length <code>1</code> we know from trigonometry that the adjacant side's length is \(\cos \ \color{red}x/\color{purple}h = \cos \ \color{red}x/\color{purple}1 = \cos\ \color{red}x\) and that the opposing side's length is \(\sin \ \color{green}y/\color{purple}h = \sin \ \color{green}y/\color{purple}1 = \sin\ \color{green}y\).  This gives us some general formulas for retrieving the length in both the <code>x</code> and <code>y</code> directions, depending on the given angle. Let's use this to calculate the components of the direction vector:
+						</p>
+						<img src="camera/camera_pitch.png">
+					</section>
+					<section>
+						<p>
+						This triangle looks similar to the previous triangle so if we visualize that we are sitting on the <code>xz</code> plane and look towards the <code>y</code> axis we can calculate the length / strength of the <code>y</code> direction (how much we're looking up or down) based on the first triangle. From the image we can see that the resulting <code>y</code> value for a given pitch equals \(\sin\ \theta\):
+						</p>
+						<pre><code>direction.y = sin(glm::radians(pitch)); // Note that we convert the angle to radians first </code></pre>
+					</section>
+					<section>
+						<p>Here we only update the <code>y</code> value is affected, but if you look carefully you can also that the <code>x</code> and <code>z</code> components are affected. From  the triangle we can see that their values equal:</p>
+						<pre><code>direction.x = cos(glm::radians(pitch));
+direction.z = cos(glm::radians(pitch));</code></pre>
+					</section>
+					<section>
+						<p>Let's see if we can find the required components for the yaw value as well:</p>
+						<img src="camera/camera_yaw.png" class="clean"/>
+					</section>
+					<section>
+						<p>Just like the pitch triangle we can see that the <code>x</code> component depends on the <code>cos(yaw)</code> value and the <code>z</code> value also depends on the <code>sin</code> of the yaw value. Adding this to the previous values results in a final direction vector based on the pitch and yaw values:</p>
+						<pre><code>direction.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+direction.y = sin(glm::radians(pitch));
+direction.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));</code></pre>
+					</section>
+					<section>
+						<h2>Mouse input</h2>
+						<p>The yaw and pitch values are obtained from mouse (or controller/joystick) movement where horizontal mouse-movement affects the yaw and vertical mouse-movement affects the pitch.</p>
+						<p>The idea is to store the last frame's mouse positions and in the current frame we calculate how much the mouse values changed in comparrison with last frame's value.</p>
+					</section>
+					<section>
+						<p>The higher the horizontal/vertical difference, the more we update the pitch or yaw value and thus the more the camera should move.</p>
+						<p>First we will tell SDL2 that it should hide the cursor and <def>capture</def> it.</p>
+						<p>Capturing a cursor means that once the application has focus the mouse cursor stays within the window (unless the application loses focus or quits).</p>
+					</section>
+					<section>
+						<pre><code>SDL_ShowCursor(SDL_DISABLE);
+SDL_CaptureMouse(SDL_TRUE);</code></pre>
+						<p>After this call, wherever we move the mouse it won't be visible and it should not leave the window.</p>
+						<p>This is perfect for an FPS camera system.</p>
+					</section>
+					<section><p>
+						To calculate the pitch and yaw values we need to handle mouse-movement events. We do this inside our <fun>processInput</fun> function:
+						</p>
+
+						<pre><code>void processInput(SDL_Event ev, float deltaTime)
+{
+	...
+	if (ev.type == SDL_MOUSEMOTION)
+	{
+		float xpos = ev.button.x;
+		float ypos = ev.button.y;
+		...		
+	}
+	...
+}</code></pre>
+						<p>Here <var>xpos</var> and <var>ypos</var> represent the current mouse positions.</p>
+
+					</section>
+					<section>
+						<p>
+						When handling mouse input for an FPS style camera there are several steps we have to take  before eventually retrieving the direction vector:
+						<ol>
+						<li>Calculate the mouse's offset since the last frame.</li>
+						<li>Add the offset values to the camera's yaw and pitch values.</li>
+						<li>Add some constraints to the maximum/minimum pitch values</li>
+						<li>Calculate the direction vector</li>
+						</ol>
+						</p>
+					</section>
+					<section>
+						<p>
+						The first step is to calculate the offset of the mouse since the last frame. We first have to store the last mouse positions in the application, which we set to the center of the screen (screen size is <code>800</code> by <code>600</code>) initially:
+						</p>
+
+						<pre class="cpp"><code>float lastX = 400, lastY = 300;</code></pre>
+					</section>
+					<section>
+						<p>
+						Then in the mouse's callback function we calculate the offset movement between the last and current frame:
+						</p>
+
+						<pre><code>float xoffset = xpos - lastX;
+float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
+lastX = xpos;
+lastY = ypos;
+
+float sensitivity = 0.05f;
+xoffset *= sensitivity;
+yoffset *= sensitivity;</code></pre>
+						<p>
+						Note that we multiply the offset values by a <var>sensitivity</var> value. If we omit this multiplication the mouse movement would be way too strong; fiddle around with the sensitivity value to your liking.
+						</p>
+					</section>
+					<section>
+						<p>
+  Next we add the offset values to globally declared <var>pitch</var> and <var>yaw</var> values:
+</p>
+
+<pre><code>yaw   += xoffset;
+pitch += yoffset;  
+</code></pre>
+
+					</section>
+					<section>
+						<p>
+  In the third step we'd like to add some constraints to the camera so users won't be able to make weird camera movements (also prevents a few weird issues). The pitch will be constrained in such a way that users won't be able to look higher than <code>89</code> degrees (at <code>90</code> degrees the view tends to reverse, so we stick to <code>89</code> as our limit) and also not below <code>-89</code> degrees. This ensures the user will be able to look up to the sky and down to his feet but not further.
+</p>
+
+					</section>
+					<section>
+						<p>The constraint works by just replacing the resulting value with its constraint value whenever it breaches the constraint:</p>
+						<pre><code>if(pitch &gt; 89.0f)
+  pitch =  89.0f;
+if(pitch &lt; -89.0f)
+  pitch = -89.0f;
+</code></pre>
+
+<p>
+  Note that we set no constraint on the yaw value since we don't want to constrain the user in horizontal rotation. However, it's just as easy to add a constraint to the yaw as well if you feel like it.
+</p>
+
+					</section>
+					<section>
+						<p>
+  The fourth and last step is to calculate the actual direction vector from the resulting yaw and pitch value as discussed in the previous section:
+</p>
+
+<pre><code>glm::vec3 front;
+front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+front.y = sin(glm::radians(pitch));
+front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+cameraFront = glm::normalize(front);</code></pre>
+  
+  <p>
+    This computed direction vector then contains all the rotations calculated from the mouse's movement. Since the <var>cameraFront</var> vector is already included in glm's <fun>lookAt</fun> function we're set to go.
+</p>
+					</section>
+					<section>
+						<p>
+						If you would now run the code you will notice that the camera makes a large sudden jump whenever the window first receives focus of your mouse cursor.</p>
+						<p>The cause for the sudden jump is that as soon as your cursor enters the window the mouse callback function is called with an <var>xpos</var> and <var>ypos</var> position equal to the location your mouse entered the screen.</p>
+					</section>
+					<section>
+						<p>This is usually a position that is quite a distance away from the center of the screen resulting in large offsets and thus a large movement jump.</p>
+						<p>We can circumvent this issue by simply defining a static <code>bool</code> variable to check if this is the first time we receive mouse input and if so, we first update the initial mouse positions to the new <var>xpos</var> and <code>ypos</code> values; the resulting mouse movements will then use the entered mouse's position coordinates to calculate its offsets:
+						</p>
+					</section>
+					<section>
+						<pre><code>static bool firstMouse = true;
+if (firstMouse)
+{
+	firstMouse = false;
+	lastX = xpos;
+	lastY = ypos;
+}
+</code></pre>
+					</section>
+					<section>
+						<p>The final code then becomes:</p>
+						<pre><code>void processInput(SDL_Event ev, float deltaTime)
+{
+	if (ev.type == SDL_MOUSEMOTION)
+	{
+		float xpos = ev.button.x;
+		float ypos = ev.button.y;
+
+		static bool firstMouse = true;
+		if (firstMouse)
+		{
+			firstMouse = false;
+			lastX = xpos;
+			lastY = ypos;
+		}
+		
+		float xoffset = xpos - lastX;
+		float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
+		lastX = xpos;
+		lastY = ypos;
+
+		float sensitivity = 0.05f;
+		xoffset *= sensitivity;
+		yoffset *= sensitivity;
+
+		yaw += xoffset;
+		pitch += yoffset;
+
+		if (pitch > 89.0f)
+			pitch = 89.0f;
+		if (pitch < -89.0f)
+			pitch = -89.0f;		
+	}
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(front);
+}</code></pre>
+					</section>
+					<section>
+						<h2>Zoom</h2>
+						<p>
+						As a little extra to the camera system we'll also implement a zooming interface. In the previous class we said the <em>Field of view</em> or <em>fov</em> defines how much we can see of the scene. When the field of view becomes smaller the scene's projected space gets smaller giving the illusion of zooming in. To zoom in, we're going to use the mouse's scroll-wheel. Similar to mouse movement and keyboard input we have a callback function for mouse-scrolling:
+						</p>
+
+					</section>
+					<section>
+						<pre><code>if (ev.type == SDL_MOUSEWHEEL)
+{
+	if (fov >= 1.0f && fov <= 45.0f)
+		fov -= ev.wheel.y;
+	if (fov <= 1.0f)
+		fov = 1.0f;
+	if (fov >= 45.0f)
+		fov = 45.0f;		
+}
+</code></pre>
+
+					</section>
+					<section>
+						<p>
+						When scrolling, the <var>yoffset</var> value represents the amount we scrolled vertically. When the <fun>scroll_callback</fun> function is called we change the content of the globally declared <var>fov</var> variable. Since <code>45.0f</code> is the default fov value we want to constrain the zoom level between <code>1.0f</code> and <code> 45.0f</code>.
+						</p>
+						<p>
+					  	We now have to upload the perspective projection matrix to the GPU each render iteration but this time with the <var>fov</var> variable as its field of view:
+						</p>
+						<pre><code>projection = glm::perspective(glm::radians(fov), screenWidth / screenHeight, 0.1f, 100.0f);</code></pre>
+					</section>					
+					<section>
+						<p>And there you have it. We implemented a simple camera system that allows for free movement in a 3D environment.</p>
+						<video autoplay="true" loop="true" muted="true" width="600" height="450" loop>
+						    <source src="camera/camera_mouse.mp4" type="video/mp4"/>
+						</video>
+					</section>
+				</section>
+
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
