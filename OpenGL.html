@@ -451,23 +451,40 @@ gl_Position = vec4(position.x, position.y, 0.0, 1.0);</code></pre>
 						<p class="fragment">Other than that, you're free to do anything you want with the attributes and we'll see how to output those when we add color to the triangle later on.</p>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<h2>Fragment Shader</h2>
+						<p class="fragment">The output from the vertex shader is interpolated over all the pixels on the screen covered by a primitive.​</p>
+						<p class="fragment">These pixels are called fragments and this is what the fragment shader operates on.​</p>
+						<p class="fragment">Just like the vertex shader it has one mandatory output, the final color of a fragment.​</p>
+						<p class="fragment">It's up to you to write the code for computing this color from vertex colors, texture coordinates and any other data coming from the vertex shader.​</p>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<p class="fragment">To keep things simple the fragment shader will always output an orange-ish color:​</p>
+						<pre class="fragment"><code>#version 330 core
+out vec4 outColor;
+
+void main()
+{
+	outColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+}
+						</code></pre>
 					</section>
 					<section>
+						<pre><code>#version 330 core
+out vec4 outColor;
+
+void main()
+{
+	outColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+}
+						</code></pre>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
 						<p class="fragment"></p>
 						<p class="fragment"></p>
 						<p class="fragment"></p>
