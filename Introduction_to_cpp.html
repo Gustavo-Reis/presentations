@@ -461,7 +461,7 @@ void fct(int arg) // fct is global (a global function declaration)
     static int runCount = 0; // this only runs ONCE, even on
     // subsequent calls to testFunc()
     cout << "Ran this function " << ++runCount << " times" << endl;
-}  // runCount stops being in scope, but dows not die here
+}  // runCount stops being in scope, but does not die here
 
 int main()
 {
@@ -652,7 +652,7 @@ Link&lt;Record&gt;* lst = nullptr; // pointer to a Link to a Record
 int x = nullptr;             // error: nullptr is a pointer and not an integer</code></pre>
 					</section>
 					<section>
-						<p>It is often wise to check that a pointer argument that us supposed to point to something, actually points to something:</p>
+						<p>It is often wise to check that a pointer argument that is supposed to point to something, actually points to something:</p>
 					<pre class="fragment"><code style="font-size:larger">int count_x(char* p, char x)
 // count the number of occurrences of x in p[]
 // p is assumed to point to a zero-terminated array of char (or to nothing)

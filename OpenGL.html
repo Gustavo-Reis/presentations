@@ -237,7 +237,7 @@ int main(int argc, char **argv)
 }
 </code></pre>		
 					</section>
-					<section><img src="images/OpenGL/screenshot.png" class="plain" width="80%">			
+					<section><img src="images/OpenGL/screenshot.png" class="plain" width="70%">			
 </section>
 				</section>
 				<section>
@@ -365,7 +365,7 @@ glGenBuffers(1, &vbo); // Generate 1 buffer</code></pre>
 						<pre><code>glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);</code></pre>
 						<p class="fragment"><code>glBufferData</code> is a function specifically targeted to copy user-defined data into the currently bound buffer.</p>
 						<p class="fragment">Its first argument is the type of the buffer we want to copy data into: the vertex buffer object currently bound to the <code>GL_ARRAY_BUFFER</code> target.</p>
-						<p class="fragment">The second argument specifies the size of the data (in bytes) we want to pass to the buffer; a simple sizeof of the vertex data suffices.</p>
+						<p class="fragment">The second argument specifies the size of the data (in bytes) we want to pass to the buffer; a simple <code>sizeof</code> of the vertex data suffices.</p>
 						<p class="fragment">The third parameter is the actual data we want to send.</p>
 					</section>
 					<section>
@@ -427,7 +427,7 @@ void main()
 {
 	gl_Position = vec4(position, 0.0, 1.0);
 }</code></pre>
-						<p class="fragment">Since each vertex has a 2D coordinate we create a <code>vec2</code> input variable with the name <code>aPos</code>.</p>
+						<p class="fragment">Since each vertex has a 2D coordinate we create a <code>vec2</code> input variable with the name <code>position</code>.</p>
 						<p class="fragment">We also specifically set the location of the input variable via <code>layout (location = 0)</code> and you'll later see that why we're going to need that location.</p>
 					</section>
 					<section>
