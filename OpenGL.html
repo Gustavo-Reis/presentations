@@ -826,24 +826,6 @@ void main()
 }</code></pre>
 					</section>
 					<section>
-						<pre><code>#version 330 core
-in vec2 position;
-in vec3 color;
-out vec3 Color;
-void main()
-{
-    Color = color;
-    gl_Position = vec4(position, 0.0, 1.0);
-}</code></pre><pre><code>#version 330 core
-in vec3 Color;
-out vec4 outColor;
-void main()
-{
-    outColor = vec4(Color, 1.0);
-}</code></pre>
-						<p class="fragment">Make sure that the output of the vertex shader and the input of the fragment shader have the same name, or the shaders will not be linked properly.</p>
-					</section>
-					<section>
 						<img src="images/OpenGL/out_in.png" class="plain" width="90%">
 						<p class="fragment">Make sure that the output of the vertex shader and the input of the fragment shader have the same name, or the shaders will not be linked properly.</p>
 					</section>
@@ -1005,7 +987,7 @@ glBindVertexArray(0);</code></pre>
 					</section>
 					<section>
 						<p class="fragment">To draw your triangles in wireframe mode, you can configure how OpenGL draws its primitives via <code>glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)</code>.</p>
-						<p class="fragment">The first argument says we want to apply it to the front and back of all triangles and the second line tells us to draw them as lines.</p>
+						<p class="fragment">The first argument says we want to apply it to the front and back of all triangles and the second argument tells us to draw them as lines.</p>
 						<p class="fragment">Any subsequent drawing calls will render the triangles in wireframe mode until we set it back to its default using <code>glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)</code>.</p>
 					</section>
 					<section>
