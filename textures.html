@@ -254,7 +254,7 @@ glGenerateMipmap(GL_TEXTURE_2D);</code></pre>
 glGenerateMipmap(GL_TEXTURE_2D);</code></pre>
 						<p class="fragment">This is a large function with quite a few parameters so we'll walk through them step-by-step:</p>
 						<ul>
-							<li class="fragment">The first argument specifies the texture target; setting this to <code>AGL_TEXTURE_2D</code> means this operation will generate a texture on the currently bound texture object at the same target (so any textures bound to targets <code>AGL_TEXTURE_1D</code> or <code>AGL_TEXTURE_3D</code> will not be affected).</li>
+							<li class="fragment">The first argument specifies the texture target; setting this to <code>GL_TEXTURE_2D</code> means this operation will generate a texture on the currently bound texture object at the same target (so any textures bound to targets <code>GL_TEXTURE_1D</code> or <code>GL_TEXTURE_3D</code> will not be affected).</li>
 							<li class="fragment">The second argument specifies the mipmap level for which we want to create a texture for if you want to set each mipmap level manually, but we'll leave it at the base level which is 0.</li>
 						</ul>
 					</section>
@@ -325,30 +325,34 @@ stbi_image_free(data);</code></pre>
 };</code></pre>
 						<p class="fragment">Since we've added an extra vertex attribute we again have to notify OpenGL of the new vertex format:</p>
 						<div class="fragment"><img src="images/OpenGL/textures_stride.png" width="40%" class="plain"></div>
-						<pre class="fragment"><code>glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-glEnableVertexAttribArray(2);</code></pre>
+						<pre class="fragment"><code>GLint texCoordAttrib = glGetAttribLocation(shaderProgram, "texCoord");
+glEnableVertexAttribArray(texCoordAttrib);
+glVertexAttribPointer(texCoordAttrib, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));</code></pre>
 					</section>
 					<section>
-						<pre><code>glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-glEnableVertexAttribArray(2);</code></pre>
+						<pre><code>GLint texCoordAttrib = glGetAttribLocation(shaderProgram, "texCoord");
+glEnableVertexAttribArray(texCoordAttrib);
+glVertexAttribPointer(texCoordAttrib, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));</code></pre>
 						<p class="fragment">Note that we have to adjust the stride parameter of the previous two vertex attributes to <code>8 * sizeof(float)</code> as well.</p>
 					</section>
 					<section>
 						<p class="fragment">Next we need to alter the vertex shader to accept the texture coordinates as a vertex attribute and then forward the coordinates to the fragment shader:</p>
-						<pre class="fragment"><code>#version 330 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aColor;
-layout (location = 2) in vec2 aTexCoord;
+						<div class="fragment"><pre class="stretch"><code>#version 330 core
 
-out vec3 ourColor;
+in vec3 position;
+in vec3 color;
+in vec2 texCoord;
+
+out vec3 Color;
 out vec2 TexCoord;
 
 void main()
 {
-    gl_Position = vec4(aPos, 1.0);
-    ourColor = aColor;
-    TexCoord = aTexCoord;
-}</code></pre>
+	Color = color;
+	TexCoord = texCoord;
+	gl_Position = vec4(position, 1.0);
+
+}</code></pre></div>
 					</section>
 					<section>
 						<p class="fragment">The fragment shader should then accept the <code>TexCoord</code> output variable as an input variable.</p>
