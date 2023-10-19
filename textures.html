@@ -362,16 +362,16 @@ void main()
 					<section>
 						<p class="fragment">We can then add a texture to the fragment shader by simply declaring a uniform sampler2D that we later assign our texture to:</p>
 						<pre class="fragment"><code>#version 330 core
-out vec4 FragColor;
-  
-in vec3 ourColor;
+in vec3 Color;
 in vec2 TexCoord;
+
+out vec4 outColor;
 
 uniform sampler2D ourTexture;
 
 void main()
 {
-    FragColor = texture(ourTexture, TexCoord);
+	outColor = texture(ourTexture, TexCoord);
 }</code></pre>
 					</section>
 					<section>
