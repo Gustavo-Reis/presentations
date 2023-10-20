@@ -841,12 +841,8 @@ void user() {
 						<p class="fragment">For simple concrete types, memberwise copy is often exactly the right semantics for copy.</p>
 						<p class="fragment">For some sophisticated concrete types, such as <code>Vector</code>, memberwise copy is not the right semantics for copy, and for abstract types it almost never is.</p>
 					</section>
-				</section>
-				<section>
 					<section>
 						<h2>Copying Containers</h2>
-					</section>
-					<section>
 						<p class="fragment">When a class is a resource handle, that is, it is responsible for an object accessed through a pointer, the default memberwise copy is typically a disaster.</p>
 						<p class="fragment">Memberwise copy would violate the resource handle's invariant.</p>
 						<p class="fragment">For example, the default copy would leave a copy of a Vector referring to the same elements as the original:</p>
@@ -924,12 +920,8 @@ public:
 						<p class="fragment">The name <code>this</code> is predefined in a member function and points to the object for which the member function is called. </p>
 						<p class="fragment">A copy constructor and a copy assignment for a class <code>X</code> are typically declared to take an argument of type <code>const X&</code>.</p>
 					</section>
-				</section>
-				<section>
 					<section>
 						<h2>Moving Containers</h2>
-					</section>
-					<section>
 						<p class="fragment">We can control copying by defining a copy constructor and a copy assignment, but copying can be costly for large containers.</p>
 						<p class="fragment">Consider:</p>
 						<pre class="fragment"><code style="font-size:larger;">Vector operator+(const Vector& a, const Vector& b) {
@@ -1024,12 +1016,8 @@ public:
 						<div class="fragment"><img src="images/cpp/move_containers.png" width="60%" class="plain"></div>
 						<p class="fragment">When <code>z</code> is destroyed, it too has been moved from (by the <code>return</code>) so that, like <code>x</code>, it is empty (it holds no elements). </p>
 					</section>
-				</section>
-				<section>
 					<section>
 						<h2>Suppressing Operations</h2>
-					</section>
-					<section>
 						<p class="fragment">Using the default copy or move for a class in a hierarchy is typically a disaster: given only a pointer to a base, we simply don’t know what members the derived class has, so we can’t know how to copy them.</p>
 						<p class="fragment">So, the best thing to do is usually to <code>delete</code> the default copy and move operations, that is, to eliminate the default definitions of those two operations:</p>
 						<div class="fragment"><pre class="stretch"><code style="font-size:larger;">class Shape {
