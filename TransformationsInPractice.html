@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Transformations In Practice</title>
+
+		<meta name="description" content="Computer Graphics - Textures">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+		<style type="text/css">
+			.output{
+				font-size:larger;
+				background-color:black;
+				color:lightgrey;
+			}
+		</style>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<img src="images/OpenGL/Opengl-logo.svg" width="100%" class="plain">
+					<p><center><small>Source:</small></center></p>
+					<p><center><small><a href="http://learnopengl.com">Learn OpenGL</a></small></center></p>
+					<p><center><small><a href="http://open.gl">Open.GL</a></small></center></p>
+				</section>
+				<section>				
+					<section>
+						<h1>Transformations In Practice</h1>
+					</section>
+					<section>
+						<p class="fragment">Now that we've explained all the theory behind transformations, it's time to see how we can actually use this knowledge to our advantage.​</p>
+						<p class="fragment">OpenGL does not have any form of matrix or vector knowledge built in, so we have to define our own mathematics classes and functions.</p>
+					</section>
+					<section>
+						<p class="fragment">We will abstract from all the tiny mathematical details and simply use pre-made mathematics libraries.</p>
+						<p class="fragment">There is an easy-to-use and tailored-for-OpenGL mathematics library called GLM.</p>
+						<div class="fragment"><img src="https://github.com/g-truc/glm/raw/master/doc/manual/logo-mini.png" class="plain"></div>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>GLM</h2>
+					</section>
+					<section>
+						<p class="fragment"><b>GLM</b> stands for OpenGL Mathematics and is a header-only library, which means that we only have to include the proper header files and we're done; no linking and compiling necessary. GLM can be downloaded from their website (0.9.9.9 - 2020-XX-XX).</p>
+						<p class="fragment">Copy the root directory of the header files into your includes folder of your C++ project.</p>
+					</section>
+					<section>
+						<p class="fragment">Most of GLM's functionality that we need can be found in only 3 headers files that we'll include as follows:</p>
+						<div class="fragment"><pre><code>#include &lt;glm/glm.hpp&gt;
+#include &lt;glm/gtc/matrix_transform.hpp&gt;
+#include &lt;glm/gtc/type_ptr.hpp&gt;</code></pre></div>
+					</section>
+					<section>
+						<pre><code>glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+glm::mat4 trans(1.0f); // initialize trans with the entity matrix
+trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+std::cout << "x = " << vec.x << ", y = " << vec.y << ", z = " << vec.z << std::endl;
+vec = trans * vec; // perform translation
+std::cout << "x = " << vec.x << ", y = " << vec.y << ", z = " << vec.z << std::endl;</code></pre>
+						<div class="fragment"><img src="images/OpenGL/glm.png" class="plain" width="60%"> </div>
+					</section>
+					<section>
+						<pre><code>glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+glm::mat4 trans(1.0f); // initialize trans with the entity matrix
+trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+std::cout << "x = " << vec.x << ", y = " << vec.y << ", z = " << vec.z << std::endl;
+vec = trans * vec; // perform translation
+std::cout << "x = " << vec.x << ", y = " << vec.y << ", z = " << vec.z << std::endl;</code></pre>
+						<p class="fragment">We first define a vector named vec using GLM's built-in vector class.</p>
+						<p class="fragment">Next we define a mat4 which is a 4-by-4 identity matrix.</p>
+						<p class="fragment">The next step is to create a transformation matrix by passing our identity matrix to the glm::translate function, together with a translation vector (the given matrix is then multiplied with a translation matrix and the resulting matrix is returned).</p>
+					</section>
+					<section>
+						<pre><code>glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+glm::mat4 trans(1.0f); // initialize trans with the entity matrix
+trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+std::cout << "x = " << vec.x << ", y = " << vec.y << ", z = " << vec.z << std::endl;
+vec = trans * vec; // perform translation
+std::cout << "x = " << vec.x << ", y = " << vec.y << ", z = " << vec.z << std::endl;</code></pre>
+						<p class="fragment">Then we multiply our vector by the transformation matrix and output the result.</p>
+						<p class="fragment">If we still remember how matrix translation works then the resulting vector should be <code>(1+1,0+1,0+0)</code> which is <code>(2,1,0)</code>.</p>
+						<div class="fragment"><img src="images/OpenGL/glm_2.png" class="plain" width="60%"> </div>					
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Rotate our Textured Rectangle</h2>
+					</section>
+					<section>
+						<p class="fragment">Let's do something more interesting and scale and rotate the container object from the previous class:</p>
+						<pre class="fragment"><code>glm::mat4 trans(1.0f);
+trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));</code></pre>
+						<p class="fragment">First we scale the container by 0.5 on each axis and then rotate the container 90 degrees around the Z-axis.</p>
+						<p class="fragment">GLM expects its angles in radians so we convert the degrees to radians using <code>glm::radians</code>.</p>
+						<p class="fragment">Note that the textured rectangle is on the XY plane so we want to rotate around the Z-axis.</p>
+					</section>
+					<section>
+						<pre><code>glm::mat4 trans(1.0f);
+trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));</code></pre>
+						<p class="fragment">The next big question is: how do we get the transformation matrix to the shaders?</p>
+						<p class="fragment">GLSL also has a <code>mat4</code> type.</p>
+						<p class="fragment">Thus, we need to adapt our vertex shader to accept a mat4 uniform variable and multiply the position vector by the matrix uniform.</p>
+					</section>
+					<section>
+						<pre><code class="stretch">#version 330 core
+
+in vec3 aPos;
+in vec3 aColor;
+in vec2 aTexCoord;
+
+out vec3 ourColor;
+out vec2 texCoord; 
+
+uniform mat4 transform; 
+
+void main() 
+{ 
+	gl_Position = transform * vec4(aPos, 1.0);
+	ourColor = aColor; texCoord = aTexCoord;
+}</code></pre>
+					</section>
+					<section>
+						<pre><code class="stretch">#version 330 core
+
+in vec3 aPos;
+in vec3 aColor;
+in vec2 aTexCoord;
+
+out vec3 ourColor;
+out vec2 texCoord; 
+
+uniform mat4 transform; 
+
+void main() 
+{ 
+	gl_Position = transform * vec4(aPos, 1.0);
+	ourColor = aColor; texCoord = aTexCoord;
+}</code></pre>
+<div class="fragment"><pre><code>glm::mat4 trans(1.0f);
+trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+
+unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));</code></pre></div>
+					</section>
+					<section>
+						<pre><code>unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));</code></pre>
+						<p class="fragment">We first query the location of the uniform variable and then send the matrix data to the shaders via <code>glUniform</code> function with <code>Matrix4fv</code> as its postfix.</p>
+						<p class="fragment">The first argument should be familiar by now which is the uniform's location.</p>
+						<p class="fragment">The second argument tells OpenGL how many matrices we'd like to send, which is 1.</p>
+						<p class="fragment">The third argument asks us if we want to transpose our matrix, that is to swap the columns and rows.</p>
+					</section>
+					<section>
+						<p class="fragment">OpenGL developers often use an internal matrix layout called column-major ordering which is the default matrix layout in GLM so there is no need to transpose the matrices; we can keep it at <code>GL_FALSE</code>.</p>
+						<p class="fragment">The last parameter is the actual matrix data, but GLM stores their matrices not in the exact way that OpenGL likes to receive them so we first transform them with GLM's built-in function <code>value_ptr</code>.</p>
+					</section>
+					<section>
+						<img src="images/OpenGL/rotated_rectangle.png" class="plain" width="60%">
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Rotate with Time</h2>
+					</section>
+					<section>
+						<p class="fragment">Our container is indeed tilted to the left and twice as small so the transformation was successful.</p>
+						<p class="fragment">Let's get a little more funky and see if we can rotate the container over time and for fun we'll also reposition the container at the bottom-right side of the window.</p>
+						<p class="fragment">To rotate the container over time we have to update the transformation matrix in the game loop because it needs to update each render iteration.</p>
+					</section>
+					<section>
+						<pre><code class="stretch">int now = SDL_GetTicks();
+float time = (now - start) / 1000.0f;
+
+glm::mat4 trans(1.0f);
+trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+trans = glm::rotate(trans, time, glm::vec3(0.0f, 0.0f, 1.0f));</code></pre>
+						<p class="fragment">Here we first rotate the container around the origin (0,0,0) and once it's rotated, we translate its rotated version to the bottom-right corner of the screen.</p>
+						<p class="fragment">Remember that the actual transformation order should be read in reverse: even though in code we first translate and then later rotate, the actual transformations first apply a rotation and then a translation.</p>
+						<p class="fragment">Understanding all these combinations of transformations and how they apply to objects is difficult to understand.</p>
+					</section>
+
+				</section>
+
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				width: 1280,
+				height: 720,
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				transition: 'convex',
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
