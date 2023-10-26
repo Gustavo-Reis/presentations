@@ -130,47 +130,49 @@ trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));</code></pre>
 					<section>
 						<pre><code class="stretch">#version 330 core
 
-in vec3 aPos;
-in vec3 aColor;
-in vec2 aTexCoord;
+in vec3 position;
+in vec3 color;
+in vec2 texCoord;
 
-out vec3 ourColor;
-out vec2 texCoord; 
+out vec3 Color;
+out vec2 TexCoord; 
 
 uniform mat4 transform; 
 
 void main() 
 { 
 	gl_Position = transform * vec4(aPos, 1.0);
-	ourColor = aColor; texCoord = aTexCoord;
+	Color = color;
+	TexCoord = texCoord;
 }</code></pre>
 					</section>
 					<section>
 						<pre><code class="stretch">#version 330 core
 
-in vec3 aPos;
-in vec3 aColor;
-in vec2 aTexCoord;
+in vec3 position;
+in vec3 color;
+in vec2 texCoord;
 
-out vec3 ourColor;
-out vec2 texCoord; 
+out vec3 Color;
+out vec2 TexCoord; 
 
 uniform mat4 transform; 
 
 void main() 
 { 
 	gl_Position = transform * vec4(aPos, 1.0);
-	ourColor = aColor; texCoord = aTexCoord;
+	Color = color;
+	TexCoord = texCoord;
 }</code></pre>
 <div class="fragment"><pre><code>glm::mat4 trans(1.0f);
 trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
 trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
 
-unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
 glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));</code></pre></div>
 					</section>
 					<section>
-						<pre><code>unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+						<pre><code>unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
 glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));</code></pre>
 						<p class="fragment">We first query the location of the uniform variable and then send the matrix data to the shaders via <code>glUniform</code> function with <code>Matrix4fv</code> as its postfix.</p>
 						<p class="fragment">The first argument should be familiar by now which is the uniform's location.</p>
