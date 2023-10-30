@@ -92,7 +92,7 @@ vec = trans * vec; // perform translation
 std::cout << "x = " << vec.x << ", y = " << vec.y << ", z = " << vec.z << std::endl;</code></pre>
 						<p class="fragment">We first define a vector named vec using GLM's built-in vector class.</p>
 						<p class="fragment">Next we define a mat4 which is a 4-by-4 identity matrix.</p>
-						<p class="fragment">The next step is to create a transformation matrix by passing our identity matrix to the glm::translate function, together with a translation vector (the given matrix is then multiplied with a translation matrix and the resulting matrix is returned).</p>
+						<p class="fragment">The next step is to create a transformation matrix by passing our identity matrix to the <code>glm::translate</code> function, together with a translation vector (the given matrix is then multiplied with a translation matrix and the resulting matrix is returned).</p>
 					</section>
 					<section>
 						<pre><code>glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
