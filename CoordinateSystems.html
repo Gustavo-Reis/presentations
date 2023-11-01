@@ -342,7 +342,7 @@ model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0, 0.0, 0.0));</cod
 						<p class="fragment">Note that in normalized device coordinates <b>OpenGL</b> actually uses a left-handed system (the projection matrix switches the handedness).</p>
 					</section>
 					<section>
-						<pre><code>glm::mat4 model(1.0f);
+						<pre><code class="stretch">glm::mat4 model(1.0f);
 model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0, 0.0, 0.0));
 
 glm::mat4 view = glm::mat4(1.0f);
@@ -350,15 +350,26 @@ glm::mat4 view = glm::mat4(1.0f);
 view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
 glm::mat4 projection;
-projection = glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);</code></pre>
-						<pre><code>#version 150 core
+projection = glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);
 
-in vec3 aPos;
-in vec3 aColor;
-in vec2 aTexCoord;
+GLuint modelLocation = glGetUniformLocation(shaderProgram, "model");
+glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 
-out vec3 ourColor;
-out vec2 texCoord;
+GLuint viewLocation = glGetUniformLocation(shaderProgram, "view");
+glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+
+GLuint projectionLocation = glGetUniformLocation(shaderProgram, "projection");
+glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));</code></pre>
+					</section>
+					<section>
+						<pre><code class="stretch">#version 330 core
+
+in vec3 position;
+in vec3 color;
+in vec2 texCoord;
+
+out vec3 Color;
+out vec2 TexCoord;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -366,56 +377,170 @@ uniform mat4 projection;
 
 void main()
 {
-	gl_Position = projection * view * model * vec4(aPos, 1.0);
-	ourColor = aColor;
-	texCoord = aTexCoord;
+	Color = color;
+	TexCoord = texCoord;
+	gl_Position = projection * view * model * vec4(position, 1.0);
 }</code></pre>
 					</section>
 					<section>
-						<img src="images/OpenGL/projected_rectangle.png" class="plain" width="70%">
+						<img src="images/OpenGL/projected_rectangle.png" class="plain" width="60%">
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Draw a Cube</h2>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<p class="fragment">Let's take the adventurous route and extend our 2D plane to a 3D cube. To render a cube we need a total of 36 vertices: 6 faces * 2 triangles * 3 vertices each:</p>
+						<pre class="fragment"><code>float vertices[] = {
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+};</code></pre>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<p class="fragment">Update attributes data:</p>
+						<pre class="fragment"><code>GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+glEnableVertexAttribArray(posAttrib);
+glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+
+//GLint colorAttrib = glGetAttribLocation(shaderProgram, "color");
+//glEnableVertexAttribArray(colorAttrib);
+//glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+
+GLint texCoordAttrib = glGetAttribLocation(shaderProgram, "texCoord");
+glEnableVertexAttribArray(texCoordAttrib);
+glVertexAttribPointer(texCoordAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));</code></pre>
+						<p class="fragment">Draw</p>
+						<pre class="fragment"><code>glDrawArrays(GL_TRIANGLES, 0, 36);</code></pre>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>					
+						<img src="images/OpenGL/cube.png" class="plain">
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Rotate the Cube</h2>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<pre><code>int now = SDL_GetTicks();
+float time = (now - start) / 1000.0f;
+
+model = glm::mat4(1.0f);
+model = glm::rotate(model, time, glm::vec3(0.5f, 1.0f, 0.0f));
+glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));</code></pre>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<img src="images/OpenGL/rotated_cube.png" class="plain">
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>					
+						<p class="fragment">Some sides of the cubes are being drawn over other sides of the cube.</p>
+						<p class="fragment">This happens because when OpenGL draws your cube triangle-by-triangle, it will overwrite its pixels even though something else might've been drawn there before.</p>
+						<p class="fragment">Because of this, some triangles are drawn on top of each other while they're not supposed to overlap.</p>
+						<p class="fragment">Luckily, OpenGL stores depth information in a buffer called the <b>z-buffer</b> that allows OpenGL to decide when to draw over a pixel and when not to.</p>
+						<p class="fragment">Using the <b>z-buffer</b> we can configure OpenGL to do depth-testing.</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Z-buffer</h2>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<p class="fragment">However, if we want to make sure OpenGL actually performs the depth testing we first need to tell OpenGL we want to enable depth testing; it is disabled by default.</p>					
+						<p class="fragment">We can enable depth testing using <code>glEnable</code>.</p>
+						<p class="fragment">The <code>glEnable</code> and <code>glDisable</code> functions allow us to enable/disable certain functionality in OpenGL.</p>
+						<p class="fragment">That functionality is then enabled/disabled until another call is made to disable/enable it.</p>
+						<p class="fragment">Right now we want to enable depth testing by enabling <code>GL_DEPTH_TEST</code>:</p>
+						<pre class="fragment"><code>glEnable(GL_DEPTH_TEST);</code></pre>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<p class="fragment">Since we're using a depth buffer we also want to clear the depth buffer before each render iteration (otherwise the depth information of the previous frame stays in the buffer).</p>
+						<p class="fragment">Just like clearing the color buffer, we can clear the depth buffer by specifying the <code>DEPTH_BUFFER_BIT</code> bit in the <code>glClear</code> function:</p>
+						<pre class="fragment"><code>glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);</code></pre>
+					</section>
+					<section>
+						<img src="images/OpenGL/depth_test.png" class="plain">
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>More Cubes!</h2>
+					</section>
+					<section>
+						<p class="fragment">Say we wanted to display 10 of our cubes on screen.</p>
+						<p class="fragment">Each cube will look the same but will only differ in where it's located in the world with each a different rotation.</p>
+						<p class="fragment">The graphical layout of the cube is already defined so we don't have to change our buffers or attribute arrays when rendering more objects.</p>
+						<p class="fragment">The only thing we have to change for each object is its model matrix where we transform the cubes into the world.</p>
+					</section>
+					<section>
+						<p class="fragment">First, let's define a translation vector for each cube that specifies its position in world space. We'll define 10 cube positions in a <code>glm::vec3</code> array:</p>
+						<pre class="fragment"><code>glm::vec3 cubePositions[] = {
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(2.0f,  5.0f, -15.0f),
+	glm::vec3(-1.5f, -2.2f, -2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3(2.4f, -0.4f, -3.5f),
+	glm::vec3(-1.7f,  3.0f, -7.5f),
+	glm::vec3(1.3f, -2.0f, -2.5f),
+	glm::vec3(1.5f,  2.0f, -2.5f),
+	glm::vec3(1.5f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f)
+};</code></pre>					
+					</section>
+					<section>
+						<p class="fragment">Now, within the game loop we want to call the <code>glDrawArrays</code> function 10 times, but this time send a different model matrix to the vertex shader each time before we render.</p>
+						<p class="fragment">We will create a small loop within the game loop that renders our object 10 times with a different model matrix. Note that we also add a small rotation to each container.</p>
+						<pre class="fragment"><code>for (unsigned int i = 0; i < 10; i++)
+{
+	glm::mat4 model(1.0f);
+	model = glm::translate(model, cubePositions[i]);
+	float angle = 20.0f * i;
+	model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}</code></pre>
+					</section>
+					<section>
+						<img src="images/OpenGL/more_cubes.png" class="plain">
 					</section>
 					<section>
 						<p class="fragment"></p>
