@@ -191,7 +191,7 @@ T* end(Vector&lt;T>& x)
 struct Buffer {
 	using value_type = T;
 	constexpr int size() { return N; }
-	T[N];
+	T data[N];
 	// ...
 };</code></pre>
 					</section>
@@ -199,7 +199,7 @@ struct Buffer {
 struct Buffer {
 	using value_type = T;
 	constexpr int size() { return N; }
-	T[N];
+	T data[N];
 	// ...
 };</code></pre>
 						<p class="fragment">The alias (<code>value_type</code>) and the <code>constexpr</code> function are provided to allow users (read-only) access to the template arguments.</p>
