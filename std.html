@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Standard-Library</title>
+
+		<meta name="description" content="Classes">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+		<style type="text/css">
+			.output{
+				font-size:larger;
+				background-color:black;
+				color:lightgrey;
+			}
+		</style>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Standard-Library</h1>
+					<h2>"A tour of C++" - Bjarne Stroustrup</h2>
+					<h2>(Chapter 6...13)</h2>
+				</section>
+				<section>
+					<section>
+						<h1>Header and Namespace</h1>
+					</section>
+					<section>
+						<p class="fragment">Standard library namespace: <code>std</code></p>
+						<p class="fragment">Every facility provided through standard header:</p>
+						<pre class="fragment"><code style="font-size:larger">#include&lt;string>
+#include&lt;list></code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>String</h2>
+					</section>
+					<section>
+						<p class="fragment">Can use a variety of character types (e.g., Unicode).</p>
+						<p class="fragment">String concatenation ( <code>+</code> ) and comparison ( <code>==</code>)</p>
+						<p class="fragment">Strings are mutable (e.g. <code>+=</code>, <code>replace()</code>)</p>
+						<pre class="fragment"><code style="font-size:larger">string name = "Niels Stroustrup";
+string s = name.substr(6,10); // s = "Stroustrup"
+name.replace(0,5,"nicholas"); // name becomes "nicholas Stroustrup"
+name[0] = toupper(name[0]); // name becomes "Nicholas Stroustrup"</code></pre>
+					</section>
+					<section>
+						<h2>Regex</h2>
+					</section>
+					<section>
+						<p class="fragment"><code>regex_match()</code> / <code>regex_search()</code></p>
+						<p class="fragment"><code>regex_replace()</code></p>
+						<p class="fragment"><code>regex_iterator</code> / <code>regex_token_iterator</code></p>
+						<pre class="fragment"><code style="font-size:larger">regex pat {"\\d{4}(-\\d{3})?\\s+[A-Za-z]+"}; // PT postal code pattern
+string postCode = "2411-901 Leiria";
+if (regex_match(postCode, pat)) {
+	cout << "Postal code ok\n";
+}
+string telephone = "919293949";
+if (!regex_match(telephone, pat)) {
+	cout << "Telephone not a postal code\n";
+}</code></pre>
+					</section>
+					<section>
+						<p class="fragment">Pattern for parsing XML:</p>
+						<pre class="fragment"><code style="font-size:larger"><(.∗?)>(.∗?)</\1></code></pre>
+						<p class="fragment">Find words with a preceding space:</p>
+						<pre class="fragment"><code style="font-size:larger">string input = "aa as; asd ++eˆasdf asdfg";
+regex pat {R"(\s+(\w+))"};
+for (sregex_iterator p(input.begin(),input.end(),pat); p!=sregex_iterator{}; ++p)
+	cout << (*p)[1] << '\n';</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>I/O Streams</h2>
+					</section>
+					<section>
+						<p class="fragment"><code>ostream</code> converts typed objects to a stream of characters (bytes)</p>
+						<p class="fragment"><code>istream</code> converts a stream of characters (bytes) to typed objects</p>
+						<p class="fragment">Operations are type-safe, type-sensitive, and extensible</p>
+					</section>
+					<section>
+						<p class="fragment"><code>cout</code> is the standard output stream</p>
+						<p class="fragment"><code>cerr</code> is the standard stream for reporting errors</p>
+						<p class="fragment"><code><<</code> ("put to") output operator on objects of type ostream</p>
+						<p class="fragment"><code>cin</code> is the standard input stream</p>
+						<p class="fragment"><code>>></code> ("get from") is used as an input operator</p>
+						<ul>
+							<li class="fragment">The type of the right-hand oerand determines what input is accepted</li>
+							<li class="fragment">To read a whole line (including the terminating newline
+character) use the <code>getline()</code> function</li>
+						</ul>
+					</section>
+					<section>
+						<pre><code class="stretch" style="font-size:larger">struct Entry {
+	string name;
+	int number;
+};
+ostream& operator<<(ostream& os, const Entry& e) {
+	return os << "{\"" << e.name << "\", " << e.number << "}";
+}
+
+istream& operator>>(istream& is, Entry& e)
+{
+	char c, c2;
+	if (is>>c && c=='{' && is>>c2 && c2=='"') { // start with a { "
+		string name; // the default value of a string is the empty string: ""
+		while (is.get(c) && c!='"') // anything before a " is part of the name
+		name+=c;
+		if (is>>c && c==',') {
+			int number = 0;
+			if (is>>number>>c && c=='}') { // read the number and a }
+					e = {name,number}; // assign to the entry
+					return is;
+				}
+		}
+	}
+	is.setstate(ios_base::failbit); // register the failure in the stream
+	return is;
+}</code></pre>
+					</section>
+					<section>
+						<p class="fragment"><code>#include &lt;fstream></code> streams to and from a file:</p>
+						<ul>
+							<li class="fragment"><code>ifstreams</code> for reading from file</li>
+							<li class="fragment"><code>ofstreams</code> for writing to a file</li>
+							<li class="fragment"><code>fstreams</code> for reading from and writing to a file</li>
+						</ul>
+												<pre class="fragment"><code class="stretch" style="font-size:larger">ofstream ofs("target");
+if (!ofs)
+cerr << "couldn't open 'target' for writing\n";</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Containers</h2>
+					</section>
+					<section>
+						<p class="fragment"><code>vector</code></p>
+						<ul>
+							<li class="fragment">Elements</li>
+							<li class="fragment">Range checking</li>
+						</ul>
+						<p class="fragment"><code>list</code></p>
+						<p class="fragment"><code>set</code></p>
+						<p class="fragment"><code>map</code></p>
+						<p class="fragment"><code>unordered_map</code></p>
+					</section>
+					<section>
+						<h2>vector</h2>
+					</section>
+					<section>
+						<p class="fragment">Sequence of elements of a given type</p>
+						<p class="fragment">Stored continguously in memory</p>
+						<p class="fragment">Pointers to the first element, one-past-the-last element, and one-past-the-last allocated space</p>
+						<p class="fragment">Allocator</p>
+						<p class="fragment">Initial size</p>
+						<div class="fragment"><img src="images/cpp/vector.png" class="plain"></div>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">vector&lt;Entry> phone_book = {
+	{"David Hume",123456},
+	{"Karl Popper",234567},
+	{"Bertrand Arthur William Russell",345678}
+};
+
+void print_book(const vector&lt;Entry>& book) {
+	for (int i = 0; i!=book.size(); ++i)
+		cout << book[i] << '\n';
+}
+void print_book2(const vector&lt;Entry>& book) {
+	for (const auto& x : book)
+		cout << x << '\n';
+}</code></pre>
+					</section>
+					<section>
+						<p class="fragment">Initial size can be changed:</p>
+						<ul>
+							<li class="fragment"><code>push_back()</code> adds a new element at the end of a vector, increasign its size by one.</li>
+							<li class="fragment"><code>erase()</code> reduces the container size by the number of elements removerd, which are destroyed</li>
+							<ul>
+								<li class="fragment">Inefficient...</li>
+							</ul>
+						</ul>
+					</section>
+					<section>
+						<h2>list</h2>
+					</section>
+					<section>
+						<p class="fragment">Sequences where we want to insert and delete elements without moving other elements</p>
+						<p class="fragment">Inefficient with subscripting</p>
+					</section>
+					<section>
+						<pre><code style="font-size:larger">int get_number(const string& s, const vector&lt;Entry>& phone_book) {
+	for (const auto& x : phone_book) if (x.name==s)
+		return x.number;
+	return 0; // use 0 to represent "number not found"
+}
+
+int get_number2(const string& s, const vector&lt;Entry>& phone_book) {
+	for (auto p = phone_book.begin(); p!=phone_book.end(); ++p)
+		if (p->name==s)
+			return p->number;
+	return 0; // use 0 to represent "number not found"
+}</code></pre>
+					</section>
+					<section>
+						<h2>list</h2>
+					</section>
+					<section>
+						<p class="fragment">Store unique elements following a specific order</p>
+						<pre class="fragment"><code style="font-size:larger">set&lt;SDL_Keycode> keys_pressed
+
+...
+
+if (ev.type == SDL_KEYDOWN) {
+	keys_pressed.insert(ev.key.keysym.sym);
+}
+else if(ev.type == SDL_KEYUP) {
+	keys_pressed.erase(ev.key.keysym.sym);
+}
+
+SDL_Keycode key = SDLK_LEFT;
+if (keys_pressed.find(key) != keys_pressed.end()) {
+	// ...
+}</code></pre>
+					</section>
+					<section>
+						<h2>map</h2>
+					</section>
+					<section>
+						<p class="fragment"><code>map</code> a.k.a. associative array or a dictionary</p>
+						<p class="fragment">search tree (a red-black tree)</p>
+						<ul>
+							<li class="fragment">Container of pairs of values optimised for lookup</li>
+							<li class="fragment">Comparable keys</li>
+						</ul>
+						<div class="fragment"><img src="images/cpp/map.png" class="plain"></div>
+					</section>
+					<section>
+						<pre><code class="stretch" style="font-size:larger">map&lt;string,int> phone_book {
+	{"David Hume",123456},
+	{"Karl Popper",234567},
+	{"Bertrand Arthur William Russell",345678}
+};
+
+int number = phone_book["David Hume"];
+auto numberIterator = phone_book.find("David Hume");</code></pre>
+					</section>
+					<section>
+						<h2>unordered_map</h2>
+					</section>
+					<section>
+						<p class="fragment"><code>unordered_map</code> (hash table)</p>
+						<p class="fragment">Hashable keys</p>
+						<div class="fragment"><img src="images/cpp/unordered_map.png" class="plain"></div>
+					</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				width: 1920,
+				height: 1080,
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				transition: 'convex',
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>

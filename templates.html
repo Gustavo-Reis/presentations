@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Templates</title>
+
+		<meta name="description" content="Classes">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+		<style type="text/css">
+			.output{
+				font-size:larger;
+				background-color:black;
+				color:lightgrey;
+			}
+		</style>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Templates</h1>
+					<h2>"A tour of C++" - Bjarne Stroustrup</h2>
+					<h2>(Chapter 5)</h2>
+				</section>
+				<section>
+					<section>
+						<h1>Templates</h1>
+					</section>
+					<section>
+						<p class="fragment">When someone wants to use vector, it is unlikely to always to want a vector of <code>double</code>s.</p>
+						<p class="fragment">A vector is a general concept, independent of the notion of a floatingpoint number.</p>
+						<p class="fragment">Consequently, the element type of a vector ought to be represented independently.</p>
+						<p class="fragment">A <b>template</b> is a class or a function that we parameterize with a set of
+types or values.</p>
+						<p class="fragment">We use templates to represent concepts that are best understood as something very general from which we can generate specific types and functions by specifying arguments, such as: the element type <code>double</code>.</p>
+					</section>
+					<section>
+						<h2>Parameterized Types</h2>
+					</section>
+					<section>
+						<p class="fragment">We can generalize our vector-of-doubles type to a vector-of-anything type by making it a <code>template</code> and replacing the specific type <code>double</code> with a parameter:</p>
+						<pre class="fragment"><code style="font-size:larger;">template&lt;typename T>
+class Vector {
+private:
+	T∗ elem; // elem points to an array of sz elements of type T
+	int sz;
+public:
+	explicit Vector(int s); // constructor: establish invariant, acquire resources
+	~Vector() { delete[] elem; } // destructor: release resources
+	
+	// ... copy and move operations ...
+	
+	T& operator[](int i);
+	const T& operator[](int i) const;
+	int size() const { return sz; }
+};</code></pre>
+					</section>
+					<section>
+						<pre><code style="font-size:larger;">template&lt;typename T>
+class Vector {
+private:
+	T∗ elem; // elem points to an array of sz elements of type T
+	int sz;
+public:
+	explicit Vector(int s); // constructor: establish invariant, acquire resources
+	~Vector() { delete[] elem; } // destructor: release resources
+	
+	// ... copy and move operations ...
+	
+	T& operator[](int i);
+	const T& operator[](int i) const;
+	int size() const { return sz; }
+};</code></pre>
+						<p class="fragment">The <code>template &lt;typename T></code> prefix makes <code>T</code> a parameter of the declaration it prefixes.</code></p>
+						<p class="fragment">It is C++'s version of the mathematical "for all <code>T</code>" o" more precisely "for all types <code>T</code>".</p>
+						<p class="fragment">Using class to introduce a type parameter is equivalent to using typename, and in older code we often see <code>template&lt;class T></code> as the prefix.</p>
+					</section>
+					<section>
+						<p class="fragment">The member functions might be defined similarly:</p>
+						<pre class="fragment"><code class="stretch" style="font-size:larger;">template&lt;typename T>
+Vector&lt;T>::Vector(int s)
+{
+	if (s&lt;0)
+		throw Negative_size{};
+	elem = new T[s];
+	sz = s;
+}
+
+template&lt;typename T>
+const T& Vector&lt;T>::operator[](int i) const
+{
+	if (i<0 || size()<=i)
+		throw out_of_range{"Vector::operator[]"};
+	return elem[i];
+}</code></pre>
+					</section>
+					<section><pre><code class="stretch" style="font-size:larger;">template&lt;class T>
+class Vector {
+private:
+	T∗ elem; // elem points to an array of sz elements of type T
+	int sz;
+public:
+	explicit Vector(int s); // constructor: establish invariant, acquire resources
+	~Vector() { delete[] elem; } // destructor: release resources
+	// ... copy and move operations ...
+	T& operator[](int i);
+	const T& operator[](int i) const;
+	int size() const { return sz; }
+};
+
+template&lt;typename T>
+Vector&lt;T>::Vector(int s)
+{
+	if (s&lt;0)
+		throw Negative_size{};
+	elem = new T[s];
+	sz = s;
+}
+
+template&lt;typename T>
+const T& Vector&lt;T>::operator[](int i) const
+{
+	if (i&lt;0 || size()&lt;=i)
+		throw out_of_range{"Vector::operator[]"};
+	return elem[i];
+}</code></pre>
+						
+					</section>
+					<section>
+						<p class="fragment">Given these definitions, we can define <code>Vector</code>s like this:</p>
+						<pre class="fragment"><code style="font-size:larger;">Vector&lt;char> vc(200); // vector of 200 characters
+Vector&lt;string> vs(17); // vector of 17 strings
+Vector&lt;list&lt;int>> vli(45); // vector of 45 lists of integers</code></pre>
+						<p class="fragment">The <code>>></code> in <code>Vector&lt;list&lt;int>></code> terminates the nested template arguments; it is not a misplaced input operator.</p>
+						<p class="fragment">We can use <code>Vector</code>s like this:</p>
+						<pre class="fragment"><code style="font-size:larger;">void write(const Vector&lt;string>& vs) // Vector of some strings
+{
+	for (int i = 0; i!=vs.size(); ++i)
+		cout &lt;&lt; vs[i] &lt;&lt; '\n';
+}</code></pre>
+					</section>
+					<section>
+						<p class="fragment">To support the range-for loop for our Vector, we must define suitable <code>begin()</code> and <code>end()</code> functions:</p>
+						<pre class="fragment"><code style="font-size:larger;">template&lt;typename T>
+T* begin(Vector&lt;T>& x)
+{
+	return x.size() ? &x[0] : nullptr; // pointer to first element or nullptr
+}
+
+template&lt;typename T>
+T* end(Vector&lt;T>& x)
+{
+	return begin(x)+x.size(); // pointer to one-past-last element
+}</code></pre>
+						<p class="fragment">Given those, we can write:</p>
+						<pre class="fragment"><code style="font-size:larger;">void f2(Vector&lt;string>& vs)
+{
+	for (auto& s : vs)
+		cout &lt;&lt; s &lt;&lt; '\n';
+}</code></pre>
+					</section>
+					<section>
+						<p class="fragment">Templates are a compile-time mechanism, so their use incurs no run-time overhead compared to hand-crafted code.</p>
+						<p class="fragment">In fact, the code generated for <code>Vector&lt;double></code> is identical to the code generated for the version of the double <code>Vector</code> of our previous classes.</p>
+						<p class="fragment">Furthermore, the code generated for the standard-library <code>vector&lt;double></code> is likely to be better (because more effort has gone into its implementation).</p>
+						<p class="fragment">In addition to type arguments, a template can take value arguments:</p>
+						<pre class="fragment"><code style="font-size:larger;">template<&lt;typename T, int N>
+struct Buffer {
+	using value_type = T;
+	constexpr int size() { return N; }
+	T[N];
+	// ...
+};</code></pre>
+					</section>
+					<section><pre><code style="font-size:larger;">template<&lt;typename T, int N>
+struct Buffer {
+	using value_type = T;
+	constexpr int size() { return N; }
+	T[N];
+	// ...
+};</code></pre>
+						<p class="fragment">The alias (<code>value_type</code>) and the <code>constexpr</code> function are provided to allow users (read-only) access to the template arguments.</p>
+						<p class="fragment">Value arguments are useful in many contexts.</p>
+						<p class="fragment">For example, <code>Buffer</code> allows us to create arbitrarily sized buffers with no overheads from the use of heap:</p>
+						<pre class="fragment"><code style="font-size:larger;">Buffer&lt;char,1024> glob; // global buffer of characters (statically allocated)
+
+void fct() {
+	Buffer&lt;int,10> buf; // local buffer of integers (on the stack)
+	// ...
+}</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Concepts and Generic Programming</h2>
+					</section>
+					<section>
+						<p class="fragment">What are templates for?</p>
+						<p class="fragment">In other words, what programming techniques are effective when you use templates?</p>
+						<p class="fragment">Templates offer:</p>
+						<ul>
+							<li class="fragment">The ability to pass types (as well as values and templates) as arguments without loss of information. This implies excellent opportunities for inlining, of which current implementations take great advantage.</li>
+							<li class="fragment">Delayed type checking (done at instantiation time). This implies opportunities to weave together information from different contexts.</li>
+							<li class="fragment">The ability to pass constant values as arguments. This implies the ability to do compile-time computation.</li>
+						</ul>
+					</section>
+					<section>
+						<p class="fragment">Templates provide a powerful mechanism for compile-time computation and type manipulation that can lead to very compact and efficient code.</p>
+						<p class="fragment">Remember that types (classes) can contain both code and values.</p>
+						<p class="fragment">The first and most common use of templates is to <b>support generic programming</b>, that is, programming focused on the design, implementation, and use of general algorithms.</p>
+						<p class="fragment">Here, "general" means that an algorithm can be designed to accept a wide variety of types as long as they meet the algorithm's requirements on its arguments.</p>
+						<p class="fragment">The template is C++’s main support for generic programming.</p>
+						<p class="fragment">Templates provide (compile-time) parametric polymorphism.</p>
+					</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				width: 1920,
+				height: 1080,
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				transition: 'convex',
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
