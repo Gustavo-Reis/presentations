@@ -3,9 +3,9 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>Camera</title>
+		<title>Shader Class</title>
 
-		<meta name="description" content="Computer Graphics - Camera">
+		<meta name="description" content="Computer Graphics - Shader Class">
 		<meta name="author" content="Gustavo Reis">
 
 		<meta name="apple-mobile-web-app-capable" content="yes">
@@ -34,31 +34,168 @@
 		<div class="reveal">
 			<div class="slides">
 				<section>
-					<h1>Camera</h1>
-					<p>Source:</p>
-					<p><a href="http://learnopengl.com">Learn OpenGL</a></p>
-					<p><a href="http://open.gl">Open.GL</a></p>
+					<h1>Shader Class</h1>
 				</section>
 				<section>				
 					<section>
-						<h1>Camera</h1>
-						<p style="text-align: left;">In the previous class we discussed the view matrix and how we can use the view matrix to move around the scene (we moved backwards a little).
-						</p>
-						
-						<p style="text-align: left;">OpenGL by itself is not familiar with the concept of a camera.</p>
-						<p style="text-align: left;">However, we can try to simulate one by moving all objects in the scene in the reverse direction, giving the illusion that <em>we</em> are moving.</p>
+						<h1>Shader Parser</h1>
+						<p style="text-align: left;">In the previous class we have been using shader programs using raw string literals, like so:</p>
+						<pre><code>const char* vertexShaderSource = R"glsl(
+	#version 330 core
+
+	in vec3 position;
+	in vec3 color;
+	in vec2 texCoord;
+	
+	out vec3 Color;
+	out vec2 TexCoord;
+
+	uniform mat4 model;
+	uniform mat4 view;
+	uniform mat4 projection;
+
+	void main()
+	{
+		Color = color;
+		TexCoord = texCoord;
+		gl_Position = projection * view * model * vec4(position, 1.0);
+	}
+	)glsl";
+
+
+// Vertex Shader
+
+GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+glCompileShader(vertexShader);
+
+GLint  success;
+char infoLog[512];
+glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+if (!success)
+{
+	glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+	std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+}
+
+// Fragment Shader
+
+const char* fragmentShaderSource = R"glsl(
+	#version 330 core
+	in vec3 Color;
+	in vec2 TexCoord;
+
+	out vec4 outColor;
+
+	uniform sampler2D ourTexture;
+	uniform sampler2D ourTexture2;
+
+	void main()
+	{
+		vec4 colTex1 = texture(ourTexture, TexCoord);
+		vec4 colTex2 = texture(ourTexture2, TexCoord);
+		outColor = mix(colTex1, colTex2, 0.5);
+	})glsl";
+
+GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+glCompileShader(fragmentShader);
+
+glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+
+if (!success)
+{
+	glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+	std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+}
+
+GLuint shaderProgram;
+shaderProgram = glCreateProgram();
+
+glAttachShader(shaderProgram, vertexShader);
+glAttachShader(shaderProgram, fragmentShader);
+glLinkProgram(shaderProgram);
+
+glDeleteShader(vertexShader);
+glDeleteShader(fragmentShader);
+
+glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+if (!success) {
+	glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+	std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+}</code></pre>
 					</section>
 					<section>
-						<h1>Camera</h1>
-						<p style="text-align: left;">Throughout this class we will discuss how we can set up a camera in OpenGL.</p>
-						<p style="text-align: left;">Also, we will discuss an FPS-style camera that allows you to freely move around in a 3D scene.</p>
-						<p style="text-align: left;">Finally we will also discuss keyboard and mouse input and finish with a custom camera class.</p>
+						<p style="text-align: left;">This way, shader programs must be hard coded inside your main program code, which is not the ideal.</p>
+						<p style="text-align: left;">A better way, would be using shader code in separate source files and have your own <code>Shader</code> class to parse and build shader programs from those.</p>
 					</section>
 				</section>
 				<section>
 					<section>
-						<h2>Camera/View space</h2>
-						<p style="text-align: left;">When we're talking about camera/view space we're talking about all the vertex coordinates as seen from the camera's perspective as the origin of the scene: the view matrix transforms all the world coordinates into view coordinates that are relative to the camera's position and direction.</p>	
+						<h2>Shader Parser</h2>
+						<pre><code class="stretch">#shader vertex
+#version 330 core
+in vec3 position;		
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+void main()
+{
+    gl_Position = projection * view * model * vec4(position, 1.0);
+};
+
+#shader fragment
+#version 330 core
+out vec4 outColor;
+uniform vec3 objectColor;
+uniform vec3 lightColor;
+void main()
+{
+    outColor = vec4(lightColor * objectColor, 1.0f);
+};</code></pre>
+					</section>
+					
+					<section>
+						<p style="text-align: left;">The idea is to have a file in your project named <var>something.shader</var> and then use your shader class like so:</p> 
+						<pre><code>Shader someShader("something.shader");</code></pre>
+					</section>
+					<section>
+						<h2>Shader.h</h2>
+						<pre><code>struct ShaderProgramSource
+{
+	std::string VertexSource;
+	std::string FragmentSource;
+};
+
+class Shader {
+private:
+	std::string m_FilePath;
+	unsigned int m_RendererID;
+	std::unordered_map&lt;std::string, int&gt; m_UniformLocationCache;
+
+public:
+	Shader(const std::string& filepath);
+	~Shader();
+
+	void Bind() const;
+	void Unbind() const;
+
+	// set uniforms
+	void SetUniform1i(const std::string& name, int value);
+	void SetUniform1f(const std::string& name, float value);
+	void SetUniform3f(const std::string& name, float v0, float v1, float v2);
+	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
+	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
+	
+	// set vertex attrib pointers
+	void VertexAttribPointer(const std::string& name, int size, GLenum type, bool normalized, size_t stride, const void* offset);
+private:
+	ShaderProgramSource ParseShader(const std::string& filepath);
+	unsigned int CompileShader(unsigned int type, const std::string& source);
+	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
+	int GetUniformLocation(const std::string& name);
+};</code></pre>
 					</section>
 					
 					<section>
