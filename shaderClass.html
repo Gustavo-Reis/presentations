@@ -39,28 +39,28 @@
 				<section>				
 					<section>
 						<h1>Shader Parser</h1>
-						<p style="text-align: left;">In the previous class we have been using shader programs using raw string literals, like so:</p>
-						<pre><code>const char* vertexShaderSource = R"glsl(
-	#version 330 core
+						<p style="text-align: left;" class="fragment">In the previous class we have been using shader programs using raw string literals, like so:</p>
+						<pre class="fragment"><code>const char* vertexShaderSource = R"glsl(
+#version 330 core
 
-	in vec3 position;
-	in vec3 color;
-	in vec2 texCoord;
-	
-	out vec3 Color;
-	out vec2 TexCoord;
+in vec3 position;
+in vec3 color;
+in vec2 texCoord;
 
-	uniform mat4 model;
-	uniform mat4 view;
-	uniform mat4 projection;
+out vec3 Color;
+out vec2 TexCoord;
 
-	void main()
-	{
-		Color = color;
-		TexCoord = texCoord;
-		gl_Position = projection * view * model * vec4(position, 1.0);
-	}
-	)glsl";
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+	Color = color;
+	TexCoord = texCoord;
+	gl_Position = projection * view * model * vec4(position, 1.0);
+}
+)glsl";
 
 
 // Vertex Shader
@@ -76,7 +76,7 @@ glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 if (!success)
 {
 	glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-	std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	std::cout &lt;&lt; "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" &lt;&lt; infoLog &lt;&lt; std::endl;
 }
 
 // Fragment Shader
@@ -107,7 +107,7 @@ glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 if (!success)
 {
 	glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-	std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+	std::cout &lt;&lt; "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" &lt;&lt; infoLog &lt;&lt; std::endl;
 }
 
 GLuint shaderProgram;
@@ -123,12 +123,12 @@ glDeleteShader(fragmentShader);
 glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 if (!success) {
 	glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-	std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+	std::cout &lt;&lt; "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" &lt;&lt; infoLog &lt;&lt; std::endl;
 }</code></pre>
 					</section>
 					<section>
-						<p style="text-align: left;">This way, shader programs must be hard coded inside your main program code, which is not the ideal.</p>
-						<p style="text-align: left;">A better way, would be using shader code in separate source files and have your own <code>Shader</code> class to parse and build shader programs from those.</p>
+						<p style="text-align: left;" class="fragment">This way, shader programs must be hard coded inside your main program code, which is not the ideal.</p>
+						<p style="text-align: left;" class="fragment">A better way, would be using shader code in separate source files and have your own <code>Shader</code> class to parse and build shader programs from those.</p>
 					</section>
 				</section>
 				<section>
@@ -157,8 +157,8 @@ void main()
 					</section>
 					
 					<section>
-						<p style="text-align: left;">The idea is to have a file in your project named <var>something.shader</var> and then use your shader class like so:</p> 
-						<pre><code>Shader someShader("something.shader");</code></pre>
+						<p style="text-align: left;" class="fragment">The idea is to have a file in your project named <var>something.shader</var> and then use your shader class like so:</p> 
+						<pre class="fragment"><code>Shader someShader("something.shader");</code></pre>
 					</section>
 					<section>
 						<h2>Shader.h</h2>
