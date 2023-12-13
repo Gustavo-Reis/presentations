@@ -39,28 +39,28 @@
 				<section>				
 					<section>
 						<h1>Shader Parser</h1>
-						<p style="text-align: left;" class="fragment">In the previous class we have been using shader programs using raw string literals, like so:</p>
+						<p style="text-align: left;" class="fragment">In the previous classes we have been using shader programs using raw string literals, like so:</p>
 						<pre class="fragment"><code>const char* vertexShaderSource = R"glsl(
-#version 330 core
+	#version 330 core
 
-in vec3 position;
-in vec3 color;
-in vec2 texCoord;
+	in vec3 position;
+	in vec3 color;
+	in vec2 texCoord;
+	
+	out vec3 Color;
+	out vec2 TexCoord;
 
-out vec3 Color;
-out vec2 TexCoord;
+	uniform mat4 model;
+	uniform mat4 view;
+	uniform mat4 projection;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
-void main()
-{
-	Color = color;
-	TexCoord = texCoord;
-	gl_Position = projection * view * model * vec4(position, 1.0);
-}
-)glsl";
+	void main()
+	{
+		Color = color;
+		TexCoord = texCoord;
+		gl_Position = projection * view * model * vec4(position, 1.0);
+	}
+	)glsl";
 
 
 // Vertex Shader
@@ -127,32 +127,49 @@ if (!success) {
 }</code></pre>
 					</section>
 					<section>
-						<p style="text-align: left;" class="fragment">This way, shader programs must be hard coded inside your main program code, which is not the ideal.</p>
+						<p style="text-align: left;" class="fragment">This way, shader programs must be hard-coded inside your main program code, which is not the ideal.</p>
 						<p style="text-align: left;" class="fragment">A better way, would be using shader code in separate source files and have your own <code>Shader</code> class to parse and build shader programs from those.</p>
 					</section>
 				</section>
 				<section>
 					<section>
-						<h2>Shader Parser</h2>
-						<pre><code class="stretch">#shader vertex
+						<h2>Shader File</h2>
+						<pre><code>#shader vertex
 #version 330 core
-in vec3 position;		
+
+in vec3 position;
+in vec3 color;
+in vec2 texCoord;
+
+out vec3 Color;
+out vec2 TexCoord;
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+
 void main()
 {
-    gl_Position = projection * view * model * vec4(position, 1.0);
+	Color = color;
+	TexCoord = texCoord;
+	gl_Position = projection * view * model * vec4(position, 1.0);
 };
 
 #shader fragment
 #version 330 core
+in vec3 Color;
+in vec2 TexCoord;
+
 out vec4 outColor;
-uniform vec3 objectColor;
-uniform vec3 lightColor;
+
+uniform sampler2D ourTexture;
+uniform sampler2D ourTexture2;
+
 void main()
 {
-    outColor = vec4(lightColor * objectColor, 1.0f);
+	vec4 colTex1 = texture(ourTexture, TexCoord);
+	vec4 colTex2 = texture(ourTexture2, TexCoord);
+	outColor = mix(colTex1, colTex2, 0.5);
 };</code></pre>
 					</section>
 					
@@ -197,483 +214,98 @@ private:
 	int GetUniformLocation(const std::string& name);
 };</code></pre>
 					</section>
-					
-					<section>
-						<h2>Camera/View space</h2>
-						<p style="text-align: left;">To define a camera we need its position in world space, the direction it's looking at, a vector pointing to the right and a vector pointing upwards from the camera.</p>
-					</section>
-					<section>
-						<h2>Camera/View space</h2>
-						<p style="text-align: left;">In fact we are actually going to create a coordinate system with 3 perpendicular unit axes with the camera's position as the origin.</p>							
-					</section>
-					<section>
-						<h2>Camera/View space</h2>
-						<img src="camera/camera_axes.png" style="background: #FFFFFF">
-					</section>
-					<section>
-						<h3>1. Camera position</h3>
-						<p style="text-align: left">Getting a camera position is easy. The camera position is basically a vector in world space that points to the camera's position. We set the camera at the same position we've set the camera in the previous class:</p>
-						<pre><code>glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);</code></pre>
-						<note style="text-align: left">Don't forget that the positive z-axis is going through your screen towards you so if we want the camera to move backwards, we move along the positive z-axis.</note>
-					</section>
-					<section>
-						<h3>2. Camera direction</h3>
-						<p style="text-align: left">The next vector required is the camera's direction e.g. at what direction it is pointing at.</p>
-						<p style="text-align: left">For now we let the camera point to the origin of our scene: <code>(0,0,0)</code>.</p>
-						<p style="text-align: left">Remember that if we subtract two vectors from each other we get a vector that's the difference of these two vectors?</p>
-						<p style="text-align: left">Subtracting the camera position vector from the scene's origin vector thus results in the direction vector.
-						</p>
-					</section>
-					<section>
-						<h3>2. Camera direction</h3>
-						<p style="text-align: left">Since we know that the camera points towards the negative z direction we want the direction vector to point towards the camera's positive z-axis.</p>
-						<p style="text-align: left">If we switch the subtraction order around we now get a vector pointing towards the camera's positive z-axis:</p>
-						<pre><code>glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);</code></pre>
-						<warning>The name <em>direction</em> vector is not the best chosen name, since it is actually pointing in the reverse direction of what it is targeting.</warning>
-					</section>
-					<section>
-						<h3>3. Right axis</h3>
-						<p style="text-align: left">The next vector we need is a <em>right</em> vector that represents the positive x-axis of the camera space.</p>
-						<p style="text-align: left">To get the <em>right</em> vector we use a little trick by first specifying an <em>up</em> vector that points upwards (in world space).</p>
-						<p style="text-align: left">Then we do a cross product on the up vector and the direction vector from step 2.</p>						
-					</section>
-					<section>
-						<h3>3. Right axis</h3>
-						<p style="text-align: left">Since the result of a cross product is a vector perpendicular to both vectors, we will get a vector that points to the positive x-axis's direction (if we would switch the vectors we'd get a vector that points in the negative x-axis):</p>
-						<pre><code>glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f); 
-glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));</code></pre>
-					</section>
-					<section>
-						<h3>4. Up axis</h3>
-						<p style="text-align: left">Now that we have both the x-axis vector and the z-axis vector, retrieving the vector that points in the camera's positive y-axis is relatively easy: we take the cross product of the right and direction vector:</p>
-						<pre><code>glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);</code></pre>
-					</section>
-					<section>
-						<h3>4. Up axis</h3>
-						<p style="text-align: left">With the help of the cross product and a few tricks we were able to create all the vectors that form the view/camera space. For the more mathematically inclined readers, this process is known as the <a href="http://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process" target="_blank">Gram-Schmidt</a> process in linear algebra. Using these camera vectors we can now create a <def>LookAt</def> matrix that proves very useful for creating a camera.</p>
-					</section>
 				</section>
 				<section>
 					<section>
-						<h2>Look At</h2>
-						<p style="text-align: left">A great thing about matrices is that if you define a coordinate space using 3 perpendicular (or non-linear) axes you can create a matrix with those 3 axes plus a translation vector and you can transform any vector to that coordinate space by multiplying it with this matrix.</p>
+						<h2>Hands-on!</h2>
+						<p class="fragment">Let's adapt our project with the floating Camera around the textured cubes in order to use our <code>Shader</code> class.</p>
 					</section>
 					<section>
-						<h2>Look At</h2>
-						<p style="text-align: left">This is exactly what the LookAt matrix does and now that we have 3 perpendiclar axes and a position vector to define the camera space we can create our own LookAt matrix:</p>
-						<div style="font-size: 80%">
-						\[LookAt = \begin{bmatrix} \color{red}{R_x} & \color{red}{R_y} & \color{red}{R_z} & 0 \\ \color{green}{U_x} & \color{green}{U_y} & \color{green}{U_z} & 0 \\ \color{blue}{D_x} & \color{blue}{D_y} & \color{blue}{D_z} & 0 \\ 0 & 0 & 0  & 1 \end{bmatrix} * \begin{bmatrix} 1 & 0 & 0 & -\color{purple}{P_x} \\ 0 & 1 & 0 & -\color{purple}{P_y} \\ 0 & 0 & 1 & -\color{purple}{P_z} \\ 0 & 0 & 0  & 1 \end{bmatrix} \]
-						</div>
-					</section>
-					<section>
-						<h2>Look At</h2>
-						<div style="font-size: 80%">
-						\[LookAt = \begin{bmatrix} \color{red}{R_x} & \color{red}{R_y} & \color{red}{R_z} & 0 \\ \color{green}{U_x} & \color{green}{U_y} & \color{green}{U_z} & 0 \\ \color{blue}{D_x} & \color{blue}{D_y} & \color{blue}{D_z} & 0 \\ 0 & 0 & 0  & 1 \end{bmatrix} * \begin{bmatrix} 1 & 0 & 0 & -\color{purple}{P_x} \\ 0 & 1 & 0 & -\color{purple}{P_y} \\ 0 & 0 & 1 & -\color{purple}{P_z} \\ 0 & 0 & 0  & 1 \end{bmatrix} \]
-						</div>
-						<p style="text-align: left">Where \(\color{red}R\) is the right vector, \(\color{green}U\) is the up vector, \(\color{blue}D\) is the direction vector and \(\color{purple}P\) is the camera's position vector.</p>
-					</section>
-					<section>
-						<h2>Look At</h2>
-						<p style="text-align: left">Note that the position vector is inverted since we eventually want to translate the world in the opposite direction of where we want to move.</p>
-						<p style="text-align: left">Using this LookAt matrix as our view matrix effectively transforms all the world coordinates to the view space we just defined.</p>
-						<p style="text-align: left">The LookAt matrix then does exactly what it says: it creates a view matrix that <em>looks</em> at a given target. </p>					
-					</section>
-					<section>
-						<h2>Look At</h2>
-						<p style="text-align: left">Luckily for us, GLM already does all this work for us. </p>
-						<p style="text-align: left;">We only have to specify a camera position, a target position and a vector that represents the up vector in world space (the up vector we used for calculating the right vector). GLM then creates the LookAt matrix that we can use as our view matrix:</p>
-						<pre><code>glm::mat4 view;
-view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), 
-  		   glm::vec3(0.0f, 0.0f, 0.0f), 
-  		   glm::vec3(0.0f, 1.0f, 0.0f));</code></pre>
-					</section>
-					<section>
-						<h2>Look At</h2>
-						<p style="text-align: left">The <code>glm::LookAt</code> function requires a position, a target and up vector respectively. This creates a view matrix that is the same as the one used in previous example.</p>
-						<p style="text-align: left">Before delving into user input, let's get a little funky first by rotating the camera around our scene. We keep target of the scene at <code>(0,0,0)</code>.</p>
-					</section>
-					<section>
-						<h2>Look At</h2>
-						<p>We use a little bit of trigonometry to create an <code>x</code> and <code>z</code> coordinate each frame that represents a point on a circle and we'll use these for our camera position.</p>
-						<p>By re-calculating the <var>x</var> and <var>z</var> coordinate we're traversing all the points in a circle and thus the camera rotates around the scene.</p>
-					</section>
-					<section>
-						<h2>Look At</h2>
-						<p>We enlarge this circle by a pre-defined radius and create a new view matrix each render iteration using SDL's <fun>SDL_GetTicks</fun> function:</p>
-						<pre><code>float time = SDL_GetTicks() / 1000.0f;
-float radius = 10.0f;
-float camX = sin(time) * radius;
-float camZ = cos(time) * radius;
-glm::mat4 view;
-view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));</code></pre>
-					</section>
-					<section>						
-						  <video autoplay="true" loop="true" muted="true" width="600" height="450" loop>
-						    <source src="camera/camera_circle.mp4" type="video/mp4"/>
-						  </video>
-						
-					</section>
-				</section>
-				<section>
-					<section>
-						<h1>Walk Around</h1>
-						<p>Swinging the camera around a scene is fun, but it's more fun to do all the movement by ourselves! First we need to set up a camera system, so it is useful to define some camera variables at the top of our program:</p>
-						<pre><code>glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);</code></pre>
-						<p>The <code>LookAt</code> function becomes:</p>
-						<pre><code>view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);</code></pre>
-					</section>
-					<section>
-						<p>First we set the camera position to the previously defined <var>cameraPos</var>. The direction is the current position + the direction vector we just defined.</p>
-						<p>This ensures that however we move, the camera keeps looking at the target direction. Let's play a bit with these variables by updating the <var>cameraPos</var> vector when we press some keys.</p>
-					</section>
-					<section>
-						<p>Define a <fun>processInput</fun> function to manage any of SDL's keyboard state:</p>
-						<pre><code>void processKeyboard()
+						<p class="fragment">Add both <code>Shader.h</code> and <code>Shader.cpp</code> files to your project.</p>
+						<p class="fragment">Add the following <code>texture.shader</code> file to your project:</p>						
+						<pre class="fragment"><code>#shader vertex
+#version 330 core
+
+in vec3 position;
+in vec3 color;
+in vec2 texCoord;
+
+out vec3 Color;
+out vec2 TexCoord;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
 {
-	float cameraSpeed = 0.05f; // adjust accordingly
-	const Uint8* keyState;
-	keyState = SDL_GetKeyboardState(NULL);
-	if (keyState[SDL_SCANCODE_W])
-		cameraPos += cameraSpeed * cameraFront;
-	if (keyState[SDL_SCANCODE_S])
-		cameraPos -= cameraSpeed * cameraFront;
-	if (keyState[SDL_SCANCODE_A])
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-	if (keyState[SDL_SCANCODE_D])
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;	
-}</code></pre>
-					</section>
-					<section>												
-						<p>Whenever we press one of the WASD keys, the camera's position is updated accordingly.</p>
-						<p>If we want to move forward or backwards we add or subtract the direction vector from the position vector.</p>
-						<p>If we want to move sidewayds we do a cross product to create a right vector and we move along the right vector accordingly.</p>
-						<p>This creates the familiar strafe effect when using the camera.</p>
-					</section>
-					<section>
-						<note>Note that we normalize the resulting right vector. If we wouldn't normalize this vector, the resulting cross product might return differently sized vectors based on the cameraFront variable. If we would not normalize the vector we would either move slow or fast based on the camera's orientation instead of at a consistent movement speed.</note>
-						<pre><code>void processInput(SDL_Event ev)
+	Color = color;
+	TexCoord = texCoord;
+	gl_Position = projection * view * model * vec4(position, 1.0);
+};
+
+#shader fragment
+#version 330 core
+in vec3 Color;
+in vec2 TexCoord;
+
+out vec4 outColor;
+
+uniform sampler2D ourTexture;
+uniform sampler2D ourTexture2;
+
+void main()
 {
-	float cameraSpeed = 0.05f; // adjust accordingly
-	const Uint8* keyState;
-	keyState = SDL_GetKeyboardState(NULL);
-	if (keyState[SDL_SCANCODE_W])
-		cameraPos += cameraSpeed * cameraFront;
-	if (keyState[SDL_SCANCODE_S])
-		cameraPos -= cameraSpeed * cameraFront;
-	if (keyState[SDL_SCANCODE_A])
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-	if (keyState[SDL_SCANCODE_D])
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;	
-}</code></pre>					
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>Movement Speed</h2>
-						<p>Currently we used a constant value for movement speed when walking around.</p>
-						<p>In theory this seems fine, but in practice people have different processing powers and the result of that is that some people are able to draw much more frames than others each second.</p>
-						<p>Whenever a user draws more frames than another user he also calls <fun>processInput</fun> more often.</p>
+	vec4 colTex1 = texture(ourTexture, TexCoord);
+	vec4 colTex2 = texture(ourTexture2, TexCoord);
+	outColor = mix(colTex1, colTex2, 0.5);
+};</code></pre>
 					</section>
 					<section>
-						<p>The result is that some people move really fast and some really slow depending on their setup.</p>
-						<p>When shipping your application you want to make sure it runs the same on all kinds of hardware.</p>
-						<p>Games usually keep track of a <var>deltaTime</var> variable that stores the time it takes to render the last frame.</p>
-						<p>We then multiply all velocities with this <var>deltaTime</var> value.</p>
+						<p>Add the following include on your main file:</p>
+						<pre class="fragment"><code>#include "Shader.h"</code></pre>
+						<p class="fragment">Load the shader like so:</p>			
+						<pre class="fragment"><code>Shader shader("texture.shader");</code></pre>			
 					</section>
 					<section>
-						<p>The result is that when we have a large <var>deltaTime</var> in a frame, meaning that the last frame took longer than average, the velocity for that frame will also be a bit higher to balance it all out.</p>
-						<p>When using this approach it does not matter if you have a very fast or slow pc, the velocity of the camera will be balanced out accordingly so each user will have the same experience.</p>
+						<p>Now, we need to adapt the following code:</p>
+						<pre class="fragment"><code>GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+glEnableVertexAttribArray(posAttrib);
+glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);</code></pre>
+						<p class="fragment">Using a single line of code:</p>
+						<pre class="fragment"><code>shader.VertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);</code></pre>
+						<p class="fragment">And do the same for the <code>texCoord</code> input:</p>
+						<pre class="fragment"><code>shader.VertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));</code></pre>
 					</section>
 					<section>
-						<p>To calculate the <var>deltaTime</var> value we keep track of 2 variables:</p>
-						<pre><code>float deltaTime = 0.0f;	// Time between current frame and last frame
-float lastFrameTime = SDL_GetTicks(); // Time of last frame</code></pre>
-						<p>Within each frame we then calculate the new <var>deltaTime</var> value for later use:</p>
-						<pre><code>int now = SDL_GetTicks();
-float deltaTime = (now - lastFrameTime) / 1000.0f;
-lastFrameTime = now;</code></pre>
-					</section>
-					<section>
-						<p>Now that we have <var>deltaTime</var> we can take it into account when calculating the velocities</p>
-						<pre><code>void processKeyboard(float deltaTime)
-{
-	float cameraSpeed = 2.5f * deltaTime;
-	...
-}</code></pre>
-					</section>					
-					<section>
-					<p>Together with the previous section we should now have a much smoother and more consistent camera system for moving around the scene:</p>						
-						  <video autoplay="true" loop="true" muted="true" width="600" height="450" loop>
-						    <source src="camera/camera_smooth.mp4" type="video/mp4"/>
-						  </video>
-						
-					</section>
-				</section>
-				<section>
-					<section>
-						<h1>Look around</h1>
-						<p>Only using the keyboard keys to move around isn't that interesting. </p>
-						<p>Especially since we can't turn around making the movement rather restricted.</p>
-						<p>That's where the mouse comes in!</p>
-					</section>
-					<section>
-						<p>To look around the scene we have to change the cameraFront vector based on the input of the mouse.</p>
-						<p>However, changing the direction vector based on mouse rotations is a little complicated and requires some trigonemetry.</p>
-					</section>
-					<section>
-						<h2>Euler angles</h2>
-						<p>Euler angles are 3 values that can represent any rotation in 3D, defined by Leonhard Euler somewhere in the 1700s. There are 3 Euler angles: <em>pitch</em>, <em>yaw</em> and <em>roll</em>. The following image gives them a visual meaning:</p>
-						<img src="camera/camera_pitch_yaw_roll.png" class="plain">
-					</section>
-					<section>
-						<p>The <def>pitch</def> is the angle that depicts how much we're looking up or down as seen in the first image.</p>
-						<p>The second image shows the <def>yaw</def> value which represents the magnitude we're looking to the left or to the right.</p>
-						<p>The roll represents how much we <def>roll</def> as mostly used in space-flight cameras. Each of the Euler angles are represented by a single value and with the combination of all 3 of them we can calculate any rotation vector in 3D.</p>
-					</section>
-					<section>
-						<p>For our camera system we only care about the yaw and pitch values so we won't discuss the roll value here. Given a pitch and a yaw value we can convert them into a 3D vector that represents a new direction vector. The process of converting yaw and pitch values to a direction vector requires a bit of trigonemetry and we start with a basic case:</p>
-						<img src="camera/camera_triangle.png" class="plain">
-					</section>
-					<section>
-						<p>
-						 If we define the hypotenuse to be of length <code>1</code> we know from trigonometry that the adjacant side's length is \(\cos \ \color{red}x/\color{purple}h = \cos \ \color{red}x/\color{purple}1 = \cos\ \color{red}x\) and that the opposing side's length is \(\sin \ \color{green}y/\color{purple}h = \sin \ \color{green}y/\color{purple}1 = \sin\ \color{green}y\).  This gives us some general formulas for retrieving the length in both the <var>x</var> and <var>y</var> directions, depending on the given angle. Let's use this to calculate the components of the direction vector:
-						</p>
-						<img src="camera/camera_pitch.png" class="plain">
-					</section>
-					<section>
-						<p>
-						This triangle looks similar to the previous triangle so if we visualize that we are sitting on the <var>xz</var> plane and look towards the <var>y</var> axis we can calculate the length / strength of the <var>y</var> direction (how much we're looking up or down) based on the first triangle. From the image we can see that the resulting <var>y</var> value for a given pitch equals \(\sin\ \theta\):
-						</p>
-						<pre><code>direction.y = sin(glm::radians(pitch)); // Note that we convert the angle to radians first </code></pre>
-					</section>
-					<section>
-						<p>Here we only update the <var>y</var> value is affected, but if you look carefully you can also that the <var>x</var> and <var>z</var> components are affected. From  the triangle we can see that their values equal:</p>
-						<pre><code>direction.x = cos(glm::radians(pitch));
-direction.z = cos(glm::radians(pitch));</code></pre>
-					</section>
-					<section>
-						<p>Let's see if we can find the required components for the yaw value as well:</p>
-						<img src="camera/camera_yaw.png" class="plain" width="50%">
-					</section>
-					<section>
-						<p>Just like the pitch triangle we can see that the <var>x</var> component depends on the <code>cos(yaw)</code> value and the <var>z</var> value also depends on the <code>sin</code> of the yaw value. Adding this to the previous values results in a final direction vector based on the pitch and yaw values:</p>
-						<pre><code>direction.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-direction.y = sin(glm::radians(pitch));
-direction.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));</code></pre>
-					</section>
-					<section>
-						<h2>Mouse input</h2>
-						<p>The yaw and pitch values are obtained from mouse (or controller/joystick) movement where horizontal mouse-movement affects the yaw and vertical mouse-movement affects the pitch.</p>
-						<p>The idea is to store the last frame's mouse positions and in the current frame we calculate how much the mouse values changed in comparrison with last frame's value.</p>
-					</section>
-					<section>
-						<p>The higher the horizontal/vertical difference, the more we update the pitch or yaw value and thus the more the camera should move.</p>
-						<p>First we will tell SDL2 that it should hide the cursor and <def>capture</def> it.</p>
-						<p>Capturing a cursor means that once the application has focus the mouse cursor stays within the window (unless the application loses focus or quits).</p>
-					</section>
-					<section>
-						<pre><code>SDL_ShowCursor(SDL_DISABLE);
-SDL_CaptureMouse(SDL_TRUE);</code></pre>
-						<p>After this call, wherever we move the mouse it won't be visible and it should not leave the window.</p>
-						<p>This is perfect for an FPS camera system.</p>
-					</section>
-					<section><p>
-						To calculate the pitch and yaw values we need to handle mouse-movement events. We do this inside our <fun>processInput</fun> function:
-						</p>
+						<p>Now, we need to adapt the texture code:</p>
+						<pre class="fragment"><code>GLuint textureLocation;
+GLuint textureLocation2;
 
-						<pre><code>void processInput(SDL_Event ev, float deltaTime)
-{
-	...
-	if (ev.type == SDL_MOUSEMOTION)
-	{
-		float xpos = ev.button.x;
-		float ypos = ev.button.y;
-		...		
-	}
-	...
-}</code></pre>
-						<p>Here <var>xpos</var> and <var>ypos</var> represent the current mouse positions.</p>
+textureLocation = glGetUniformLocation(shaderProgram, "ourTexture");
+textureLocation2 = glGetUniformLocation(shaderProgram, "ourTexture2");
 
+glUniform1i(textureLocation, 0);
+glUniform1i(textureLocation, 1);</code></pre>
+						<p class="fragment">By using the following:</p>
+						<pre class="fragment"><code>shader.SetUniform1i("ourTexture", 0);
+shader.SetUniform1i("ourTexture2", 1);</code></pre>
 					</section>
 					<section>
-						<p>
-						When handling mouse input for an FPS style camera there are several steps we have to take  before eventually retrieving the direction vector:
-						<ol>
-						<li>Calculate the mouse's offset since the last frame.</li>
-						<li>Add the offset values to the camera's yaw and pitch values.</li>
-						<li>Add some constraints to the maximum/minimum pitch values</li>
-						<li>Calculate the direction vector</li>
-						</ol>
-						</p>
+						<p>We also need to replace the code on enabling the shader program:</p>
+						<pre class="fragment"><code>glUseProgram(shaderProgram);</code></pre>
+						<p class="fragment">Which becomes like this:</p>
+						<pre class="fragment"><code>shader.Bind();</code></pre>
 					</section>
 					<section>
-						<p>
-						The first step is to calculate the offset of the mouse since the last frame. We first have to store the last mouse positions in the application, which we set to the center of the screen (screen size is <code>800</code> by <code>600</code>) initially:
-						</p>
-
-						<pre class="cpp"><code>float lastX = 400, lastY = 300;</code></pre>
+						<p>Finally, we need to set the model, view and projection matrices:</p>
+						<pre class="fragment"><code>GLuint modelLocation = glGetUniformLocation(shaderProgram, "model");
+glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));</code></pre>
+						<p class="fragment">By using the following:</p>
+						<pre class="fragment"><code>shader.SetUniformMat4f("model", model);</code></pre>
+						<p class="fragment">And do the same for the other matrices.</p>
 					</section>
-					<section>
-						<p>
-						Then in the mouse's callback function we calculate the offset movement between the last and current frame:
-						</p>
 
-						<pre><code>float xoffset = xpos - lastX;
-float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
-lastX = xpos;
-lastY = ypos;
-
-float sensitivity = 0.05f;
-xoffset *= sensitivity;
-yoffset *= sensitivity;</code></pre>
-						<p>
-						Note that we multiply the offset values by a <var>sensitivity</var> value. If we omit this multiplication the mouse movement would be way too strong; fiddle around with the sensitivity value to your liking.
-						</p>
-					</section>
-					<section>
-						<p>
-  Next we add the offset values to globally declared <var>pitch</var> and <var>yaw</var> values:
-</p>
-
-<pre><code>yaw   += xoffset;
-pitch += yoffset;  
-</code></pre>
-
-					</section>
-					<section>
-						<p>
-  In the third step we'd like to add some constraints to the camera so users won't be able to make weird camera movements (also prevents a few weird issues). The pitch will be constrained in such a way that users won't be able to look higher than <code>89</code> degrees (at <code>90</code> degrees the view tends to reverse, so we stick to <code>89</code> as our limit) and also not below <code>-89</code> degrees. This ensures the user will be able to look up to the sky and down to his feet but not further.
-</p>
-
-					</section>
-					<section>
-						<p>The constraint works by just replacing the resulting value with its constraint value whenever it breaches the constraint:</p>
-						<pre><code>if(pitch &gt; 89.0f)
-  pitch =  89.0f;
-if(pitch &lt; -89.0f)
-  pitch = -89.0f;
-</code></pre>
-
-<p>
-  Note that we set no constraint on the yaw value since we don't want to constrain the user in horizontal rotation. However, it's just as easy to add a constraint to the yaw as well if you feel like it.
-</p>
-
-					</section>
-					<section>
-						<p>
-  The fourth and last step is to calculate the actual direction vector from the resulting yaw and pitch value as discussed in the previous section:
-</p>
-
-<pre><code>glm::vec3 front;
-front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-front.y = sin(glm::radians(pitch));
-front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
-cameraFront = glm::normalize(front);</code></pre>
-  
-  <p>
-    This computed direction vector then contains all the rotations calculated from the mouse's movement. Since the <var>cameraFront</var> vector is already included in glm's <fun>lookAt</fun> function we're set to go.
-</p>
-					</section>
-					<section>
-						<p>
-						If you would now run the code you will notice that the camera makes a large sudden jump whenever the window first receives focus of your mouse cursor.</p>
-						<p>The cause for the sudden jump is that as soon as your cursor enters the window the mouse callback function is called with an <var>xpos</var> and <var>ypos</var> position equal to the location your mouse entered the screen.</p>
-					</section>
-					<section>
-						<p>This is usually a position that is quite a distance away from the center of the screen resulting in large offsets and thus a large movement jump.</p>
-						<p>We can circumvent this issue by simply defining a static <code>bool</code> variable to check if this is the first time we receive mouse input and if so, we first update the initial mouse positions to the new <var>xpos</var> and <var>ypos</var> values; the resulting mouse movements will then use the entered mouse's position coordinates to calculate its offsets:
-						</p>
-					</section>
-					<section>
-						<pre><code class="stretch">static bool firstMouse = true;
-if (firstMouse)
-{
-	firstMouse = false;
-	lastX = xpos;
-	lastY = ypos;
-}
-</code></pre>
-					</section>
-					<section>
-						<p>The final code then becomes:</p>
-						<pre><code>void processInput(SDL_Event ev, float deltaTime)
-{
-	if (ev.type == SDL_MOUSEMOTION)
-	{
-		float xpos = ev.button.x;
-		float ypos = ev.button.y;
-
-		static bool firstMouse = true;
-		if (firstMouse)
-		{
-			firstMouse = false;
-			lastX = xpos;
-			lastY = ypos;
-		}
-		
-		float xoffset = xpos - lastX;
-		float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
-		lastX = xpos;
-		lastY = ypos;
-
-		float sensitivity = 0.05f;
-		xoffset *= sensitivity;
-		yoffset *= sensitivity;
-
-		yaw += xoffset;
-		pitch += yoffset;
-
-		if (pitch > 89.0f)
-			pitch = 89.0f;
-		if (pitch < -89.0f)
-			pitch = -89.0f;		
-	}
-
-	glm::vec3 front;
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(front);
-}</code></pre>
-					</section>
-					<section>
-						<h2>Zoom</h2>
-						<p>
-						As a little extra to the camera system we'll also implement a zooming interface. In the previous class we said the <em>Field of view</em> or <em>fov</em> defines how much we can see of the scene. When the field of view becomes smaller the scene's projected space gets smaller giving the illusion of zooming in. To zoom in, we're going to use the mouse's scroll-wheel. Similar to mouse movement and keyboard input we have a callback function for mouse-scrolling:
-						</p>
-
-					</section>
-					<section>
-						<pre><code>if (ev.type == SDL_MOUSEWHEEL)
-{
-	if (fov >= 1.0f && fov <= 45.0f)
-		fov -= ev.wheel.y;
-	if (fov <= 1.0f)
-		fov = 1.0f;
-	if (fov >= 45.0f)
-		fov = 45.0f;		
-}
-</code></pre>
-
-					</section>
-					<section>
-						<p>
-						When scrolling, the <var>yoffset</var> value represents the amount we scrolled vertically. When the <fun>scroll_callback</fun> function is called we change the content of the globally declared <var>fov</var> variable. Since <code>45.0f</code> is the default fov value we want to constrain the zoom level between <code>1.0f</code> and <code> 45.0f</code>.
-						</p>
-						<p>
-					  	We now have to upload the perspective projection matrix to the GPU each render iteration but this time with the <var>fov</var> variable as its field of view:
-						</p>
-						<pre><code>projection = glm::perspective(glm::radians(fov), screenWidth / screenHeight, 0.1f, 100.0f);</code></pre>
-					</section>					
-					<section>
-						<p>And there you have it. We implemented a simple camera system that allows for free movement in a 3D environment.</p>
-						<video autoplay="true" loop="true" muted="true" width="600" height="450" loop>
-						    <source src="camera/camera_mouse.mp4" type="video/mp4"/>
-						</video>
-					</section>
 				</section>
 
 			</div>
