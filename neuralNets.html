@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>Artificial Intelligence Applied to Games - Introduction to AI</title>
+		<title>Nuts and Bolts of AI and Machine Learning</title>
 
 		<meta name="description" content="Nuts and Bolts of AI and Machine Learning">
 		<meta name="author" content="Gustavo Reis">
@@ -36,6 +36,7 @@
 				<section>				
 					<section>
 						<h1>Nuts and Bolts of AI and Machine Learning</h1>
+						Gustavo Reis
 					</section>
 					<section>
 						<h2>Buzz Words</h2>
@@ -268,61 +269,153 @@
 		            <section>
 		            	<img src="NNs/alexnet.png" class="plain" width="100%">
 		            </section>
+		        </section>
+		        <section>
+		        	<section><h1>HRTFs</h1></section>
+		        	<section>
+	                    <img src="interactive/comsol1.png" class="plain">
+	                </section>
+	                <section>
+	                    <img src="interactive/comsol2.png" class="plain">
+	                </section>
+	                <section>
+	                    <img src="interactive/comsol3.png" class="plain">
+	                </section>
+	                <section>
+	                    <img src="interactive/comsol4.png" class="plain">
+	                </section>
+	                <section>
+	                    <img src="interactive/comsol5.png" class="plain">
+	                </section>
+	                <section>
+	                    <img src="NNs/roberta.png" class="plain">
+	                </section>
+	                <section>
+	                    <img src="NNs/roberta2.png" class="plain" width="60%">
+	                </section>
+	                <section>
+	                    <img src="NNs/notebook.png" class="plain" width="60%">
+	                </section>
+	                <section>
+	                    <img src="NNs/bem.png" class="plain" width="60%">
+	                </section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<h3>Current simulations:</h3>
+						<p class="fragment">Spheres with thousands of points</p>
+						<p class="fragment">Each layer has a different distance: 0.25, 0.5, 0.75, 1, 1.5, 2, 4, 8, 10, 16 and 32 meters</p>
+						<p class="fragment">Total of 25,795 sound source positions</p>
+						<p class="fragment">426 different frequencies: from 46.875 Hz to 20.000 Hz</p>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+	                    <img src="NNs/anechoic.png" class="plain" width="60%">
+	                </section>
+		        </section>
+		        <section>
+		        	<section><h1>Deep Learning and HRTFs</h1></section>
+					<section>
+						<h2>NN 1</h2>
+						<p class="fragment"><b>1st attempt:</b> try figure out if a NN is capable of learning an HRTF. Used just the horizontal plane of a single subject.</p>
+						<p class="fragment"><b>2nd attempt:</b> try figure out if a NN is capable of learning an HRTF. Used the whole sphere (25,795 points) of a single subject.</p>
+						<p class="fragment"><b>3rd attempt:</b> Moving to more subjects.</p>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<h2>NN 2</h2>
+						<p class="fragment"><b>1st attempt:</b> 42 ear params</p>
+						<p class="fragment"><b>2nd attempt:</b> 15 ear params</p>
+						<p class="fragment">4 + 42 + 15 = 61 inputs</p>
+						<p class="fragment">Hundreds of subjects</p>
+						<p class="fragment">10,000,000 points for the train dataset</p>
+						<p class="fragment">2,579,500 points for the test dataset</p>
+						<p class="fragment">Error arround 2.3 dBO</p>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<h2>NN 3 - End to end</h2>
+						<p class="fragment"><b>Idea:</b> use photos of the subject to infer the morpholical data (head and ears)</p>
+						<p class="fragment">Use pre-trained networks for processing the image data</p>
+						<p class="fragment">Resnet 50 or VGG19?</p>
+						<p class="fragment">Resnet 50</p>
+						<p class="fragment">25,088 image features</p>
+						<p class="fragment">Photos of front, 90º and 45º</p>
+						<p class="fragment">3 x 25,088 = 75,264 inputs</p>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+	                    <img src="NNs/head_f000000_c1.png" class="plain" width="50%">
+	                </section>
+	                <section>
+	                    <img src="NNs/left_ear_f000000_a1.png" class="plain" width="50%">
+	                </section>
+	                <section>
+	                    <img src="NNs/left_ear_f000000_b1.png" class="plain" width="50%">
+	                </section>
+	                <section>
+	                    <img src="NNs/ear_0.png" class="plain" width="50%">
+	                </section>
+	                <section>
+	                    <img src="NNs/ear_1.png" class="plain" width="50%">
+	                </section>
+	                <section>
+	                    <img src="NNs/ear_2.png" class="plain" width="50%">
+	                </section>
+					<section>
+						<h2>Current Results</h2>
+						<p class="fragment">3.648 dBO</p>
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<h2>Current Results</h2>
+						<img src="NNs/performance.png" class="plain" width="50%">
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<h2>Current Results</h2>
+						<img src="NNs/predicted_hrtf.png" class="plain" width="50%">
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<h2>Current Results</h2>
+						<img src="NNs/predicted_impulse.png" class="plain" width="50%">
 					</section>
 					<section>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
-						<p class="fragment"></p>
+						<h2>Current Results</h2>
+						<img src="NNs/error_impulse.png" class="plain" width="50%">
 					</section>
+					<section>
+						<h2>Current Results</h2>
+						<img src="NNs/front.jpg" class="plain" width="30%">
+					</section>
+					<section>
+						<h2>Current Results</h2>
+						<img src="NNs/photo_a.jpg" class="plain" width="40%">
+					</section>
+					<section>
+						<h2>Current Results</h2>
+						<img src="NNs/photo_z.jpg" class="plain" width="40%">
+					</section>
+		        </section>
+		        <section>
+		        	<section><h1>Future Work</h1></section>
+					<section>
+						<p class="fragment">Network with 5 image inputs: Front, 90º, 45º, 90º zoomed, 45º zoomed</p>
+						<p class="fragment">5 x 25,088 = 125,400 inputs!</p>
+						<p class="fragment">4.7198 dBO in 14 Epochs</p>
+					</section>
+					<section>
+						<h2>Future Work</h2>
+						<img src="NNs/left_ear_ad000001_b4.png" class="plain" width="40%">
+					</section>
+					<section>
+						<h2>Future Work</h2>
+						<img src="NNs/left_ear_ad000000_b3.png" class="plain" width="40%">
+					</section>
+					<section>
+						<h2>Future Work</h2>
+						<img src="NNs/head_ad000001_c9.png" class="plain" width="40%">
+					</section>
+					<section>
+						<h2>Future Work</h2>
+						<img src="NNs/feio_vestido.png" class="plain" width="60%">
+					</section>
+				
 
 				</section>
+				<section><H1>Questions?</H1></section>
 
 			</div>
 		</div>
