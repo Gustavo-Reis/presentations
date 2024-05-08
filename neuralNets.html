@@ -71,392 +71,257 @@
 				</section>
 				<section>
 					<section>
-						<h2>Texture Filtering</h2>
-					</section>
-					<section>
-						<p class="fragment">Since texture coordinates are resolution independent, they won't always match a pixel exactly.</p>
-						<p class="fragment">This happens when a texture image is stretched beyond its original size or when it's sized down.</p>
-						<p class="fragment">OpenGL offers various methods to decide on the sampled color when this happens.</p>
-					</section>
-					<section>
-						<p class="fragment">This process is called filtering and the following methods are available:</p>
+						<h1>"Zipped" history of AI</h1>
 						<ul>
-							<li class="fragment"><code>GL_NEAREST</code>: Returns the pixel that is closest to the coordinates.</li>
-							<li class="fragment"><code>GL_LINEAR</code>: Returns the weighted average of the 4 pixels surrounding the given coordinates.</li>
-							<li class="fragment"><code>GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR</code>: Sample from mipmaps instead.</li>
+							<li class="fragment">1943 - 1956: Gestation and birth</li>
+							<ul>
+								<li class="fragment">W. Macculloch and W. Pitts proposed a model of artificial neurons</li>
+								<li class="fragment">C. Shannon and A. Turing were already writing programs to play chess (even without access to computers…)</li>
+								<li class="fragment">During the 1950s, A. Newell and H. Simon developed a program capable of proving mathematical theorems</li>
+								<li class="fragment">In 1956 there was a workshop where the name “Artificial Intelligence” was born</li>
+							</ul>
 						</ul>
 					</section>
 					<section>
-						<img src="images/OpenGL/texture_filtering.png" width="70%" class="plain">
-					</section>
-					<section>
-						<p class="fragment">While linear interpolation gives a smoother result, it isn't always the most ideal option.</p>
-						<p class="fragment">Nearest neighbor interpolation is more suited in games that want to mimic 8 bit graphics, because of the pixelated look.</p>
-						<p class="fragment">You can specify which kind of interpolation should be used for two separate cases: scaling the image down and scaling the image up.</p>
-						<p class="fragment">These two cases are identified by the keywords <code>GL_TEXTURE_MIN_FILTER</code> and <code>GL_TEXTURE_MAG_FILTER</code>.</p>
-						<pre class="fragment"><code>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</code></pre>
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>Mipmaps</h2>
-					</section>
-					<section>
-						<p class="fragment">Imagine if we had a large room with thousands of objects, each with an attached texture.</p>
-						<p class="fragment">There will be objects far away that have the same high resolution texture attached as the objects close to the viewer.</p>
-						<p class="fragment">Since the objects are far away and probably only produce a few fragments, OpenGL has difficulties retrieving the right color value for its fragment from the high resolution texture, since it has to pick a texture color for a fragment that spans a large part of the texture.</p>
-						<p class="fragment">This will produce visible artifacts on small objects, not to mention the waste of memory to use high resolution textures on small objects.</p>
-					</section>
-					<section>
-						<p class="fragment">To solve this issue OpenGL uses a concept called mipmaps that is basically a collection of texture images where each subsequent texture is twice as small compared to the previous one.</p>
-						<p class="fragment">The idea behind mipmaps should be easy to understand: after a certain distance threshold from the viewer, OpenGL will use a different mipmap texture that best suits the distance to the object.</p>
-						<p class="fragment">Because the object is far away, the smaller resolution will not be noticeable to the user.</p>
-						<p class="fragment">Also, mipmaps have the added bonus feature that they're good for performance as well.</p>
-					</section>
-					<section>
-						<img src="images/OpenGL/mipmaps.png" width="70%" class="plain">
-					</section>
-					<section>
-						<p class="fragment">As you've seen, there is another way to filter textures: mipmaps.</p>
-						<p class="fragment">Mipmaps are smaller copies of your texture that have been sized down and filtered in advance.</p>
-						<p class="fragment">It is recommended that you use them because they result in both a higher quality and higher performance.</p>
-						<pre class="fragment"><code>glGenerateMipmap(GL_TEXTURE_2D);</code></pre>
-						<p class="fragment">Generating them is as simple as calling the function above, so there's no excuse for not using them!</p>
-						<p class="fragment">Note that you do have to load the texture image itself before mipmaps can be generated from it.</p>
-					</section>
-					<section>
-						<p class="fragment">When switching between mipmaps levels during rendering OpenGL might show some artifacts like sharp edges visible between the two mipmap layers.</p>
-						<p class="fragment">Just like normal texture filtering, it is also possible to filter between mipmap levels using <code>NEAREST</code> and <code>LINEAR</code> filtering for switching between mipmap levels.</p>
-					</section>
-					<section>
-						<p class="fragment">To specify the filtering method between mipmap levels we can replace the original filtering methods with one of the following four options:</p>
+						<h1>"Zipped" history of AI</h1>
 						<ul>
-							<li class="fragment"><code>GL_NEAREST_MIPMAP_NEAREST</code>: Uses the mipmap that most closely matches the size of the pixel being textured and samples with nearest neighbour interpolation.</li>
-							<li class="fragment"><code>GL_LINEAR_MIPMAP_NEAREST</code>: Samples the closest mipmap with linear interpolation.</li>
-							<li class="fragment"><code>GL_NEAREST_MIPMAP_LINEAR</code>: Uses the two mipmaps that most closely match the size of the pixel being textured and samples with nearest neighbour interpolation.</li>
-							<li class="fragment"><code>GL_LINEAR_MIPMAP_LINEAR</code>: Samples closest two mipmaps with linear interpolation.</li>
+							<li class="fragment">1952 - 1969: Early enthusiasm, great expectations</li>
+							<ul>
+								<li class="fragment">In this period, many problems were solved whose resolution by computers was considered to be impossible</li>
+								<li class="fragment">A. Samuel developed a program that learned to play checkers at strong amateur level (being able to beat him also)</li>
+								<li class="fragment">The <span style="color: blue">Lisp</span> programming language was created in this period</li>
+								<li class="fragment">A. Newell and H. Simon developed the <span style="color: red">General Problem Solver</span> having the goal of simulating human reasoning in the resolution of simple problems</li>
+								<li class="fragment">Time Sharing (DEC)</li>
+								<li class="fragment">Microworlds (problems solved in a controlled environment)</li>
+								<ul>
+									<li class="fragment">Most notable example: Blocks world</li>
+								</ul>
+							</ul>
 						</ul>
 					</section>
 					<section>
-						<p class="fragment">There are some other texture parameters available, but they're suited for specialized operations. You can read about them in the specification.</p>
-						<p class="fragment">Just like texture filtering we can set the filtering method to one of the 4 aforementioned methods using <code>glTexParameteri</code>:</p>
-						<pre class="fragment"><code>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</code></pre>
-						<p class="fragment">A common mistake is to set one of the mipmap filtering options as the magnification filter.</p>
-						<p class="fragment">This doesn't have any effect since mipmaps are primarily used for when textures get downscaled: texture magnification doesn't use mipmaps and giving it a mipmap filtering option will generate an OpenGL <code>GL_INVALID_ENUM</code> error code.</p>
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>Loading and Creating Textures</h2>
-					</section>
-					<section>
-						<p class="fragment">The first thing we need to do to actually use textures is to load them into our game.</p>
-						<p class="fragment">Texture images can be stored in dozens of file formats, each with their own structure and ordering of data, so how do we get those images in our application?</p>
-						<p class="fragment">One solution would be to choose a file format we'd like to use, say .PNG and write our own image loader to convert the image format into a large array of bytes.</p>
-					</section>
-					<section>
-						<p class="fragment">While it's not very hard to write your own image loader, it's still cumbersome and what if you want to support more file formats?</p>
-						<p class="fragment">You'd then have to write an image loader for each format you want to support.</p>
-						<p class="fragment">Another solution, and probably a good one, is to use an image-loading library that supports several popular formats and does all the hard work for us. </p>
-						<p class="fragment">A library like <code>stb_image.h</code>.</p>
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>stb_image.h</h2>
-					</section>
-					<section>
-						<p class="fragment">stb_image.h is a very popular single header image loading library by <a url="https://github.com/nothings">Sean Barrett</a> that is able to load most popular file formats and is easy to integrate in your project(s).</p>
-						<p class="fragment">stb_image.h can be downloaded from <a url="https://github.com/nothings/stb/blob/master/stb_image.h">here</a>. Simply download the single header file, add it to your project as stb_image.h and create an additional C++ file with the following code:</p>
-						<pre class="fragment"><code>#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"</code></pre>
-					</section>
-					<section>
-						<pre><code>#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"</code></pre>
-						<p class="fragment">By defining <code>STB_IMAGE_IMPLEMENTATION</code> the preprocessor modifies the header file such that it only contains the relevant definition source code, effectively turning the header file into a .cpp file, and that's about it.</p>
-						<p class="fragment">Now simply include <code>stb_image.h</code> somewhere in your program and compile.</p>
-					</section>
-					<section>
-						<p class="fragment">For the following texture sections we're going to use an image of a wooden container. To load an image using <code>stb_image.h</code> we use its <code>stbi_load</code> function:</p>
-						<pre class="fragment"><code>int width, height, nrChannels;
-unsigned char *data = stbi_load("container.jpg", &width, &height, &nrChannels, 0);</code></pre>
-						<p class="fragment">The function first takes as input the location of an image file. It then expects you to give three ints as its second, third and fourth argument that <code>stb_image.h</code> will fill with the resulting image's width, height and number of color channels.</p>
-						<p class="fragment"> We need the image's width and height for generating textures later on.</p>
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>Generating a Texture</h2>
-					</section>
-					<section>
-						<p class="fragment">Like any of the previous objects in OpenGL, textures are referenced with an ID; let's create one:</p>
-						<pre class="fragment"><code>GLuint texture;
-glGenTextures(1, &texture);</code></pre>
-						<p class="fragment">The <code>glGenTextures</code> function first takes as input how many textures we want to generate and stores them in a unsigned int array given as its second argument (<code>GLuint</code>).</p>
-						<p class="fragment">Just like other objects we need to bind it so any subsequent texture commands will configure the currently bound texture:</p>
-						<pre class="fragment"><code>glBindTexture(GL_TEXTURE_2D, texture);</code></pre>
-					</section>
-					<section>
-						<p class="fragment">Now that the texture is bound, we can start generating a texture using the previously loaded image data.</p>
-						<p class="fragment">Textures are generated with <code>glTexImage2D</code>:</p>
-						<pre class="fragment"><code>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-glGenerateMipmap(GL_TEXTURE_2D);</code></pre>
-					</section>
-					<section>						
-						<pre><code>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-glGenerateMipmap(GL_TEXTURE_2D);</code></pre>
-						<p class="fragment">This is a large function with quite a few parameters so we'll walk through them step-by-step:</p>
+						<h1>"Zipped" history of AI</h1>
 						<ul>
-							<li class="fragment">The first argument specifies the texture target; setting this to <code>GL_TEXTURE_2D</code> means this operation will generate a texture on the currently bound texture object at the same target (so any textures bound to targets <code>GL_TEXTURE_1D</code> or <code>GL_TEXTURE_3D</code> will not be affected).</li>
-							<li class="fragment">The second argument specifies the mipmap level for which we want to create a texture for if you want to set each mipmap level manually, but we'll leave it at the base level which is 0.</li>
+							<li class="fragment">1966 - 1974: A dose of reality</li>
+							<ul>
+								<li class="fragment">In 1958, H. Simon predicted that within 10 years, a computer would be chess champion and a significant mathematical theorem would be proved by a computer!!!</li>
+								<li class="fragment">However...</li>
+								<ul>
+									<li class="fragment">Programs knew nothing about their subject matter; They succeeded by simple syntactic manipulation</li>
+									<ul>
+										<li class="fragment">Example: by simple syntactic manipulation, the sentence “The spirit is willing but the flesh is weak” was translated as  “The vodka is good but the meat is rotten”...</li>
+									</ul>
+									<li class="fragment">The methods able to solve simple problems were not able to solve general and difficult problems</li>
+								</ul>
+								<li class="fragment">Computers had not enough computational power to solve “larger” problems</li>
+								<li class="fragment">Difficulties due to computational limitations - genetic algorithms (“good” idea, but impossible to verify with existent hardware)</li>
+								<li class="fragment">“Perceptrons” book (Minsky and Papert, 1969) that, among other things, address perceptron limitations</li>
+								<li class="fragment">Strong decrease in AI research funding (the so called “AI Winter”)</li>
+								<li class="fragment"><span style="color:red">(Only) in 1997 a computer beaten the human chess world champion</span></li>
+								
+							</ul>
 						</ul>
 					</section>
-					<section>						
-						<pre><code>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-glGenerateMipmap(GL_TEXTURE_2D);</code></pre>
+					<section>
+						<h1>"Zipped" history of AI</h1>
 						<ul>
-							<li class="fragment">The third argument tells OpenGL in what kind of format we want to store the texture. Our image has only RGB values so we'll store the texture with RGB values as well.</li>
-							<li class="fragment">The 4th and 5th argument sets the width and height of the resulting texture. We stored those earlier when loading the image so we'll use the corresponding variables.</li>
-							<li class="fragment">The next argument should always be 0 (some legacy stuff).</li>
-							<li class="fragment">The 7th and 8th argument specify the format and datatype of the source image. We loaded the image with RGB values and stored them as chars (bytes) so we'll pass in the corresponding values.</li>
-							<li class="fragment">The last argument is the actual image data.</li>
+							<li class="fragment">1969 - 1979: Knowledge based systems</li>
+							<ul>
+								<li class="fragment">It was realized the necessity of using knowledge about the problem to solve in order to achieve better results</li>
+								<li class="fragment"><span style="color:blue">Expert systems</span>: systems intended to simulate the reasoning of an expert in a given area</li>
+								<ul>
+									<li class="fragment">Examples: Tendril (molecular structures identification), MyCin (bacteria identification)</li>
+								</ul>
+								<li class="fragment">Expert systems led to a strong effort in the development of knowledge representation methods</li>
+								<li class="fragment">Creation of the <span style="color:red">Prolog</span> programming language</li>
+								
+							</ul>
 						</ul>
+					</section>
+					<section>
+						<h1>"Zipped" history of AI</h1>
+						<ul>
+							<li class="fragment">1980 - Present: AI becomes an industry</li>
+							<ul>
+								<li class="fragment">AI starts to pay: expert systems, robotics, vision systems</li>
+							</ul>
+							<li class="fragment">1986 - Present: The return of neural networks</li>
+							<ul>
+								<li class="fragment">It started mainly due to the Back-propagation algorithm</li>
+							</ul>
+							<li class="fragment">1987 - Present: AI adopts the scientific method</li>
+							<ul>
+								<li class="fragment"><span style="color:blue">It is now more common to build on existing theories than to propose brand new ones</span>, <span style="color:red">to base claims on rigorous theorems or hard experimental evidence rather than on intuition</span>, <span style="color:green">and to show relevance to real-world applications rather than toy examples</span></li>
+							</ul>							
+						</ul>
+					</section>
+				</section>							
+				<section>
+					<h1>Humans are inspired by nature</h1>
+					<ul>
+							<li class="fragment">Birds</li>
+							<ul>
+								<li class="fragment">Flying - Airplanes</li>
+							</ul>
+							<li class="fragment">Horses</li>
+							<ul>
+								<li class="fragment">Cars</li>
+							</ul>
+							<li class="fragment">Bio-Inspired Computing</li>
+							<ul>
+								<li class="fragment">Evolutionary Algorithms - Evolution</li>
+								<li class="fragment">Cellular Automata - Life</li>
+								<li class="fragment">Ant Colony Optimization - Ants</li>
+								<li class="fragment">Particle Swarm Optimization - Birds Flocking</li>
+								<li class="fragment">Artificial Neural Networks - Biological Neural Networks</li>
+								<li class="fragment">...</li>
+							</ul>							
+						</ul>
+				</section>
+				<section>
+					<section>
+						<h1>The Brain</h1>
+					</section>
+					<section>
+						<img src="NNs/biologicalNeuron.png" class="plain" width="40%">
+						<p class="fragment">Neurons are the fundamental unit of the nervous system tissue</p>
+						<p class="fragment">A biologic neuron has three types of components that are specially interesting for the the understanding of artificial neurons:</p>
+
+						<ul>
+							<li class="fragment">Dendrites</li>
+							<li class="fragment">Soma</li>
+							<li class="fragment">Axon</li>
+						</ul>
+					</section>
+					<section>
+						<img src="NNs/biologicalNeuron.png" class="plain" width="40%">
+						<p class="fragment">Each neuron is composed of a cellular body with several branches called dendrites and an isolated longer branch, called axon</p>
+						<p class="fragment">Dendrites connect to other neurons’ axons through junctions called synapses</p>
+						<p class="fragment">A neuron can be connected to hundreds of thousands of other neurons</p>
+					</section>
+					<section>
+						<img src="NNs/biologicalNeuron.png" class="plain" width="40%">
+						<p class="fragment">Signals propagate between neurons through a complicated electrochemical reaction which leads synapses to produce chemical substances that enter through dendrites.</p>
+						<p class="fragment">This can raise or diminish the electrical potential of the cellular body</p>
+						<p class="fragment">If the electrical potential overpasses some limit, an electrical impulse is sent to the axon, which spreads by its ramifications, thus transmitting electrical signals to other neurons</p>
+					</section>
+					<section>
+						<img src="NNs/biologicalNeuron.png" class="plain" width="40%">
+						<p class="fragment">An average brain has something on the order of 100 billion neurons. Each neuron is connected to up to 10,000 other neurons, which means that the number of synapses is between 100 trillion and 1,000 trillion</p>
+						<p class="fragment">It has been observed that often used connections become stronger and that neurons sometimes form new connections with other neurons. It is thought that <b>these mechanisms lead to learning</b></p>
+						<p class="fragment">Computation is strongly parallel and asynchronous</p>
+					</section>
+				</section>
+				<section>
+					<section><h1>Artificial Neural Networks</h1></section>
+					<section>
+						<p class="fragment">Although artificial neurons and perceptrons were inspired by the biological processes scientists were able to observe in the brain back in the 50s, they do differ from their biological counterparts in several ways.</p>						
+						<div class="fragment"><img src="NNs/analogy.png" class="plain"></div>
+						<p class="fragment">The idea behind perceptrons (the predecessors to artificial neurons) is that it is possible to mimic certain parts of neurons, such as dendrites, cell bodies and axons using simplified mathematical models of what limited knowledge we have on their inner workings: signals can be received from dendrites, and sent down the axon once enough signals were received.</p>
 					</section>					
 					<section>
-						<p class="fragment">Once <code>glTexImage2D</code> is called, the currently bound texture object now has the texture image attached to it.</p>
-						<p class="fragment">However, currently it only has the base-level of the texture image loaded and if we want to use mipmaps we have to specify all the different images manually (by continually incrementing the second argument) or, we could call <code>glGenerateMipmap</code> after generating the texture.</p>
-						<p class="fragment">This will automatically generate all the required mipmaps for the currently bound texture.</p>
-						<p class="fragment">After we're done generating the texture and its corresponding mipmaps, it is good practice to free the image memory:</p>
-						<pre class="fragment"><code>stbi_image_free(data);</code></pre>
+						<img src="NNs/analogy.png" class="plain" width="30%">
+						<p class="fragment"> This outgoing signal can then be used as another input for other neurons, repeating the process.</p>
+						<p class="fragment">Some signals are more important than others and can trigger some neurons to fire easier.</p>
+						<p class = "fragment">Connections can become stronger or weaker, new connections can appear while others can cease to exist.</p>
+						<p class = "fragment">We can mimic most of this process by coming up with a function that receives a list of weighted input signals and outputs some kind of signal if the sum of these weighted inputs reach a certain bias.</p>
+						<p class = "fragment">Note that this simplified model does not mimic neither the creation nor the destruction of connections (dendrites or axons) between neurons, and ignores signal timing.</p>
+						<p class = "fragment">However, this restricted model alone is powerful enough to work with simple classification tasks.</p>
+					</section>
+					<section>	
+						<p>Invented by Frank Rosenblatt, the perceptron was originally intended to be a custom-built mechanical hardware instead of a software function. The Mark 1 perceptron was a machine built for image recognition tasks by the US navy.</p>		
+						<iframe width="937" height="703" src="https://www.youtube.com/embed/cNxadbrN_aI" title="Perceptron Research from the 50&#39;s &amp; 60&#39;s, clip" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 					</section>
 					<section>
-						<pre class="stretch"><code>GLuint texture;
-glGenTextures(1, &texture);
-glBindTexture(GL_TEXTURE_2D, texture);
-// set the texture wrapping/filtering options (on the currently bound texture object)
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-// load and generate the texture
-int width, height, nrChannels;
-unsigned char *data = stbi_load("container.jpg", &width, &height, &nrChannels, 0);
-if (data)
-{
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-}
-else
-{
-    std::cout << "Failed to load texture" << std::endl;
-}
-stbi_image_free(data);</code></pre>
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>Applying Textures</h2>
-					</section>
-					<section>
-						<p class="fragment">For the upcoming sections we will use the rectangle shape drawn with <code>glDrawElements</code> from the final part of the Hello Triangle (previous class).</p>
-						<p class="fragment">We need to inform OpenGL how to sample the texture so we'll have to update the vertex data with the texture coordinates:</p>
-						<pre class="fragment"><code>float vertices[] = {
-     // positions         // colors           // texture coords
-     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
-};</code></pre>
-					</section>
-					<section>
-						<pre><code>float vertices[] = {
-     // positions         // colors           // texture coords
-     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
-};</code></pre>
-						<p class="fragment">Since we've added an extra vertex attribute we again have to notify OpenGL of the new vertex format:</p>
-						<div class="fragment"><img src="images/OpenGL/textures_stride.png" width="40%" class="plain"></div>
-						<pre class="fragment"><code>GLint texCoordAttrib = glGetAttribLocation(shaderProgram, "texCoord");
-glEnableVertexAttribArray(texCoordAttrib);
-glVertexAttribPointer(texCoordAttrib, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));</code></pre>
-					</section>
-					<section>
-						<pre><code>GLint texCoordAttrib = glGetAttribLocation(shaderProgram, "texCoord");
-glEnableVertexAttribArray(texCoordAttrib);
-glVertexAttribPointer(texCoordAttrib, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));</code></pre>
-						<p class="fragment">Note that we have to adjust the stride parameter of the previous two vertex attributes to <code>8 * sizeof(float)</code> as well.</p>
-					</section>
-					<section>
-						<p class="fragment">Next we need to alter the vertex shader to accept the texture coordinates as a vertex attribute and then forward the coordinates to the fragment shader:</p>
-						<div class="fragment"><pre class="stretch"><code>#version 330 core
-
-in vec3 position;
-in vec3 color;
-in vec2 texCoord;
-
-out vec3 Color;
-out vec2 TexCoord;
-
-void main()
-{
-	Color = color;
-	TexCoord = texCoord;
-	gl_Position = vec4(position, 1.0);
-
-}</code></pre></div>
-					</section>
-					<section>
-						<p class="fragment">The fragment shader should then accept the <code>TexCoord</code> output variable as an input variable.</p>
-						<p class="fragment">The fragment shader should also have access to the texture object, but how do we pass the texture object to the fragment shader?</p>
-						<p class="fragment">GLSL has a built-in data-type for texture objects called a <code>sampler</code> that takes as a postfix the texture type we want e.g. <code>sampler1D</code>, <code>sampler3D</code> or in our case <code>sampler2D</code>.</p>
-					</section>
-					<section>
-						<p class="fragment">We can then add a texture to the fragment shader by simply declaring a uniform sampler2D that we later assign our texture to:</p>
-						<pre class="fragment"><code>#version 330 core
-in vec3 Color;
-in vec2 TexCoord;
-
-out vec4 outColor;
-
-uniform sampler2D ourTexture;
-
-void main()
-{
-	outColor = texture(ourTexture, TexCoord);
-}</code></pre>
-					</section>
-					<section>
-						<p class="fragment">To sample the color of a <code>texture</code> we use GLSL's built-in texture function that takes as its first argument a texture sampler and as its second argument the corresponding texture coordinate.</p>
-						<p class="fragment">The <code>texture</code> function then samples the corresponding color value using the texture parameters we set earlier.</p>
-						<p class="fragment">The output of this fragment shader is then the (filtered) color of the texture at the (interpolated) texture coordinate.</p>
-					</section>
-					<section>
-						<p class="fragment">All that's left to do now is to bind the texture before calling the <code>glDrawElements</code> and it will then automatically assign the texture to the fragment shader's sampler:</p>
-						<pre class="fragment"><code>glBindTexture(GL_TEXTURE_2D, texture);
-glBindVertexArray(VAO);
-glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);</code></pre>
-					</section>
-					<section>
-						<img src="images/OpenGL/textures_output.png" width="70%" class="plain">
-					</section>
-					<section>
-						<p class="fragment">To get a little funky we can also mix the resulting texture color with the vertex colors. We simply multiply the resulting texture color with the vertex color in the fragment shader to mix both colors:</p>
-						<pre class="fragment"><code>outColor = texture(ourTexture, TexCoord) * vec4(Color, 1.0);</code></pre>
-					</section>
-					<section>
-						<img src="images/OpenGL/textures_color_mix.png" width="70%" class="plain">
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>Texture Units</h2>
-					</section>
-					<section>
-						<p class="fragment">You probably wondered why the <code>sampler2D</code> variable is a uniform if we didn't even assign it some value with <code>glUniform</code>.</p>
-						<p class="fragment">Using <code>glUniform1i</code> we can actually assign a location value to the texture sampler so we can set multiple textures at once in a fragment shader.</p>
-						<p class="fragment">This location of a texture is more commonly known as a texture unit.</p>
-						<p class="fragment">The default texture unit for a texture is 0 which is the default active texture unit so we did not had to assign a location in the previous section; note that not all graphics drivers assign a default texture unit so the previous section might not've rendered for you.</p>
-					</section>
-					<section>
-						<p class="fragment">The main purpose of texture units is to allow us to use more than 1 texture in our shaders.</p>
-						<p class="fragment">By assigning texture units to the samplers, we can bind to multiple textures at once as long as we activate the corresponding texture unit first.</p>
-						<p class="fragment">Just like <code>glBindTexture</code> we can activate texture units using <code>glActiveTexture</code> passing in the texture unit we'd like to use:</p>
-						<pre class="fragment"><code>glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
-glBindTexture(GL_TEXTURE_2D, texture);</code></pre>
-					</section>
-					<section>
-						<p class="fragment">After activating a texture unit, a subsequent <code>glBindTexture</code> call will bind that texture to the currently active texture unit.</p>
-						<p class="fragment">Texture unit <code>GL_TEXTURE0</code> is always by default activated, so we didn't have to activate any texture units in the previous example when using <code>glBindTexture</code>.</p>
-					</section>
-					<section>
-						<p class="fragment">We still however need to edit the fragment shader to accept another sampler. This should be relatively straightforward now:</p>
-						<div class="fragment"><pre class="stretch"><code>#version 330 core
-in vec3 Color;
-in vec2 TexCoord;
-
-out vec4 outColor;
-
-uniform sampler2D ourTexture;
-uniform sampler2D ourTexture2;
-
-void main()
-{
-	vec4 colTex1 = texture(ourTexture, TexCoord);
-	vec4 colTex2 = texture(ourTexture2, TexCoord);
-	outColor = mix(colTex1, colTex2, 0.5);
-}</code></pre></div>
-					</section>
-					<section>
-						<pre class="stretch"><code>#version 330 core
-in vec3 Color;
-in vec2 TexCoord;
-
-out vec4 outColor;
-
-uniform sampler2D ourTexture;
-uniform sampler2D ourTexture2;
-
-void main()
-{
-	vec4 colTex1 = texture(ourTexture, TexCoord);
-	vec4 colTex2 = texture(ourTexture2, TexCoord);
-	outColor = mix(colTex1, colTex2, 0.5);
-}</code></pre>
-						<p class="fragment">The final output color is now the combination of two texture lookups.</p>
-						<p class="fragment">GLSL's built-in mix function takes two values as input and linearly interpolates between them based on its third argument.</p>
-						<p class="fragment">If the third value is 0.0 it returns the first input; if it's 1.0 it returns the second input value.</p>
-						<p class="fragment">A value of 0.2 will return 80% of the first input color and 20% of the second input color, resulting in a mixture of both our textures.</p>
-					</section>
-					<section>
-						<p class="fragment">We will now load and create another texture.</p>
-						<p class="fragment">Make sure to create another texture object, load the image and generate the final texture using <code>glTexImage2D</code>.</p>
-						<p class="fragment">For the second texture we'll use an image of your facial expression while learning OpenGL.</p>
-					</section>
-					<section>
-						<p class="fragment">To use the second texture (and the first texture) we'd have to change the rendering procedure a bit by binding both textures to the corresponding texture unit:</p>
-						<pre class="fragment"><code>glActiveTexture(GL_TEXTURE0);
-glBindTexture(GL_TEXTURE_2D, texture1);
-glActiveTexture(GL_TEXTURE1);
-glBindTexture(GL_TEXTURE_2D, texture2);
-    
-glBindVertexArray(VAO);
-glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);</code></pre>
-					</section>
-					<section>
-						<p class="fragment">We also have to tell OpenGL to which texture unit each shader sampler belongs to by setting each sampler using glUniform1i. We only have to set this once, so we can do this before we enter the render loop:</p>
-						<div class="fragment"><pre class="stretch"><code>glUseProgram(shaderProgram); // don't forget to activate the shader before setting uniforms!
-
-GLuint textureLocation;
-GLuint textureLocation2;
-
-textureLocation = glGetUniformLocation(shaderProgram, "ourTexture");
-textureLocation2 = glGetUniformLocation(shaderProgram, "ourTexture2");
-
-glUniform1i(textureLocation, 0); // set it manually
-glUniform1i(textureLocation, 1); // or with shader class
-    
-while(...)
-{
-    [...]
-}</code></pre></div>
-					</section>
-					<section>
-						<img src="images/OpenGL/inverted_texture.png" width="70%" class="plain">
-					</section>
-					<section>
-						<p class="fragment">You probably noticed that the texture is flipped upside-down!</p>
-						<p class="fragment">This happens because OpenGL expects the <code>0.0</code> coordinate on the y-axis to be on the bottom side of the image, but images usually have <code>0.0</code> at the top of the y-axis.</p>
-						<p class="fragment">Luckily for us, <code>stb_image.h</code> can flip the y-axis during image loading by adding the following statment before loading any image:</p>
-						<pre class="fragment"><code>stbi_set_flip_vertically_on_load(true);</code></pre>
-					</section>
-					<section>
-						<img src="images/OpenGL/normal_texture.png" width="70%" class="plain">
+						<p class="fragment">Just imagine the possibilities!</p>
+						<p class="fragment">A machine that can mimic learning from experience with its neuron-like mind?</p>
+						<p class="fragment">A machine that learns from examples it "sees" instead of scientists in glasses having to give it a set of hard coded instructions to work?</p>
+						<p class="fragment">The hype was real, and people were optimistic.</p>
+						<p class="fragment">Due to its resemblance to the biological neuron, and how promising perceptron networks initially were, the New York Times has reported in 1958 that <em>"the Navy [has] revealed the embryo of an electronic computer today that it expects will be able to walk, talk, see, write, reproduce itself and be conscious of its existence."</em></p>
 					</section>					
+		            <section>
+		                <h3>Evolution of Neural Network Architectures</h3>
+		                <p>Addressing the limitations of single-layer perceptrons in solving non-linear problems.</p>
+		                <ul>
+		                    <li class="fragment"><strong>Limitations of Single-Layer Perceptrons:</strong> Unable to solve non-linear problems like the XOR function.</li>
+		                    <li class="fragment"><strong>Need for Multi-Layered Approaches:</strong> Complex data relationships require multiple layers, including hidden layers.</li>
+		                    <li class="fragment"><strong>Training Challenges:</strong> Early training methods for multi-layer perceptrons were inefficient, typically involving random weight adjustments.</li>
+		                    <li class="fragment"><strong>Innovative Breakthrough:</strong> Introduction of artificial neurons capable of using continuous values and activation functions facilitated effective training of multi-layer networks.</li>
+		                    <li class="fragment"><strong>Impact on Model Capability:</strong> This change enabled the modeling of more complex relationships and improved the overall performance of neural networks.</li>
+		                </ul>
+		            </section>
+		            <section>
+		            	<img src="NNs/transferfunctions.png" class="plain" width="60%">
+		            </section>
+		            <section>
+		                <h3>Transformative Advances in Neural Networks</h3>
+		                <p>A small change in neuron modeling led to significant advancements in machine learning.</p>
+		                <ul>
+		                    <li class="fragment"><strong>Model Change:</strong> Shift from binary to continuous output values allowed neurons to function in complex mathematical formulas.</li>
+		                    <li class="fragment"><strong>Backpropagation:</strong> This change enabled the use of backpropagation to efficiently train multiple layers.</li>
+		                    <li class="fragment"><strong>Continuous vs. Binary:</strong> Unlike biological neurons that fire binary signals, artificial neurons send continuous signals.</li>
+		                    <li class="fragment"><strong>Terminology Clarification:</strong> "Multilayer perceptron" is a misnomer as these actually use layers of artificial neurons.</li>
+		                    <li class="fragment"><strong>Computational Costs:</strong> Initially, high computational costs limited their use until advances in computing power and data availability.</li>
+		                    <li class="fragment"><strong>Revival with AlexNet:</strong> In 2012, AlexNet significantly advanced neural networks by winning the ImageNet challenge without relying on handcrafted features.</li>
+		                </ul>
+		            </section>
+		            <section>
+		            	<img src="NNs/alexnet.png" class="plain" width="100%">
+		            </section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+					<section>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+						<p class="fragment"></p>
+					</section>
+
 				</section>
 
 			</div>
