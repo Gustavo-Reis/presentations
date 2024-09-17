@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>AI for Game Development</title>
+
+		<meta name="description" content="Nuts and Bolts of AI and Machine Learning">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>				
+					<section>
+						<h1>AI in Game Development</h1>
+						Gustavo Reis
+					</section>
+				</section>
+				<section>
+					<section>
+						<h1>AI in Game Development</h1>
+						<ul>
+							<li class="fragment">NPCs</li>
+							<ul>
+								<li class="fragment">Mini-Max</li>
+								<li class="fragment">Finite State Machines</li>
+								<li class="fragment">Behavior Trees</li>
+								<li class="fragment">Neural Networks</li>
+								<li class="fragment">LLMs</li>
+							</ul>
+						</ul>
+					</section>
+					<section>
+						<h1>AI in Game Development</h1>
+						<ul>
+							<li class="fragment">Content Creation</li>
+							<ul>
+								<li class="fragment">Generative AI</li>
+							</ul>
+						</ul>
+					</section>
+				</section>							
+				<section>
+					<h1>Humans are inspired by nature</h1>
+					<ul>
+							<li class="fragment">Birds</li>
+							<ul>
+								<li class="fragment">Flying - Airplanes</li>
+							</ul>
+							<li class="fragment">Horses</li>
+							<ul>
+								<li class="fragment">Cars</li>
+							</ul>
+							<li class="fragment">Bio-Inspired Computing</li>
+							<ul>
+								<li class="fragment">Evolutionary Algorithms - Evolution</li>
+								<li class="fragment">Cellular Automata - Life</li>
+								<li class="fragment">Ant Colony Optimization - Ants</li>
+								<li class="fragment">Particle Swarm Optimization - Birds Flocking</li>
+								<li class="fragment">Artificial Neural Networks - Biological Neural Networks</li>
+								<li class="fragment">...</li>
+							</ul>							
+						</ul>
+				</section>
+				<section>
+					<section><h1>Artificial Neural Networks</h1></section>
+					<section>
+						<p class="fragment">Although artificial neurons and perceptrons were inspired by the biological processes scientists were able to observe in the brain back in the 50s, they do differ from their biological counterparts in several ways.</p>						
+						<div class="fragment"><img src="NNs/analogy.png" class="plain"></div>
+						<p class="fragment">The idea behind perceptrons (the predecessors to artificial neurons) is that it is possible to mimic certain parts of neurons, such as dendrites, cell bodies and axons using simplified mathematical models of what limited knowledge we have on their inner workings: signals can be received from dendrites, and sent down the axon once enough signals were received.</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h1>Finite State Machines</h1>
+					</section>					
+					<section>
+	                    <img src="IA/FSM.png" class="plain" width="50%">
+	                </section>
+				</section>
+				<section>
+					<section>
+						<h1>Behavior Trees</h1>
+					</section>					
+					<section>
+	                    <img src="IA/BT.png" class="plain" width="50%">
+	                </section>
+				</section>
+				<section>
+					<section>
+						<h1>Mini-Max</h1>
+					</section>					
+					<section>
+	                    <img src="IA/minimax.png" class="plain" width="50%">
+	                </section>
+				</section>
+
+				<section><H1>Questions?</H1></section>
+
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				width: 1920,
+				height: 1080,
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				transition: 'convex',
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
