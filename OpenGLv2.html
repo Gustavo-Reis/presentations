@@ -112,7 +112,7 @@
 #elif _WIN32
 #include &lt;SDL.h&gt;
 #endif
-int main(int argc, char **argv)
+int main(int argc, **char argv)
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -234,759 +234,406 @@ int main(int argc, char **argv)
 				</section>
 				<section>
 					<section>
-						<h1>The Graphics Pipeline</h1>
-					</section>
+						<h1>The Graphics Pipeline</h1>					
+					</section> 
 					<section>
-						<img src="images/OpenGL/c2_pipeline.png" class="plain">
-						<center><small>Image taken from: <a href="https://open.gl/drawing">https://open.gl/drawing</a></small></center>
-					</section>
+						 <img src="images/OpenGL/c2_pipeline.png" class="plain" alt="Graphics Pipeline Overview"> <center><small>Image taken from: <a href="https://open.gl/drawing">https://open.gl/drawing</a></small></center> 
+					</section> 
 					<section>
-						<h2>Vertex Shader</h2>
-						<p class="fragment">The vertex shader is a small program running on your graphics card that processes every one of these input vertices individually.</p>
-						<p class="fragment">This is where the perspective transformation takes place, which projects vertices with a 3D world position onto your 2D screen!</p>
-						<p class="fragment">It also passes important attributes like color and texture coordinates further down the pipeline.</p>
-					</section>
+						 <h2>Vertex Shader</h2> 
+						 <p class="fragment">The vertex shader is the first programmable stage in the graphics pipeline. It processes individual vertices, applying transformations to convert 3D world coordinates into 2D screen coordinates.</p> 
+						 <p class="fragment">This is where perspective transformations take place, projecting the 3D positions of vertices onto the 2D space of the screen.</p> 
+						 <p class="fragment">Besides transforming the vertices, the vertex shader passes attributes such as color, texture coordinates, and normals down the pipeline.</p> 
+					</section> 
 					<section>
-						<p class="fragment">After the input vertices have been transformed, the graphics card will form triangles, lines or points out of them.</p>
-						<p class="fragment">These shapes are called primitives because they form the basis of more complex shapes.</p>
-						<p class="fragment">There are some additional drawing modes to choose from, like triangle strips and line strips.</p>
-						<p class="fragment">These reduce the number of vertices you need to pass if you want to create objects where each next primitive is connected to the last one, like a continuous line consisting of several segments.</p>
-					</section>
+						 
+						<p class="fragment">Once the vertices are processed, the graphics card groups them into primitives — the basic building blocks of rendering. These primitives can be triangles, lines, or points.</p> 
+						 <p class="fragment">There are additional drawing modes, such as triangle strips or line strips, which reduce the number of vertices needed by connecting primitives continuously, like forming a connected line or mesh.</p> 
+					</section> 
 					<section>
-						<h2>Geometry Shader</h2>
-						<p class="fragment">The following step, the geometry shader, is completely optional and was only recently introduced.</p>
-						<p class="fragment">Unlike the vertex shader, the geometry shader can output more data than comes in.</p>
-						<p class="fragment">It takes the primitives from the shape assembly stage as input and can either pass a primitive through down to the rest of the pipeline, modify it first, completely discard it or even replace it with other primitive(s).</p>
-					</section>
+						 <h2>Geometry Shader</h2> 
+						 <p class="fragment">The geometry shader, an optional stage, was introduced more recently. Unlike the vertex shader, the geometry shader can output more vertices than it receives as input.</p> 
+						 <p class="fragment">It operates on entire primitives, such as triangles or lines, and can modify, discard, or generate new primitives.</p> 
+					</section> 
+					<section>						 
+						<p class="fragment">This stage can be especially useful when you want to minimize data transfers between the CPU and GPU. For example, in voxel games, you can pass only the positions of vertices, and the geometry shader can generate cubes or other shapes at runtime.</p> 
+					</section> 
 					<section>
-						<p class="fragment">Since the communication between the GPU and the rest of the PC is relatively slow, this stage can help you reduce the amount of data that needs to be transferred.</p>
-						<p class="fragment">With a voxel game for example, you could pass vertices as point vertices, along with an attribute for their world position, color and material and the actual cubes can be produced in the geometry shader with a point as input!</p>
-					</section>
+						 <h2>Fragment Shader</h2> 
+						 <p class="fragment">After the vertices and primitives are processed, the fragment shader handles the per-pixel operations.</p> 
+						 <p class="fragment">The rasterizer converts the visible parts of primitives into pixel-sized fragments. The interpolated attributes from the vertex shader (or geometry shader) are passed to the fragment shader for each fragment.</p> 
+						 <p class="fragment">For instance, in a triangle, even though you only specified color at three vertices, the colors across the triangle’s surface are smoothly interpolated.</p> 
+						</section> 
+					<section>						 
+						<p class="fragment">The fragment shader calculates the final color of each fragment by using inputs such as texture coordinates, lighting calculations, and more. It’s also responsible for performing advanced effects like lighting, shadowing, and texture mapping.</p> 
+					</section> 
+					<section>						 
+						<p class="fragment">Additionally, the fragment shader can discard fragments, making certain parts of the shape transparent or see-through. This is especially useful when rendering objects like windows or glass.</p> 
+						 <p class="fragment">The final output of the fragment shader is passed through depth and stencil testing stages, where the GPU determines which fragments should be visible based on depth or stencil rules.</p> 
+						</section> 
+					<section>						 
+						<p class="fragment">The main takeaway from depth and stencil testing is that they allow the GPU to decide which fragments are visible based on their relative position. For example, a fragment of a triangle closer to the camera will obscure fragments from triangles farther away.</p> 
+					</section> </section>
+				
 					<section>
-						<h2>Fragment Shader</h2>
-						<p class="fragment">After the final list of shapes is composed and converted to screen coordinates, the rasterizer turns the visible parts of the shapes into pixel-sized fragments.</p>
-						<p class="fragment">The vertex attributes coming from the vertex shader or geometry shader are interpolated and passed as input to the fragment shader for each fragment.</p>
-						<p class="fragment">As you can see in the image, the colors are smoothly interpolated over the fragments that make up the triangle, even though only 3 points were specified.</p>
-					</section>
-					<section>
-						<p class="fragment">The fragment shader processes each individual fragment along with its interpolated attributes and should output the final color.</p>
-						<p class="fragment">This is usually done by sampling from a texture using the interpolated texture coordinate vertex attributes or simply outputting a color.</p>
-						<p class="fragment">In more advanced scenarios, there could also be calculations related to lighting and shadowing and special effects in this program.</p>
-					</section>
-					<section>
-						<p class="fragment">The shader also has the ability to discard certain fragments, which means that a shape will be see-through there.</p>
-						<p class="fragment">Finally, the end result is composed from all these shape fragments by blending them together and performing <b>depth</b> and <b>stencil testing</b>.</p>
-					</section>
-					<section>
-						<p class="fragment">All you need to know about these last two right now, is that they allow you to use additional rules to throw away certain fragments and let others pass.</p>
-						<p class="fragment">For example, if one triangle is obscured by another triangle, the fragment of the closer triangle should end up on the screen.</p>
-					</section>
-				</section>
-				<section>
-					<section>
-						<h1>Hello Triangle</h1>
-					</section>
-					<section>
-						<h2>Vertex Input</h2>
-						<p class="fragment">To start drawing something we have to first give OpenGL some input vertex data.</p>
-						<p class="fragment">OpenGL is a 3D graphics library so all coordinates that we specify in OpenGL are in 3D (x, y and z coordinate).</p>
-						<p class="fragment">OpenGL doesn't simply transform all your 3D coordinates to 2D pixels on your screen:</p>
-						<ul class="fragment">
-							<li>OpenGL only processes 3D coordinates when they're in a specific range between -1.0 and 1.0 on all 3 axes (x, y and z).</li>
-						</ul>
-					</section>
-					<section>
-						<p class="fragment">All coordinates within this so called normalized device coordinates range will end up visible on your screen (and all coordinates outside this region won't).</p>
-						<p class="fragment">Because we want to render a single triangle we want to specify a total of three vertices with each vertex having a 3D position.</p>
-						<p class="fragment">We define them in normalized device coordinates (the visible region of OpenGL) in a float array:</p>
-						<pre  class="fragment"><code>float vertices[] = {
- 0.0f,  0.5f, // Vertex 1 (X, Y)
- 0.5f, -0.5f, // Vertex 2 (X, Y)
--0.5f, -0.5f  // Vertex 3 (X, Y)
+						<section>
+							<h1>Hello Triangle</h1>
+						</section>
+						
+						<section>
+							<h2>Vertex Input</h2>
+							<p class="fragment">To start drawing something, we first need to provide OpenGL with input vertex data.</p>
+							<p class="fragment">OpenGL is a 3D graphics library, meaning all coordinates we specify are in 3D (x, y, and z coordinates).</p>
+							<p class="fragment">However, OpenGL only processes 3D coordinates that are within a specific range:</p>
+							<ul class="fragment">
+								<li>Coordinates must be between -1.0 and 1.0 on all three axes (x, y, and z) to be visible on the screen.</li>
+							</ul>
+						</section>
+						
+						<section>
+							<p class="fragment">Coordinates within this <strong>normalized device coordinates (NDC)</strong> range are rendered on the screen, while those outside are discarded.</p>
+							<p class="fragment">To render a triangle, we need to define three vertices with 3D positions:</p>
+							<pre class="fragment"><code>float vertices[] = {
+  0.0f,  0.5f,  // Vertex 1 (X, Y)
+  0.5f, -0.5f,  // Vertex 2 (X, Y)
+ -0.5f, -0.5f   // Vertex 3 (X, Y)
 };</code></pre>
-					</section>
-					<section>
-						<h2>Normalized Device Coordinates (NDC)</h2>
-						<p class="fragment">Once your vertex coordinates have been processed in the vertex shader, they should be in normalized device coordinates which is a small space where the x, y and z values vary from -1.0 to 1.0.</p>
-						<p class="fragment">Any coordinates that fall outside this range will be discarded/clipped and won't be visible on your screen.</p>
-					</section>
-					<section>
-						<p class="fragment">Below you can see the triangle we specified within normalized device coordinates (ignoring the z axis):</p>
-						<p class="fragment"><img class ="plain" src="images/OpenGL/ndc.png" width="100%"></p>
-					</section>
-					<section>
-						<p class="fragment">With the vertex data defined we'd like to send it as input to the first process of the graphics pipeline: the vertex shader.</p>
-						<p class="fragment">This is done by creating memory on the GPU where we store the vertex data, configure how OpenGL should interpret the memory and specify how to send the data to the graphics card.</p>
-						<p class="fragment">The vertex shader then processes as much vertices as we tell it to from its memory.</p>
-					</section>
-					<section>
-						<p class="fragment">We manage this memory via so called vertex buffer objects (VBO) that can store a large number of vertices in the GPU's memory.</p>
-						<p class="fragment">The advantage of using those buffer objects is that we can send large batches of data all at once to the graphics card without having to send data a vertex a time.</p>
-						<p class="fragment">Sending data to the graphics card from the CPU is relatively slow, so wherever we can we try to send as much data as possible at once.</p>
-					</section>
-					<section>
-						<p class="fragment">Once the data is in the graphics card's memory the vertex shader has almost instant access to the vertices making it extremely fast.</p>
-						<p class="fragment">A vertex buffer object is our first occurrence of an OpenGL object.</p>
-					</section>
-					<section>
-						<p class="fragment">Just like any object in OpenGL this buffer has a unique ID corresponding to that buffer, so we can generate one with a buffer ID using the glGenBuffers function:</p>
-						<pre class="fragment"><code>GLuint vbo;
+						</section>
+						
+						<section>
+							<h2>Normalized Device Coordinates (NDC)</h2>
+							<p class="fragment">Once processed by the vertex shader, vertex coordinates are transformed into normalized device coordinates, where the x, y, and z values range from -1.0 to 1.0.</p>
+							<p class="fragment">Any coordinates outside this range are clipped and not visible on the screen.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">The following image illustrates the triangle in normalized device coordinates:</p>
+							<p class="fragment"><img class="plain" src="images/OpenGL/ndc.png" width="100%" alt="Triangle in NDC"></p>
+						</section>
+						
+						<section>
+							<p class="fragment">With the vertex data defined, we send it as input to the first process of the graphics pipeline: the vertex shader.</p>
+							<p class="fragment">This involves creating memory on the GPU to store the vertex data, configuring OpenGL to interpret the memory, and specifying how the data is sent to the graphics card.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">We use <strong>Vertex Buffer Objects (VBOs)</strong> to store a large number of vertices in the GPU’s memory. The advantage is that we can send large batches of data all at once, avoiding the overhead of sending one vertex at a time.</p>
+							<p class="fragment">The vertex shader processes vertices directly from the GPU memory, making this process extremely fast.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">VBOs are OpenGL objects, identified by unique IDs. We generate a buffer ID using the <code>glGenBuffers</code> function:</p>
+							<pre class="fragment"><code>GLuint vbo;
 glGenBuffers(1, &vbo); // Generate 1 buffer</code></pre>
-						<p class="fragment">or</p>
-						<pre class="fragment"><code>unsigned int vbo;
-glGenBuffers(1, &vbo); // Generate 1 buffer</code></pre>
-					</section>
-					<section><pre><code>GLuint vbo;
-glGenBuffers(1, &vbo); // Generate 1 buffer</code></pre>
-						<p class="fragment">The memory is managed by OpenGL, so instead of a pointer you get a positive number as a reference to it.</p>
-						<p class="fragment"><code>GLuint</code> is simply a cross-platform substitute for <code>unsigned int</code>, just like <code>GLint</code> is one for <code>int</code>.</p>
-						<p class="fragment">You will need this number to make the VBO active and to destroy it when you're done with it.</p>
-					</section>
-					<section>
-						<p class="fragment">OpenGL has many types of buffer objects and the buffer type of a vertex buffer object is <code>GL_ARRAY_BUFFER</code>.</p>
-						<p class="fragment">OpenGL allows us to bind to several buffers at once as long as they have a different buffer type.</p>
-						<p class="fragment">We can bind the newly created buffer to the <code>GL_ARRAY_BUFFER</code> target with the <code>glBindBuffer</code> function:</p>
-						<pre class="fragment"><code>glBindBuffer(GL_ARRAY_BUFFER, vbo);</code></pre>
-					</section>
-					<section>
-						<p class="fragment">From that point on any buffer calls we make (on the <code>GL_ARRAY_BUFFER</code> target) will be used to configure the currently bound buffer, which is <code>vbo</code>.</p>
-						<p class="fragment">Then we can make a call to <code>glBufferData</code> function that copies the previously defined vertex data into the buffer's memory:</p>
-						<pre class="fragment"><code>glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);</code></pre>
-					</section>
-					<section>
-						<pre><code>glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);</code></pre>
-						<p class="fragment"><code>glBufferData</code> is a function specifically targeted to copy user-defined data into the currently bound buffer.</p>
-						<p class="fragment">Its first argument is the type of the buffer we want to copy data into: the vertex buffer object currently bound to the <code>GL_ARRAY_BUFFER</code> target.</p>
-						<p class="fragment">The second argument specifies the size of the data (in bytes) we want to pass to the buffer; a simple <code>sizeof</code> of the vertex data suffices.</p>
-						<p class="fragment">The third parameter is the actual data we want to send.</p>
-					</section>
-					<section>
-						<pre><code>glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);</code></pre>
-						<p class="fragment">The fourth parameter specifies how we want the graphics card to manage the given data. This can take 3 forms:</p>
-						<ul class="fragment">
-							<li><code>GL_STATIC_DRAW</code>: the data will most likely not change at all or very rarely.</li>
-							<li><code>GL_DYNAMIC_DRAW</code>: the data is likely to change a lot.</li>
-							<li><code>GL_STREAM_DRAW</code>: the data will change every time it is drawn.</li>
-						</ul>
-					</section>
-					<section>
-						<p class="fragment">The position data of the triangle does not change and stays the same for every render call so its usage type should best be <code>GL_STATIC_DRAW</code>.</p>
-						<p class="fragment">If, for instance, one would have a buffer with data that is likely to change frequently, a usage type of <code>GL_DYNAMIC_DRAW</code> or <code>GL_STREAM_DRAW</code> ensures the graphics card will place the data in memory that allows for faster writes.</p>
-					</section>
-					<section>
-						<p class="fragment">As of now we stored the vertex data within memory on the graphics card as managed by a vertex buffer object named <code>vbo</code>.</p>
-						<p class="fragment">Next we want to create a vertex and fragment shader that actually processes this data.</p>
-					</section>
-					<section>
-						<h2>Vertex Shader</h2>
-						<p class="fragment">The vertex shader is a program on the graphics card that processes each vertex and its attributes as they appear in the vertex array.</p>
-						<p class="fragment">Its duty is to output the final vertex position in device coordinates and to output any data the fragment shader requires.</p>
-						<p class="fragment">That's why the 3D transformation should take place here.</p>
-					</section>
-					<section>
-						<p class="fragment">The fragment shader depends on attributes like the color and texture coordinates, which will usually be passed from input to output without any calculations.</p>
-						<p class="fragment">Since our vertex position is already specified as device coordinates and no other attributes exist, the vertex shader will be quite simple:</p>
-						<pre class="fragment"><code>#version 330 core
+						</section>
+						
+						<section>
+							<p class="fragment">After generating the buffer, we bind it to the <code>GL_ARRAY_BUFFER</code> target:</p>
+							<pre class="fragment"><code>glBindBuffer(GL_ARRAY_BUFFER, vbo);</code></pre>
+							<p class="fragment">Once bound, any operations on <code>GL_ARRAY_BUFFER</code> will apply to this buffer.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">We can now copy the vertex data into the buffer's memory using the <code>glBufferData</code> function:</p>
+							<pre class="fragment"><code>glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);</code></pre>
+						</section>
+						
+						<section>
+							<p class="fragment"><code>glBufferData</code> takes the following arguments:</p>
+							<ul class="fragment">
+								<li>The buffer target (in this case, <code>GL_ARRAY_BUFFER</code>).</li>
+								<li>The size of the data being passed (using <code>sizeof(vertices)</code>).</li>
+								<li>The actual vertex data to store in the buffer.</li>
+								<li>A usage hint to tell the GPU how we intend to use this data (e.g., <code>GL_STATIC_DRAW</code>, <code>GL_DYNAMIC_DRAW</code>, or <code>GL_STREAM_DRAW</code>).</li>
+							</ul>
+							<p class="fragment">Since the vertex data will rarely change, we use <code>GL_STATIC_DRAW</code> for optimal performance.</p>
+						</section>
+						
+						<section>
+							<h2>Vertex Shader</h2>
+							<p class="fragment">The <strong>vertex shader</strong> processes each vertex and its attributes from the vertex buffer. Its role is to output the final vertex position in device coordinates and pass relevant data to the fragment shader.</p>
+							<pre class="fragment"><code>#version 330 core
 layout (location = 0) in vec2 position;
 void main()
 {
 	gl_Position = vec4(position, 0.0, 1.0);
 }</code></pre>
-					</section>
-					<section><pre><code>#version 330 core
-layout (location = 0) in vec2 position;
-void main()
-{
-	gl_Position = vec4(position, 0.0, 1.0);
-}</code></pre>
-						<p class="fragment">As you can see, GLSL (OpenGL Shading Language) looks similar to C.</p>
-						<p class="fragment">Each shader begins with a declaration of its version.</p>
-						<p class="fragment">Since OpenGL 3.3 and higher the version numbers of GLSL match the version of OpenGL (GLSL version 420 corresponds to OpenGL version 4.2 for example).</p>
-					</section>
-					<section><pre><code>#version 330 core
-layout (location = 0) in vec2 position;
-void main()
-{
-	gl_Position = vec4(position, 0.0, 1.0);
-}</code></pre>
-						<p class="fragment">Next, we declare all the input vertex attributes in the vertex shader with the in keyword.</p>
-						<p class="fragment">Right now we only care about position data so we only need a single vertex attribute.</p>
-						<p class="fragment">GLSL has a vector datatype that contains 1 to 4 floats based on its postfix digit.</p>
-					</section>
-					<section><pre><code>#version 330 core
-layout (location = 0) in vec2 position;
-void main()
-{
-	gl_Position = vec4(position, 0.0, 1.0);
-}</code></pre>
-						<p class="fragment">Since each vertex has a 2D coordinate we create a <code>vec2</code> input variable with the name <code>position</code>.</p>
-						<p class="fragment">We also specifically set the location of the input variable via <code>layout (location = 0)</code> and you'll later see that why we're going to need that location.</p>
-					</section>
-					<section>
-						<p class="fragment">Apart from the regular C types, GLSL has built-in vector and matrix types identified by <code>vec</code>* and <code>mat</code>* identifiers.</p>
-						<p class="fragment">The type of the values within these constructs is always a <code>float</code>.</p>
-						<p class="fragment">The number after vec specifies the number of components (x, y, z, w) and the number after <code>mat</code> specifies the number of rows /columns.</p>
-						<p class="fragment">Since the position attribute consists of only an X and Y coordinate, <code>vec2</code> is perfect.</p>
-					</section>
-					<section>
-						<p class="fragment">You can be quite creative when working with these vertex types. In the example above a shortcut was used to set the first two components of the <code>vec4</code> to those of <code>vec2</code>.</p>
-						<p class="fragment">These two lines are equal:</p>
-						<pre class="fragment"><code>gl_Position = vec4(position, 0.0, 1.0);
-gl_Position = vec4(position.x, position.y, 0.0, 1.0);</code></pre>
-						<p class="fragment">When you're working with colors, you can also access the individual components with r, g, b and a instead of x, y, z and w.</p>
-						<p class="fragment">This makes no difference and can help with clarity.</p>
-					</section>
-					<section>
-						<p class="fragment">The final position of the vertex is assigned to the special <code>gl_Position</code> variable, because the position is needed for primitive assembly and many other built-in processes.</p>
-						<p class="fragment">For these to function correctly, the last value <code>w</code> needs to have a value of <code>1.0f</code></p>
-						<p class="fragment">Other than that, you're free to do anything you want with the attributes and we'll see how to output those when we add color to the triangle later on.</p>
-					</section>
-					<section>
-						<h2>Fragment Shader</h2>
-						<p class="fragment">The output from the vertex shader is interpolated over all the pixels on the screen covered by a primitive.​</p>
-						<p class="fragment">These pixels are called fragments and this is what the fragment shader operates on.​</p>
-						<p class="fragment">Just like the vertex shader it has one mandatory output, the final color of a fragment.​</p>
-						<p class="fragment">It's up to you to write the code for computing this color from vertex colors, texture coordinates and any other data coming from the vertex shader.​</p>
-					</section>
-					<section>
-						<p class="fragment">To keep things simple the fragment shader will always output an orange-ish color:​</p>
-						<pre class="fragment"><code>#version 330 core
+							<p class="fragment">This GLSL (OpenGL Shading Language) shader takes a 2D position as input and sets the <code>gl_Position</code> to output the position in 3D space.</p>
+						</section>
+						
+						<section>
+							<h2>Fragment Shader</h2>
+							<p class="fragment">The <strong>fragment shader</strong> determines the color of each pixel (or fragment) that makes up the shapes drawn on the screen. For now, the fragment shader will output a fixed color:</p>
+							<pre class="fragment"><code>#version 330 core
 out vec4 outColor;
-
 void main()
 {
-	outColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-}
-						</code></pre>
-					</section>
-					<section>
-						<pre><code>#version 330 core
-out vec4 outColor;
-
-void main()
-{
-	outColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-}
-						</code></pre>
-						<p class="fragment">Notice that we're not using some built-in variable for outputting the color, say <code>gl_FragColor</code>.</p>
-						<p class="fragment">This is because a fragment shader can in fact output multiple colors and we'll see how to handle this when actually loading these shaders.</p>
-					</section>
-					<section>
-												<pre><code>#version 330 core
-out vec4 outColor;
-
-void main()
-{
-	outColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-}
-						</code></pre>
-						<p class="fragment">The <code>outColor</code> variable uses the type <code>vec4</code>, because each color consists of a red, green, blue and alpha component.</p>
-						<p class="fragment">Colors in OpenGL are generally represented as floating point numbers between 0.0 and 1.0 instead of the common 0 and 255.</p>
-					</section>
-					<section>
-						<h3>Compiling Shaders</h3>
-						<p class="fragment">Compiling shaders is easy once you have loaded the source code (either from file or as a hard-coded string).</p>
-						<p class="fragment">You can easily include your shader source in the C++ code through C++11 raw string literals:</p>
-						<pre class = "fragment"><code>const char* vertexShaderSource = R"glsl(
+	outColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);  // Orange color
+}</code></pre>
+						</section>
+						<section>
+							<h2>Compiling Shaders</h2>
+							<p class="fragment">To use shaders in OpenGL, we first need to compile them at runtime. Let's start with the vertex shader.</p>
+							<p class="fragment">We write the vertex shader source code as a string, and OpenGL dynamically compiles it:</p>
+							<pre class="fragment"><code>const char* vertexShaderSource = R"glsl(
 #version 330 core
-
-in vec2 position;
-
+layout (location = 0) in vec2 position;
 void main()
 {
-    gl_Position = vec4(position, 0.0, 1.0);
+	gl_Position = vec4(position, 0.0, 1.0);
 }
 )glsl";</code></pre>
-					</section>
-					<section>
-						<p class="fragment">We wrote the source code for the vertex shader (stored in a C string), but in order for OpenGL to use the shader it has to dynamically compile it at run-time from its source code.</p>
-						<p class="fragment">The first thing we need to do is create a shader object, again referenced by an ID. So we store the vertex shader as an unsigned int and create the shader with <code>glCreateShader</code>:</p>
-						<pre class="fragment"><code>GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-</code></pre>
-					</section>
-					<section>
-						<pre><code>GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-</code></pre>			
-						<p class="fragment">We provide the type of shader we want to create as an argument to <code>glCreateShader</code>. Since we're creating a vertex shader we pass in <code>GL_VERTEX_SHADER</code>.</p>
-						<p class="fragment">Next we attach the shader source code to the shader object and compile the shader:</p>
-						<pre class="fragment"><code>glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-glCompileShader(vertexShader);
-</code></pre>
-					</section>
-					<section>
-						<pre><code>glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-glCompileShader(vertexShader);
-</code></pre>
-						<p class="fragment">The <code>glShaderSource</code> function takes the shader object to compile to as its first argument.</p>
-						<p class="fragment">The second argument specifies how many strings we're passing as source code, which is only one.</p>
-						<p class="fragment">The third parameter is the actual source code of the vertex shader and we can leave the 4th parameter to <code>NULL</code>.</p>
-					</section>
-					<section>
-						<p class="fragment">You probably want to check if compilation was successful after the call to glCompileShader and if not, what errors were found so you can fix those.</p>
-						<p class="fragment">Checking for compile-time errors is accomplished as follows:</p>
-						<pre class="fragment"><code>GLint  success;
+						</section>
+						
+						<section>
+							<p class="fragment">To compile the shader, we first create a shader object, attach the source code to it, and compile it:</p>
+							<pre class="fragment"><code>GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER); // Create a vertex shader
+glShaderSource(vertexShader, 1, &vertexShaderSource, NULL); // Attach the shader source code
+glCompileShader(vertexShader); // Compile the shader</code></pre>
+						</section>
+						
+						<section>
+							<p class="fragment">It's important to check whether the shader compiled successfully. If not, we can retrieve the error message using the following code:</p>
+							<pre class="fragment"><code>GLint success;
 char infoLog[512];
-glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);</code></pre>
-						<p class="fragment">First we define an integer to indicate success and a storage container for the error messages (if any).</p>
-						<p class="fragment">Then we check if compilation was successful with <code>glGetShaderiv</code>.</p>
-					</section>
-					<section>
-						<p class="fragment">If compilation failed, we should retrieve the error message with glGetShaderInfoLog and print the error message.</p>
-						<pre class="fragment"><code>if(!success)
+glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+if (!success)
 {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+	std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 }</code></pre>
-					</section>
-					<section>
-						<p class="fragment">The fragment shader is compiled in exactly the same way:</p>
-						<pre class="fragment"><code>GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-glCompileShader(fragmentShader);</code></pre>
-					</section>
-					<section>
-						<h3>Shader Program</h3>
-						<p class="fragment">A shader program object is the final linked version of multiple shaders combined.</p>
-						<p class="fragment">To use the recently compiled shaders we have to link them to a shader program object and then activate this shader program when rendering objects.</p>
-						<p class="fragment">The activated shader program's shaders will be used when we issue render calls.</p>
-					</section>
-					<section>
-						<pre class="fragment"><code>GLuint shaderProgram;
-shaderProgram = glCreateProgram();</code></pre>
-						<p class="fragment">The <code>glCreateProgram</code> function creates a program and returns the ID reference to the newly created program object.</p>
-						<p class="fragment">Now we need to attach the previously compiled shaders to the program object and then link them with <code>glLinkProgram</code>:</p>
-						<pre class="fragment"><code>glAttachShader(shaderProgram, vertexShader);
-glAttachShader(shaderProgram, fragmentShader);
-glLinkProgram(shaderProgram);</code></pre>
-					</section>
-					<section>
-						<p class="fragment">Just like shader compilation we can also check if linking a shader program failed and retrieve the corresponding log.</p>
-						<p class="fragment">However, instead of using <code>glGetShaderiv</code> and <code>glGetShaderInfoLog</code> we now use:</p>
-						<pre class="fragment"><code>glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-if(!success) {
-    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+						</section>
+						
+						<section>
+							<p class="fragment">The fragment shader is compiled in a similar manner:</p>
+							<pre class="fragment"><code>const char* fragmentShaderSource = R"glsl(
+#version 330 core
+out vec4 outColor;
+void main()
+{
+	outColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);  // Orange color
+}
+)glsl";
+
+GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); // Create a fragment shader
+glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL); // Attach the shader source code
+glCompileShader(fragmentShader); // Compile the shader</code></pre>
+						</section>
+						
+						<section>
+							<p class="fragment">Similarly, you should check for errors after compiling the fragment shader:</p>
+							<pre class="fragment"><code>glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+if (!success)
+{
+	glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+	std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
 }</code></pre>
-					</section>
-					<section>
-						<p class="fragment">The result is a program object that we can activate by calling <code>glUseProgram</code> with the newly created program object as its argument:</p>
-						<pre class="fragment"><code>glUseProgram(shaderProgram);</code></pre>
-						<p class="fragment">Every shader and rendering call after glUseProgram will now use this program object (and thus the shaders).</p>
-						<p class="fragment">Next, delete the shader objects once we've linked them into the program object; we no longer need them anymore:</p>
-						<pre class="fragment"><code>glDeleteShader(vertexShader);
-glDeleteShader(fragmentShader);</code></pre>
-					</section>
-					<section>
-						<p class="fragment">Right now we sent the input vertex data to the GPU and instructed the GPU how it should process the vertex data within a vertex and fragment shader.</p>
-						<p class="fragment">We're almost done.</p>
-						<p class="fragment">OpenGL does not yet know how it should interpret the vertex data in memory and how it should connect the vertex data to the vertex shader's attributes.</p>
-					</section>
-					<section>
-						<h3>Linking Vertex Attributes</h3>
-						<p class="fragment">The vertex shader allows us to specify any input we want in the form of vertex attributes and while this allows for great flexibility, it does mean we have to manually specify what part of our input data goes to which vertex attribute in the vertex shader.</p>
-						<p class="fragment">This means we have to specify how OpenGL should interpret the vertex data before rendering.</p>
-					</section>
-					<section><pre><code>float vertices[] = {
-         0.0f,  0.5f, // Vertex 1 (X, Y)
-         0.5f, -0.5f, // Vertex 2 (X, Y)
-        -0.5f, -0.5f  // Vertex 3 (X, Y)
-    };
-</code></pre>
-						<p class="fragment"><img src="images/OpenGL/stride.png" class="plain"></p>
-					</section>
-					<section>
-						<img src="images/OpenGL/stride.png" class="plain" width="80%">
-						<p class="fragment">The position data is stored as 32-bit (4 byte) floating point values.</p>
-						<p class="fragment">Each position is composed of 2 of those values.</p>
-						<p class="fragment">There is no space (or other values) between each set of 2 values. The values are tightly packed in the array.</p>
-						<p class="fragment">The first value in the data is at the beginning of the buffer.</p>
-					</section>
-					<section>
-						<p class="fragment">With this knowledge, we can tell OpenGL how it should interpret the vertex data (per vertex attribute) using <code>glVertexAttribPointer</code>:</p>
-						<pre class="fragment"><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+						</section>
+						
+						<section>
+							<h2>Linking Shaders into a Shader Program</h2>
+							<p class="fragment">After compiling the shaders, we need to link them into a shader program. First, create a program object:</p>
+							<pre class="fragment"><code>GLuint shaderProgram = glCreateProgram();</code></pre>
+						</section>
+						
+						<section>
+							<p class="fragment">Next, attach the compiled vertex and fragment shaders to the program and link them:</p>
+							<pre class="fragment"><code>glAttachShader(shaderProgram, vertexShader);  // Attach the vertex shader
+glAttachShader(shaderProgram, fragmentShader);  // Attach the fragment shader
+glLinkProgram(shaderProgram);  // Link the shader program</code></pre>
+						</section>
+						
+						<section>
+							<p class="fragment">Again, it's a good idea to check if linking was successful:</p>
+							<pre class="fragment"><code>glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+if (!success)
+{
+	glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+	std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+}</code></pre>
+						</section>
+						
+						<section>
+							<p class="fragment">Once the shaders are linked into the program, we no longer need the individual shader objects, so they can be deleted:</p>
+							<pre class="fragment"><code>glDeleteShader(vertexShader); // Delete the vertex shader
+glDeleteShader(fragmentShader); // Delete the fragment shader</code></pre>
+						</section>
+						
+						<section>
+							<p class="fragment">Now, the <code>shaderProgram</code> contains the linked shaders, and we can use it in our render loop by calling:</p>
+							<pre class="fragment"><code>glUseProgram(shaderProgram);</code></pre>
+						</section>
+						<section>
+							<h3>Linking Vertex Attributes</h3>
+							<p class="fragment">After creating the shaders, OpenGL needs to know how to interpret the vertex data in memory and how to link this data to the vertex shader's attributes.</p>
+							<p class="fragment">This step involves linking the vertex data to the attributes declared in the vertex shader. In this case, we need to link the position attribute.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">First, we define the vertex data (positions of the triangle) in an array:</p>
+							<pre class="fragment"><code>float vertices[] = {
+	0.0f,  0.5f,  // Vertex 1 (X, Y)
+	0.5f, -0.5f,  // Vertex 2 (X, Y)
+	-0.5f, -0.5f   // Vertex 3 (X, Y)
+};</code></pre>
+							<p class="fragment"><img src="images/OpenGL/stride.png" class="plain"></p>
+						</section>
+						
+						<section>
+							<img src="images/OpenGL/stride.png" class="plain" width="80%">
+							<p class="fragment">The position attribute is stored as two floating point values per vertex, representing the X and Y coordinates. We will link this data to the <code>position</code> attribute in the vertex shader.</p>
+							<p class="fragment">The position data is stored as 32-bit (4 byte) floating point values.</p>
+							<p class="fragment">Each position is composed of 2 of those values.</p>
+							<p class="fragment">There is no space (or other values) between each set of 2 values. The values are tightly packed in the array.</p>
+							<p class="fragment">The first value in the data is at the beginning of the buffer.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">To link the vertex data to the vertex attribute, we use the <code>glVertexAttribPointer</code> function:</p>
+							<pre class="fragment"><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 glEnableVertexAttribArray(0);</code></pre>
-						<p class="fragment">The function <code>glVertexAttribPointer</code> has quite a few parameters so let's carefully walk through them...</p>
-					</section>
-					<section>
-						<pre class="fragment"><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+						
+						</section>
+						
+						<section>
+							<pre class="fragment"><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 glEnableVertexAttribArray(0);</code></pre>
-						<p class="fragment">The first parameter specifies which vertex attribute we want to configure.</p>
-						<p class="fragment">Remember that we specified the location of the <code>position</code> vertex attribute in the vertex shader with <code>layout (location = 0)</code>.</p>
-						<p class="fragment">This sets the location of the vertex attribute to 0 and since we want to pass data to this vertex attribute, we pass in 0.</p>
-					</section>
-					<section>
-						<pre><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+							<p class="fragment">Let’s break down the parameters of <code>glVertexAttribPointer</code>:</p>
+							<ul class="fragment">
+								<li><b>0</b>: The index of the vertex attribute. We specified the position attribute to have location 0 in the vertex shader using <code>layout (location = 0)</code>.</li>
+								<li><b>2</b>: The number of components per vertex attribute. Each position consists of two components: X and Y.</li>
+								<li><b>GL_FLOAT</b>: The data type of each component, which is <code>float</code>.</li>
+								<li><b>GL_FALSE</b>: Whether the data should be normalized. We set this to false because the data is already in the correct format.</li>
+								<li><b>2 * sizeof(float)</b>: The stride, which specifies the byte offset between consecutive vertex attributes. Since each vertex consists of two floats (X and Y), the stride is <code>2 * sizeof(float)</code>.</li>
+								<li><b>(void*)0</b>: The offset of the first component of the attribute in the array. Here, it is <code>0</code> since the position attribute is the first data in the array.</li>
+							</ul>
+						</section>
+						
+						<section>
+							<p class="fragment">After specifying the layout of the vertex data, we enable the vertex attribute at location 0 using:</p>
+							<pre class="fragment"><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 glEnableVertexAttribArray(0);</code></pre>
-						<p class="fragment">The next argument specifies the size of the vertex attribute. The vertex attribute is a <code>vec2</code> so it is composed of 2 values.</p>
-						<p class="fragment">The third argument specifies the type of the data which is <code>GL_FLOAT</code> (a <code>vec*</code> in GLSL consists of floating point values).</p>
-					</section>
-					<section>
-						<pre><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-glEnableVertexAttribArray(0);</code></pre>
-						<p class="fragment">The next argument specifies if we want the data to be normalized. If we set this to <code>GL_TRUE</code> all the data that has a value not between 0 (or -1 for signed data) and 1 will be mapped to those values. We leave this at <code>GL_FALSE</code>.</p>
-					</section>
-					<section>
-						<pre><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-glEnableVertexAttribArray(0);</code></pre>
-						<p class="fragment">The fifth argument is known as the stride and tells us the space between consecutive vertex attribute sets.</p>
-						<p class="fragment">Since the next set of position data is located exactly 2 times the size of a float away we specify that value as the stride.</p>
-					</section>
-					<section>
-						<pre><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-glEnableVertexAttribArray(0);</code></pre>
-						<p class="fragment">Note that since we know that the array is tightly packed (there is no space between the next vertex attribute value) we could've also specified the stride as 0 to let OpenGL determine the stride (this only works when values are tightly packed).</p>
-						<p class="fragment">Whenever we have more vertex attributes we have to carefully define the spacing between each vertex attribute but we'll get to see more examples of that later on.</p>
-					</section>
-					<section>
-						<pre><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-glEnableVertexAttribArray(0);</code></pre>
-						<p class="fragment">The last parameter is of type <code>void*</code> and thus requires a cast.</p>
-						<p class="fragment">This is the <b>offset</b> of where the position data begins in the buffer.</p>
-						<p class="fragment">Since the position data is at the start of the data array this value is just <b>0</b>.</p>
-					</section>					
-					<section>
-						<p class="fragment">Each vertex attribute takes its data from memory managed by a VBO and which VBO it takes its data from (one could have multiple VBOs) is determined by the vbo currently bound to <code>GL_ARRAY_BUFFER</code> when calling <code>glVertexAttribPointer</code>.</p>
-						<p class="fragment">Since the previously defined VBO was bound before calling <code>glVertexAttribPointer</code> vertex attribute 0 is now associated with its vertex data.</p>
-					</section>
-					<section>
-						<h3>Vertex Array Object</h3>
-						<p class="fragment">A vertex array object (also known as <b>VAO</b>) can be bound just like a vertex buffer object and any subsequent vertex attribute calls from that point on will be stored inside the VAO.</p>
-						<p class="fragment">This has the advantage that when configuring vertex attribute pointers you only have to make those calls once and whenever we want to draw the object, we can just bind the corresponding VAO.</p>
-					</section>
-					<section>
-						<p class="fragment">This makes switching between different vertex data and attribute configurations as easy as binding a different VAO.</p>
-						<p class="fragment">All the state we just set is stored inside the VAO.</p>
-					</section>
-					<section>
-						<p class="fragment"><b>Note:</b></p>
-						<p>
-						<ul>
-							<li class="fragment">Core OpenGL requires that we use a VAO so it knows what to do with our vertex inputs.</li>
-							<li class="fragment">If we fail to bind a VAO, OpenGL will most likely refuse to draw anything.</li>
-						</ul></p>
-					</section>
-					<section>
-						<p class="fragment">A vertex array object stores the following:</p>
-						<p>
-						<ul>
-							<li class="fragment">Calls to <code>glEnableVertexAttribArray</code> or <code>glDisableVertexAttribArray</code>.</li>
-							<li class="fragment">Vertex attribute configurations via <code>glVertexAttribPointer</code>.</li>
-							<li class="fragment">Vertex buffer objects associated with vertex attributes by calls to <code>glVertexAttribPointer</code>.</li>
-						</ul></p>
-					</section>
-					<section>
-						<img src="images/OpenGL/vao.png" class="plain" width="70%">
-					</section>
-					<section>
-						<p class="fragment">The process to generate a VAO looks simliar to that of a VBO:</p>
-						<pre class="fragment"><code>GLuint vao;
-glGenVertexArrays(1, &vao);</code></pre>
-						<p class="fragment">To use a VAO all you have to do is bind the VAO using <code>glBindVertexArray</code>.</p>
-						<p class="fragment">From that point on we should bind/configure the corresponding VBO(s) and attribute pointer(s) and then unbind the VAO for later use.</p>
-					</section>
-					<section>
-						<p class="fragment">As soon as we want to draw an object, we simply bind the VAO with the preferred settings before drawing the object and that is it.</p>
-					</section>
-					<section>
-						<pre><code>// ..:: Initialization code (done once (unless your object frequently changes)) :: ..
-// 1. bind Vertex Array Object
+						</section>
+						
+						<section>
+							<p class="fragment">Once linked, the vertex attribute configuration is stored in a Vertex Array Object (VAO). You only need to specify this configuration once, and OpenGL will remember it.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">This setup ensures that when we render our objects, the vertex data is correctly linked to the position attribute in the vertex shader.</p>
+						</section>
+						<section>
+							<h3>Vertex Array Object (VAO)</h3>
+							<p class="fragment">In OpenGL, a Vertex Array Object (VAO) stores the configuration of the vertex attributes and the buffers associated with them. This allows you to set up vertex attributes once and reuse them during rendering.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">A VAO can be bound just like any buffer object, and any vertex attribute calls made after binding the VAO will be stored in it.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">This is how we generate and bind a VAO:</p>
+							<pre class="fragment"><code>GLuint vao;
+glGenVertexArrays(1, &vao);
+glBindVertexArray(vao);</code></pre>
+						</section>
+						
+						<section>
+							<p class="fragment">The <code>glGenVertexArrays</code> function generates a VAO, and <code>glBindVertexArray</code> makes it the current active VAO. All subsequent vertex attribute calls will be stored in this VAO.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">Next, we bind the VBO and configure the vertex attributes as shown in the previous sections:</p>
+							<pre class="fragment"><code>// 1. Bind the VAO
 glBindVertexArray(vao);
-// 2. copy our vertices array in a buffer for OpenGL to use
+
+// 2. Copy the vertex data into a VBO
 glBindBuffer(GL_ARRAY_BUFFER, vbo);
 glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-// 3. then set our vertex attributes pointers
+
+// 3. Set up the vertex attribute pointers
 glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-glEnableVertexAttribArray(0);
-    
-[...]
- 
-// ..:: Drawing code (in render loop) :: ..
-// 4. draw the object
-glUseProgram(shaderProgram);
+glEnableVertexAttribArray(0);</code></pre>
+						</section>
+						
+						<section>
+							<p class="fragment">At this point, we have stored the vertex data configuration (using VBO) and vertex attribute pointers (using <code>glVertexAttribPointer</code>) inside the VAO. Now, we can unbind the VAO to avoid accidentally modifying it:</p>
+							<pre class="fragment"><code>glBindVertexArray(0);</code></pre>
+						</section>
+						
+						<section>
+							<p class="fragment">When we want to render an object, we simply bind the VAO, and OpenGL will automatically use the stored configuration:</p>
+							<pre class="fragment"><code>// Bind the VAO before drawing
 glBindVertexArray(vao);
-someOpenGLFunctionThatDrawsOurTriangle();</code></pre>
-					</section>
-					<section>
-						<p class="fragment">The VAO that stores our vertex attribute configuration and which VBO to use.</p>
-						<p class="fragment">Usually when you have multiple objects you want to draw, you first generate/configure all the VAOs (and thus the required VBO and attribute pointers) and store those for later use.</p>
-						<p class="fragment">The moment we want to draw one of our objects, we take the corresponding VAO, bind it, then draw the object and unbind the VAO again.</p>
-					</section>
-					<section>
-						<h3>Finally, the triangle!!!</h3>
-						<p class="fragment">To draw our objects of choice OpenGL provides us with the <code>glDrawArrays</code> function that draws primitives using the currently active shader, the previously defined vertex attribute configuration and with the VBO's vertex data (indirectly bound via the VAO).</p>
-						<pre class="fragment"><code>glUseProgram(shaderProgram);
+glDrawArrays(GL_TRIANGLES, 0, 3);
+glBindVertexArray(0);</code></pre>
+						</section>
+						
+						<section>
+							<p class="fragment">By binding the VAO, OpenGL automatically uses the associated vertex attributes and buffers. This allows you to efficiently switch between different objects by simply binding different VAOs.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">The VAO stores the following information:</p>
+							<ul class="fragment">
+								<li>Vertex attribute configurations such as <code>glVertexAttribPointer</code> calls</li>
+								<li>Enabled/disabled state of vertex attributes via <code>glEnableVertexAttribArray</code></li>
+								<li>Which VBOs are associated with which vertex attributes</li>
+							</ul>
+						</section>
+						
+						<section>
+							<p class="fragment"><b>Important Note:</b></p>
+							<ul class="fragment">
+								<li>In OpenGL's core profile, using a VAO is mandatory for rendering objects. Failing to bind a VAO will result in nothing being drawn.</li>
+							</ul>
+						</section>
+						
+						<section>
+							<img src="images/OpenGL/vao.png" class="plain" width="70%">
+						</section>
+						
+						<section>
+							<p class="fragment">In summary, the VAO encapsulates the state of all the vertex attribute configurations and buffer associations, allowing for efficient rendering of different objects by switching VAOs.</p>
+						</section>
+						
+						<section>
+							<h2>Drawing the Triangle</h2>
+							<p class="fragment">After configuring vertex and fragment shaders, we can now draw our triangle using the <code>glDrawArrays</code> function:</p>
+							<pre class="fragment"><code>glUseProgram(shaderProgram);
 glBindVertexArray(vao);
 glDrawArrays(GL_TRIANGLES, 0, 3);</code></pre>
-					</section>
-					<section>
-						<pre><code>glUseProgram(shaderProgram);
-glBindVertexArray(vao);
-glDrawArrays(GL_TRIANGLES, 0, 3);</code></pre>
-						<p class="fragment">The <code>glDrawArrays</code> function takes as its first argument the OpenGL primitive type we would like to draw.</p>
-						<p class="fragment">Since we said at the start we wanted to draw a triangle and I don't like lying to you, we pass in <code>GL_TRIANGLES</code>. The second argument specifies the starting index of the vertex array we'd like to draw; we just leave this at <b>0</b>.</p>
-					</section>
-					<section>
-						<pre><code>glUseProgram(shaderProgram);
-glBindVertexArray(vao);
-glDrawArrays(GL_TRIANGLES, 0, 3);</code></pre><p class="fragment">The last argument specifies how many vertices we want to draw, which is <b>3</b> (we only render <b>1</b> triangle from our data, which is exactly <b>3</b> vertices long).</p>
-					</section>
-					<section>
-						<img src="images/OpenGL/orange_triangle.png" class="plain" width="70%">
-					</section>
-				</section>
-				<section>
-					<section>
-						<h1>Uniforms</h1>
-					</section>
-					<section>
-						<p class="fragment">Right now the orange color of the triangle has been hard-coded into the shader code, but what <b>if you wanted to change it after compiling the shader</b>?</p>
-						<p class="fragment">As it turns out, vertex attributes are not the only way to pass data to shader programs.</p>
-						<p class="fragment">There is another way to pass data to the shaders called uniforms.</p>
-						<p class="fragment">These are essentially global variables, having the same value for all vertices and/or fragments.</p>
-						<p class="fragment">To demonstrate how to use these, let's make it possible to change the color of the triangle from the program itself.</p>
-					</section>
-					<section>
-						<pre><code>#version 330 core
+							<p class="fragment">The function draws 3 vertices starting at index 0 as a triangle.</p>
+						</section>
+						
+						<section>
+							<img src="images/OpenGL/orange_triangle.png" class="plain" width="70%" alt="Orange Triangle">
+						</section>
+						
+						<section>
+							<h2>Uniforms</h2>
+							<p class="fragment">We can also change the color of the triangle after compiling the shader by using <strong>uniforms</strong>, which are global variables available in shaders. Here's how we modify the triangle's color dynamically:</p>
+							<pre class="fragment"><code>#version 330 core
 uniform vec3 triangleColor;
 out vec4 outColor;
 void main()
 {
-    outColor = vec4(triangleColor, 1.0);
+	outColor = vec4(triangleColor, 1.0);
 }</code></pre>
-						<p class="fragment">The last component of the output color is transparency, which is not very interesting right now.</p>
-						<p class="fragment">If you run your program now you'll see that the triangle is black, because the value of <code>triangleColor</code> hasn't been set yet.</p>
+						</section>
+						
+						<section>
+							<p class="fragment">You can update the uniform value in your C++ code by retrieving the uniform location and setting its value with <code>glUniform</code> functions:</p>
+							<pre class="fragment"><code>GLint uniColor = glGetUniformLocation(shaderProgram, "triangleColor");
+glUniform3f(uniColor, 1.0f, 0.0f, 0.0f);  // Red color</code></pre>
+							<p class="fragment">This will change the triangle's color to red.</p>
+						</section>
+						
+						<section>
+							<img src="images/OpenGL/red_triangle.png" width="65%" class="plain" alt="Red Triangle">
+						</section>
 					</section>
-					<section>
-						<img src="images/OpenGL/black_triangle.png" width = "65%" class = "plain">
-					</section>
-					<section>
-						<p class="fragment">Changing the value of a uniform is just like setting vertex attributes, you first have to grab the location:</p>
-						<pre class="fragment"><code>GLint uniColor = glGetUniformLocation(shaderProgram, "triangleColor");</code></pre>
-						<p class="fragment">The values of uniforms are changed with any of the <code>glUniformXY</code> functions, where <code>X</code> is the number of components and <code>Y</code> is the type. Common types are <code>f</code> (float), d (double) and <code>i</code> (integer).</p>
-						<pre class="fragment"><code>glUniform3f(uniColor, 1.0f, 0.0f, 0.0f);</code></pre>
-						<p class="fragment">If you run your program now, you'll see that the triangle is red.</p>
-					</section>
-					<section>
-						<img src="images/OpenGL/red_triangle.png" width = "65%" class = "plain">
-					</section>
-					<section>
-						<p class="fragment">To make things a little more exciting, try varying the color with the time by doing something like this in your main loop:</p>
-						<pre class="fragment"><code>int start = SDL_GetTicks();
-
-[...]
-
-int now = SDL_GetTicks();
-float time = (now-start) / 1000.0f;
-glUniform3f(uniColor, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 0.0f);</code></pre>
-					</section>
-				</section>
-				<section>
-					<section><h1>Adding Some more Colors</h1></section>
-					<section>
-						<p class="fragment">Although uniforms have their place, color is something we'd rather like to specify per corner of the triangle!</p>
-						<p class="fragment">Let's add a color attribute to the vertices to accomplish this.</p>
-						<p class="fragment">We'll first have to add the extra attributes to the vertex data.</p>
-						<p class="fragment">Transparency isn't really relevant, so we'll only add the red, green and blue components:</p>
-						<pre class="fragment"><code>float vertices[] = {
-     0.0f,  0.5f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
-     0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // Vertex 2: Green
-    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f  // Vertex 3: Blue
-};</code></pre>
-					</section>
-					<section>
-						<p class="fragment">Then we have to change the vertex shader to take it as input and pass it to the fragment shader:</p>
-						<pre class="fragment"><code>#version 330 core
-in vec2 position;
-in vec3 color;
-out vec3 Color;
-void main()
-{
-    Color = color;
-    gl_Position = vec4(position, 0.0, 1.0);
-}</code></pre>
-					</section>
-					<section>
-						<p class="fragment">And Color is added as input to the fragment shader:</p>
-						<pre class="fragment"><code>#version 330 core
-in vec3 Color;
-out vec4 outColor;
-void main()
-{
-    outColor = vec4(Color, 1.0);
-}</code></pre>
-					</section>
-					<section>
-						<img src="images/OpenGL/out_in.png" class="plain" width="90%">
-						<p class="fragment">Make sure that the output of the vertex shader and the input of the fragment shader have the same name, or the shaders will not be linked properly.</p>
-					</section>
-					<section>
-						<p class="fragment">Now, we just need to alter the attribute pointer code a bit to accommodate for the new X, Y, R, G, B attribute order.</p>
-						<pre class="fragment"><code>GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-glEnableVertexAttribArray(posAttrib);
-glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
-    
-GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
-glEnableVertexAttribArray(colAttrib);
-glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)( 2 * sizeof(float)));
-</code></pre>
-						<p class="fragment">The fifth parameter is set to <code>5 * sizeof(float)</code> now, because each vertex consists of <code>5</code> floating point attribute values.</p>
-						<p class="fragment">The offset of <code>2 * sizeof(float)</code> for the color attribute is there because each vertex starts with <code>2</code> floating point values for the position that it has to skip over.</p>
-					</section>
-					<section>
-						<img src="images/OpenGL/colored_triangle.png" class="plain" width="70%">
-					</section>
-				</section>
-				<section>
-					<section>
-						<h1>Element Buffer Objects</h1>
-					</section>
-					<section>
-						<p class="fragment">Right now, the vertices are specified in the order in which they are drawn.</p>
-						<p class="fragment">Suppose we want to draw a rectangle instead of a triangle.</p>
-						<p class="fragment">We can draw a rectangle using two triangles (OpenGL mainly works with triangles).</p>
-						<p class="fragment">This will generate the following set of vertices:</p>
-						<pre class="fragment"><code>float vertices[] = {
-     // first triangle
-     0.5f,  0.5f,  // top right
-     0.5f, -0.5f,  // bottom right
-    -0.5f,  0.5f,  // top left
-     // second triangle
-     0.5f, -0.5f,  // bottom right
-    -0.5f, -0.5f,  // bottom left
-    -0.5f,  0.5f   // top left
-};</code></pre>
-					</section>
-					<section>
-						<pre><code>float vertices[] = {
-     // first triangle
-     0.5f,  0.5f,  // top right
-     0.5f, -0.5f,  // bottom right
-    -0.5f,  0.5f,  // top left
-     // second triangle
-     0.5f, -0.5f,  // bottom right
-    -0.5f, -0.5f,  // bottom left
-    -0.5f,  0.5f   // top left
-};</code></pre>
-						<p class="fragment">As you can see, there is some overlap on the vertices specified. We specify bottom right and top left twice!</p>
-						<p class="fragment">This is an overhead of 50% since the same rectangle could also be specified with only 4 vertices, instead of 6.</p>
-						<p class="fragment">This will only get worse as soon as we have more complex models that have over 1000s of triangles where there will be large chunks that overlap.</p>
-					</section>
-					<section>
-						<pre><code>float vertices[] = {
-     // first triangle
-     0.5f,  0.5f,  // top right
-     0.5f, -0.5f,  // bottom right
-    -0.5f,  0.5f,  // top left
-     // second triangle
-     0.5f, -0.5f,  // bottom right
-    -0.5f, -0.5f,  // bottom left
-    -0.5f,  0.5f   // top left
-};</code></pre>
-						<p class="fragment">What would be a better solution is to store only the unique vertices and then specify the order at which we want to draw these vertices in.</p>
-						<p class="fragment">In that case we would only have to store 4 vertices for the rectangle, and then just specify at which order we'd like to draw them.</p>
-					</section>
-					<section>
-						<p class="fragment">An EBO is a buffer, just like a vertex buffer object, that stores indices that OpenGL uses to decide what vertices to draw.</p>
-						<p class="fragment">This so called indexed drawing is exactly the solution to our problem.</p>
-						<p class="fragment">To get started we first have to specify the (unique) vertices and the indices to draw them as a rectangle:</p>
-						<pre class="fragment"><code>float vertices[] = {
-    0.5f,  0.5f, // top right
-    0.5f, -0.5f, // bottom right
-   -0.5f, -0.5f, // bottom left
-   -0.5f,  0.5f  // top left
-};
-unsigned int indices[] = {  // note that we start from 0!
-    0, 1, 3,   // first triangle
-    1, 2, 3    // second triangle
-};</code></pre>
-					</section>
-					<section>
-						<p class="fragment">You can see that, when using indices, we only need 4 vertices instead of 6.</p>
-						<p class="fragment">Next we need to create the element buffer object:</p>
-						<pre class="fragment"><code>GLuint ebo;
-glGenBuffers(1, &ebo);</code></pre>
-						<p class="fragment">Similar to the VBO we bind the EBO and copy the indices into the buffer with <code>glBufferData</code>.</p>
-					</section>
-					<section>
-						<p class="fragment">Also, just like the VBO we want to place those calls between a bind and an unbind call, although this time we specify GL_ELEMENT_ARRAY_BUFFER as the buffer type.</p>
-						<pre class="fragment"><code>glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);</code></pre>
-						<p class="fragment">Note that we're now giving <code>GL_ELEMENT_ARRAY_BUFFER</code> as the buffer target.</p>
-						<p class="fragment">The last thing left to do is replace the <code>glDrawArrays</code> call with <code>glDrawElements</code> to indicate we want to render the triangles from an index buffer.</p>
-					</section>
-					<section>
-						<p class="fragment">When using glDrawElements we're going to draw using indices provided in the element buffer object currently bound:</p>
-						<pre class="fragment"><code>glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);</code></pre>
-						<p class="fragment">The first argument specifies the mode we want to draw in, similar to <code>glDrawArrays</code>.</p>
-						<p class="fragment">The second argument is the count or number of elements we'd like to draw.</p>
-						<p class="fragment">We specified <code>6</code> indices so we want to draw <code>6</code> vertices in total.</p>
-						<p class="fragment">The third argument is the type of the indices which is of type <code>GL_UNSIGNED_INT</code>.</p>
-					</section>
-					<section>
-						<pre><code>glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);</code></pre>
-						<p class="fragment">The last argument allows us to specify an offset in the EBO (or pass in an index array, but that is when you're not using element buffer objects), but we're just going to leave this at <code>0</code>.</p>
-						<p class="fragment">The <code>glDrawElements</code> function takes its indices from the EBO currently bound to the <code>GL_ELEMENT_ARRAY_BUFFER</code> target.</p>
-						<p class="fragment">This means we have to bind the corresponding EBO each time we want to render an object with indices which seems again a bit cumbersome.</p>
-					</section>
-					<section>
-						<p class="fragment">It just so happens that a vertex array object also keeps track of element buffer object bindings.</p>
-						<p class="fragment">The element buffer object currently bound while a VAO is bound, is stored as the VAO's element buffer object.</p>
-						<p class="fragment">Binding to a VAO thus also automatically binds its EBO.</p>
-					</section>
-					<section>
-						<img src="images/OpenGL/ebo.png" class="plain" width="70%">
-					</section>
-					<section>
-						<p class="fragment"><b>Note:</b></p>
-						<ul>
-							<li class="fragment">A VAO stores the glBindBuffer calls when the target is <code>GL_ELEMENT_ARRAY_BUFFER</code>.</li>
-							<li class="fragment">This also means it stores its unbind calls so make sure you don't unbind the element array buffer before unbinding your VAO, otherwise it doesn't have an EBO configured.</li>
-						</ul>
-					</section>
-					<section>
-						<pre><code>// ..:: Initialization code :: ..
-// 1. bind Vertex Array Object
-glBindVertexArray(VAO);
-// 2. copy our vertices array in a vertex buffer for OpenGL to use
-glBindBuffer(GL_ARRAY_BUFFER, VBO);
-glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-// 3. copy our index array in a element buffer for OpenGL to use
-glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-// 4. then set the vertex attributes pointers
-glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-glEnableVertexAttribArray(0);
-
-[...]
-
-// ..:: Drawing code (in render loop) :: ..
-glUseProgram(shaderProgram);
-glBindVertexArray(VAO);
-glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0)
-glBindVertexArray(0);</code></pre>
-					</section>
-					<section>
-						<img src="images/OpenGL/rectangle.png" class="plain" width="70%">
-					</section>
-				</section>
-				<section>
-					<section>
-						<h1>Wireframe Mode</h1>
-					</section>
-					<section>
-						<p class="fragment">To draw your triangles in wireframe mode, you can configure how OpenGL draws its primitives via <code>glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)</code>.</p>
-						<p class="fragment">The first argument says we want to apply it to the front and back of all triangles and the second argument tells us to draw them as lines.</p>
-						<p class="fragment">Any subsequent drawing calls will render the triangles in wireframe mode until we set it back to its default using <code>glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)</code>.</p>
-					</section>
-					<section>
-						<img src="images/OpenGL/wireframe.png" class="plain" width="70%">
-					</section>
-				</section>
-
+						
 			</div>
 		</div>
 
