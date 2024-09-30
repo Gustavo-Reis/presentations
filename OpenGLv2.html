@@ -112,7 +112,7 @@
 #elif _WIN32
 #include &lt;SDL.h&gt;
 #endif
-int main(int argc, **char argv)
+int main(int argc, char** argv)
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -496,13 +496,20 @@ glEnableVertexAttribArray(0);</code></pre>
 						</section>
 						
 						<section>
-							<pre class="fragment"><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+							<pre><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 glEnableVertexAttribArray(0);</code></pre>
 							<p class="fragment">Let’s break down the parameters of <code>glVertexAttribPointer</code>:</p>
 							<ul class="fragment">
 								<li><b>0</b>: The index of the vertex attribute. We specified the position attribute to have location 0 in the vertex shader using <code>layout (location = 0)</code>.</li>
 								<li><b>2</b>: The number of components per vertex attribute. Each position consists of two components: X and Y.</li>
 								<li><b>GL_FLOAT</b>: The data type of each component, which is <code>float</code>.</li>
+							</ul>
+						</section>
+
+						<section>
+							<pre><code>glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);</code></pre>
+							<ul class="fragment">
 								<li><b>GL_FALSE</b>: Whether the data should be normalized. We set this to false because the data is already in the correct format.</li>
 								<li><b>2 * sizeof(float)</b>: The stride, which specifies the byte offset between consecutive vertex attributes. Since each vertex consists of two floats (X and Y), the stride is <code>2 * sizeof(float)</code>.</li>
 								<li><b>(void*)0</b>: The offset of the first component of the attribute in the array. Here, it is <code>0</code> since the position attribute is the first data in the array.</li>
