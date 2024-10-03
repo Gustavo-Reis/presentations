@@ -640,6 +640,222 @@ glUniform3f(uniColor, 1.0f, 0.0f, 0.0f);  // Red color</code></pre>
 							<img src="images/OpenGL/red_triangle.png" width="65%" class="plain" alt="Red Triangle">
 						</section>
 					</section>
+
+					<section>
+						<p class="fragment">To make things a little more exciting, try varying the color with the time by doing something like this in your main loop:</p>
+						<pre class="fragment"><code>int start = SDL_GetTicks();
+
+[...]
+
+int now = SDL_GetTicks();
+float time = (now-start) / 1000.0f;
+glUniform3f(uniColor, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 0.0f);</code></pre>
+					</section>
+				</section>
+				<section>
+					<section><h1>Adding Some more Colors</h1></section>
+					<section>
+						<p class="fragment">Although uniforms have their place, color is something we'd rather like to specify per corner of the triangle!</p>
+						<p class="fragment">Let's add a color attribute to the vertices to accomplish this.</p>
+						<p class="fragment">We'll first have to add the extra attributes to the vertex data.</p>
+						<p class="fragment">Transparency isn't really relevant, so we'll only add the red, green and blue components:</p>
+						<pre class="fragment"><code>float vertices[] = {
+     0.0f,  0.5f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
+     0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // Vertex 2: Green
+    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f  // Vertex 3: Blue
+};</code></pre>
+					</section>
+					<section>
+						<p class="fragment">Then we have to change the vertex shader to take it as input and pass it to the fragment shader:</p>
+						<pre class="fragment"><code>#version 330 core
+in vec2 position;
+in vec3 color;
+out vec3 Color;
+void main()
+{
+    Color = color;
+    gl_Position = vec4(position, 0.0, 1.0);
+}</code></pre>
+					</section>
+					<section>
+						<p class="fragment">And Color is added as input to the fragment shader:</p>
+						<pre class="fragment"><code>#version 330 core
+in vec3 Color;
+out vec4 outColor;
+void main()
+{
+    outColor = vec4(Color, 1.0);
+}</code></pre>
+					</section>
+					<section>
+						<img src="images/OpenGL/out_in.png" class="plain" width="90%">
+						<p class="fragment">Make sure that the output of the vertex shader and the input of the fragment shader have the same name, or the shaders will not be linked properly.</p>
+					</section>
+					<section>
+						<p class="fragment">Now, we just need to alter the attribute pointer code a bit to accommodate for the new X, Y, R, G, B attribute order.</p>
+						<pre class="fragment"><code>GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+glEnableVertexAttribArray(posAttrib);
+glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+    
+GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
+glEnableVertexAttribArray(colAttrib);
+glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)( 2 * sizeof(float)));
+</code></pre>
+						<p class="fragment">The fifth parameter is set to <code>5 * sizeof(float)</code> now, because each vertex consists of <code>5</code> floating point attribute values.</p>
+						<p class="fragment">The offset of <code>2 * sizeof(float)</code> for the color attribute is there because each vertex starts with <code>2</code> floating point values for the position that it has to skip over.</p>
+					</section>
+					<section>
+						<img src="images/OpenGL/colored_triangle.png" class="plain" width="70%">
+					</section>
+				</section>
+				<section>
+					<section>
+						<h1>Element Buffer Objects</h1>
+					</section>
+					<section>
+						<p class="fragment">Right now, the vertices are specified in the order in which they are drawn.</p>
+						<p class="fragment">Suppose we want to draw a rectangle instead of a triangle.</p>
+						<p class="fragment">We can draw a rectangle using two triangles (OpenGL mainly works with triangles).</p>
+						<p class="fragment">This will generate the following set of vertices:</p>
+						<pre class="fragment"><code>float vertices[] = {
+     // first triangle
+     0.5f,  0.5f,  // top right
+     0.5f, -0.5f,  // bottom right
+    -0.5f,  0.5f,  // top left
+     // second triangle
+     0.5f, -0.5f,  // bottom right
+    -0.5f, -0.5f,  // bottom left
+    -0.5f,  0.5f   // top left
+};</code></pre>
+					</section>
+					<section>
+						<pre><code>float vertices[] = {
+     // first triangle
+     0.5f,  0.5f,  // top right
+     0.5f, -0.5f,  // bottom right
+    -0.5f,  0.5f,  // top left
+     // second triangle
+     0.5f, -0.5f,  // bottom right
+    -0.5f, -0.5f,  // bottom left
+    -0.5f,  0.5f   // top left
+};</code></pre>
+						<p class="fragment">As you can see, there is some overlap on the vertices specified. We specify bottom right and top left twice!</p>
+						<p class="fragment">This is an overhead of 50% since the same rectangle could also be specified with only 4 vertices, instead of 6.</p>
+						<p class="fragment">This will only get worse as soon as we have more complex models that have over 1000s of triangles where there will be large chunks that overlap.</p>
+					</section>
+					<section>
+						<pre><code>float vertices[] = {
+     // first triangle
+     0.5f,  0.5f,  // top right
+     0.5f, -0.5f,  // bottom right
+    -0.5f,  0.5f,  // top left
+     // second triangle
+     0.5f, -0.5f,  // bottom right
+    -0.5f, -0.5f,  // bottom left
+    -0.5f,  0.5f   // top left
+};</code></pre>
+						<p class="fragment">What would be a better solution is to store only the unique vertices and then specify the order at which we want to draw these vertices in.</p>
+						<p class="fragment">In that case we would only have to store 4 vertices for the rectangle, and then just specify at which order we'd like to draw them.</p>
+					</section>
+					<section>
+						<p class="fragment">An EBO is a buffer, just like a vertex buffer object, that stores indices that OpenGL uses to decide what vertices to draw.</p>
+						<p class="fragment">This so called indexed drawing is exactly the solution to our problem.</p>
+						<p class="fragment">To get started we first have to specify the (unique) vertices and the indices to draw them as a rectangle:</p>
+						<pre class="fragment"><code>float vertices[] = {
+    0.5f,  0.5f, // top right
+    0.5f, -0.5f, // bottom right
+   -0.5f, -0.5f, // bottom left
+   -0.5f,  0.5f  // top left
+};
+unsigned int indices[] = {  // note that we start from 0!
+    0, 1, 3,   // first triangle
+    1, 2, 3    // second triangle
+};</code></pre>
+					</section>
+					<section>
+						<p class="fragment">You can see that, when using indices, we only need 4 vertices instead of 6.</p>
+						<p class="fragment">Next we need to create the element buffer object:</p>
+						<pre class="fragment"><code>GLuint ebo;
+glGenBuffers(1, &ebo);</code></pre>
+						<p class="fragment">Similar to the VBO we bind the EBO and copy the indices into the buffer with <code>glBufferData</code>.</p>
+					</section>
+					<section>
+						<p class="fragment">Also, just like the VBO we want to place those calls between a bind and an unbind call, although this time we specify GL_ELEMENT_ARRAY_BUFFER as the buffer type.</p>
+						<pre class="fragment"><code>glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);</code></pre>
+						<p class="fragment">Note that we're now giving <code>GL_ELEMENT_ARRAY_BUFFER</code> as the buffer target.</p>
+						<p class="fragment">The last thing left to do is replace the <code>glDrawArrays</code> call with <code>glDrawElements</code> to indicate we want to render the triangles from an index buffer.</p>
+					</section>
+					<section>
+						<p class="fragment">When using glDrawElements we're going to draw using indices provided in the element buffer object currently bound:</p>
+						<pre class="fragment"><code>glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);</code></pre>
+						<p class="fragment">The first argument specifies the mode we want to draw in, similar to <code>glDrawArrays</code>.</p>
+						<p class="fragment">The second argument is the count or number of elements we'd like to draw.</p>
+						<p class="fragment">We specified <code>6</code> indices so we want to draw <code>6</code> vertices in total.</p>
+						<p class="fragment">The third argument is the type of the indices which is of type <code>GL_UNSIGNED_INT</code>.</p>
+					</section>
+					<section>
+						<pre><code>glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);</code></pre>
+						<p class="fragment">The last argument allows us to specify an offset in the EBO (or pass in an index array, but that is when you're not using element buffer objects), but we're just going to leave this at <code>0</code>.</p>
+						<p class="fragment">The <code>glDrawElements</code> function takes its indices from the EBO currently bound to the <code>GL_ELEMENT_ARRAY_BUFFER</code> target.</p>
+						<p class="fragment">This means we have to bind the corresponding EBO each time we want to render an object with indices which seems again a bit cumbersome.</p>
+					</section>
+					<section>
+						<p class="fragment">It just so happens that a vertex array object also keeps track of element buffer object bindings.</p>
+						<p class="fragment">The element buffer object currently bound while a VAO is bound, is stored as the VAO's element buffer object.</p>
+						<p class="fragment">Binding to a VAO thus also automatically binds its EBO.</p>
+					</section>
+					<section>
+						<img src="images/OpenGL/ebo.png" class="plain" width="70%">
+					</section>
+					<section>
+						<p class="fragment"><b>Note:</b></p>
+						<ul>
+							<li class="fragment">A VAO stores the glBindBuffer calls when the target is <code>GL_ELEMENT_ARRAY_BUFFER</code>.</li>
+							<li class="fragment">This also means it stores its unbind calls so make sure you don't unbind the element array buffer before unbinding your VAO, otherwise it doesn't have an EBO configured.</li>
+						</ul>
+					</section>
+					<section>
+						<pre><code>// ..:: Initialization code :: ..
+// 1. bind Vertex Array Object
+glBindVertexArray(VAO);
+// 2. copy our vertices array in a vertex buffer for OpenGL to use
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+// 3. copy our index array in a element buffer for OpenGL to use
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+// 4. then set the vertex attributes pointers
+glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);
+
+[...]
+
+// ..:: Drawing code (in render loop) :: ..
+glUseProgram(shaderProgram);
+glBindVertexArray(VAO);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0)
+glBindVertexArray(0);</code></pre>
+					</section>
+					<section>
+						<img src="images/OpenGL/rectangle.png" class="plain" width="70%">
+					</section>
+				</section>
+				<section>
+					<section>
+						<h1>Wireframe Mode</h1>
+					</section>
+					<section>
+						<p class="fragment">To draw your triangles in wireframe mode, you can configure how OpenGL draws its primitives via <code>glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)</code>.</p>
+						<p class="fragment">The first argument says we want to apply it to the front and back of all triangles and the second argument tells us to draw them as lines.</p>
+						<p class="fragment">Any subsequent drawing calls will render the triangles in wireframe mode until we set it back to its default using <code>glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)</code>.</p>
+					</section>
+					<section>
+						<img src="images/OpenGL/wireframe.png" class="plain" width="70%">
+					</section>
+				</section>
 						
 			</div>
 		</div>
