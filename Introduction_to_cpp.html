@@ -1148,7 +1148,7 @@ int Vector::size()
 						<pre class="fragment"><code style="font-size:larger">double& Vector::operator[](int i)
 {
     if (i<0 || size()<=i) throw out_of_range{"Vector::operator[]"};
-        return elem[i];
+    return elem[i];
 }</code></pre>
 					</section>
 					<section>
@@ -1192,7 +1192,7 @@ int Vector::size()
 					<section>
 						<pre class="fragment"><code style="font-size:larger">Vector::Vector(int s) {
    if (s<0) throw length_error{};
-      elem = new double[s];
+   elem = new double[s];
    sz = s;
 }
 </code></pre>

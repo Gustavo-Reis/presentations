@@ -508,7 +508,7 @@ void h() {
 					<section>
 						<p class="fragment">To achieve this resolution, a <code>Container</code> object must contain information to allow it to select the right function to call at run time.</p>
 						<p class="fragment">The usual implementation technique is for the compiler to convert the name of a virtual function into an index into a table of pointers to functions.</p>
-						<p class="fragment">That table is <b><u>usually called the virtual function</u></b> table or simply the <b>vtbl</b>.</p>
+						<p class="fragment">That table is <b><u>usually called the virtual function table</u></b> or simply the <b>vtbl</b>.</p>
 						<p class="fragment">Each class with virtual functions has its own <b>vtbl</b> identifying its virtual functions.</p>
 					</section>
 					<section>
@@ -550,9 +550,9 @@ public:
     virtual void move(Point to) = 0;
     
     virtual void draw() const = 0;      // draw on current "Canvas"
-    virtual void rotate(int angle) = 0; // destructor
+    virtual void rotate(int angle) = 0; 
     
-    virtual ~Shape() {}
+    virtual ~Shape() {}                 // destructor
     // ...
 };</code></pre>
 					</section>
@@ -563,9 +563,9 @@ public:
     virtual void move(Point to) = 0;
     
     virtual void draw() const = 0;      // draw on current "Canvas"
-    virtual void rotate(int angle) = 0; // destructor
+    virtual void rotate(int angle) = 0; 
     
-    virtual ~Shape() {}
+    virtual ~Shape() {}                 // destructor
     // ...
 };</code></pre>
 						<p class="fragment">Naturally, this interface is an abstract class: as far as representation is concerned, nothing (except the location of the pointer to the <b>vtbl</b>) is common for every <code>Shape</code>.</p>
