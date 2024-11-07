@@ -133,9 +133,8 @@ if (!success) {
 				</section>
 				<section>
 					<section>
-						<h2>Shader File</h2>
-						<pre><code>#shader vertex
-#version 330 core
+						<h2>Vertex Shader File</h2>
+						<pre><code>#version 330 core
 
 in vec3 position;
 in vec3 color;
@@ -153,10 +152,11 @@ void main()
 	Color = color;
 	TexCoord = texCoord;
 	gl_Position = projection * view * model * vec4(position, 1.0);
-};
-
-#shader fragment
-#version 330 core
+};</code></pre>
+					</section>
+					<section>
+						<h2>Fragment Shader File</h2>
+						<pre><code>#version 330 core
 in vec3 Color;
 in vec2 TexCoord;
 
@@ -174,44 +174,33 @@ void main()
 					</section>
 					
 					<section>
-						<p style="text-align: left;" class="fragment">The idea is to have a file in your project named <var>something.shader</var> and then use your shader class like so:</p> 
-						<pre class="fragment"><code>Shader someShader("something.shader");</code></pre>
+						<p style="text-align: left;" class="fragment">The idea is to have a file in your project named <var>something_shader.glsl</var> and then use your shader class like so:</p> 
+						<pre class="fragment"><code>Shader shaderProgram("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");</code></pre>
 					</section>
 					<section>
 						<h2>Shader.h</h2>
-						<pre><code>struct ShaderProgramSource
+						<pre><code>#pragma once
+#include "glad/glad.h"
+#include &lt;string>
+#include &lt;glm/glm.hpp>
+
+class Shader
 {
-	std::string VertexSource;
-	std::string FragmentSource;
-};
-
-class Shader {
-private:
-	std::string m_FilePath;
-	unsigned int m_RendererID;
-	std::unordered_map&lt;std::string, int&gt; m_UniformLocationCache;
-
 public:
-	Shader(const std::string& filepath);
+	Shader(const char* vertexPath, const char* fragmentPath);
 	~Shader();
-
-	void Bind() const;
-	void Unbind() const;
-
-	// set uniforms
-	void SetUniform1i(const std::string& name, int value);
-	void SetUniform1f(const std::string& name, float value);
-	void SetUniform3f(const std::string& name, float v0, float v1, float v2);
-	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
-	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
-	
-	// set vertex attrib pointers
-	void VertexAttribPointer(const std::string& name, int size, GLenum type, bool normalized, size_t stride, const void* offset);
+	void setVertexAttribPointer(const char* param, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer) const;
+	void use() const;
+	void setBool(const std::string& name, bool value) const;
+	void setInt(const std::string& name, int value) const;
+	void setFloat(const std::string& name, float value) const;
+	void set3Float(const std::string& name, float v0, float v1, float v2) const;
+	void setMat4(const std::string& name, const glm::mat4& mat) const;
+private:	
+	GLuint compileShader(GLenum type, const char* source);
+	void checkCompileErrors(GLuint shader, const std::string& type) const;
 private:
-	ShaderProgramSource ParseShader(const std::string& filepath);
-	unsigned int CompileShader(unsigned int type, const std::string& source);
-	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
-	int GetUniformLocation(const std::string& name);
+	GLuint id;
 };</code></pre>
 					</section>
 				</section>
@@ -222,9 +211,8 @@ private:
 					</section>
 					<section>
 						<p class="fragment">Add both <code>Shader.h</code> and <code>Shader.cpp</code> files to your project.</p>
-						<p class="fragment">Add the following <code>texture.shader</code> file to your project:</p>						
-						<pre class="fragment"><code>#shader vertex
-#version 330 core
+						<p class="fragment">Add the following <code>vertex_shader.glsl</code> file to your project:</p>						
+						<pre class="fragment"><code>#version 330 core
 
 in vec3 position;
 in vec3 color;
@@ -242,10 +230,11 @@ void main()
 	Color = color;
 	TexCoord = texCoord;
 	gl_Position = projection * view * model * vec4(position, 1.0);
-};
-
-#shader fragment
-#version 330 core
+};</code></pre>
+					</section>
+					<section>
+						<p class="fragment">Add the following <code>fragment_shader.glsl</code> file to your project:</p>						
+						<pre class="fragment"><code>#version 330 core
 in vec3 Color;
 in vec2 TexCoord;
 
@@ -260,12 +249,12 @@ void main()
 	vec4 colTex2 = texture(ourTexture2, TexCoord);
 	outColor = mix(colTex1, colTex2, 0.5);
 };</code></pre>
-					</section>
+</section>
 					<section>
 						<p>Add the following include on your main file:</p>
 						<pre class="fragment"><code>#include "Shader.h"</code></pre>
 						<p class="fragment">Load the shader like so:</p>			
-						<pre class="fragment"><code>Shader shader("texture.shader");</code></pre>			
+						<pre class="fragment"><code>Shader shaderProgram("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");</code></pre>			
 					</section>
 					<section>
 						<p>Now, we need to adapt the following code:</p>
@@ -273,9 +262,9 @@ void main()
 glEnableVertexAttribArray(posAttrib);
 glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);</code></pre>
 						<p class="fragment">Using a single line of code:</p>
-						<pre class="fragment"><code>shader.VertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);</code></pre>
+						<pre class="fragment"><code>shader.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);</code></pre>
 						<p class="fragment">And do the same for the <code>texCoord</code> input:</p>
-						<pre class="fragment"><code>shader.VertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));</code></pre>
+						<pre class="fragment"><code>shader.setVertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));</code></pre>
 					</section>
 					<section>
 						<p>Now, we need to adapt the texture code:</p>
@@ -288,25 +277,26 @@ textureLocation2 = glGetUniformLocation(shaderProgram, "ourTexture2");
 glUniform1i(textureLocation, 0);
 glUniform1i(textureLocation, 1);</code></pre>
 						<p class="fragment">By using the following:</p>
-						<pre class="fragment"><code>shader.SetUniform1i("ourTexture", 0);
-shader.SetUniform1i("ourTexture2", 1);</code></pre>
+						<pre class="fragment"><code>shaderProgram.setInt("ourTexture", 0);
+shaderProgram.setInt("ourTexture2", 1);</code></pre>
 					</section>
 					<section>
 						<p>We also need to replace the code on enabling the shader program:</p>
 						<pre class="fragment"><code>glUseProgram(shaderProgram);</code></pre>
 						<p class="fragment">Which becomes like this:</p>
-						<pre class="fragment"><code>shader.Bind();</code></pre>
+						<pre class="fragment"><code>shaderProgram.use();</code></pre>
 					</section>
 					<section>
 						<p>Finally, we need to set the model, view and projection matrices:</p>
 						<pre class="fragment"><code>GLuint modelLocation = glGetUniformLocation(shaderProgram, "model");
 glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));</code></pre>
 						<p class="fragment">By using the following:</p>
-						<pre class="fragment"><code>shader.SetUniformMat4f("model", model);</code></pre>
+						<pre class="fragment"><code>shaderProgram.setMat4("model", model);</code></pre>
 						<p class="fragment">And do the same for the other matrices.</p>
 					</section>
 
 				</section>
+				</div>
 
 			</div>
 		</div>
