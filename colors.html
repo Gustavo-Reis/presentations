@@ -195,23 +195,34 @@ void main()
 				</section>
 				<section>
 					<p>Make sure to update your vertex data and attribute pointers to correspond with the new vertex shader.</p>
-					<pre><code>GLint posAttrib = glGetAttribLocation(shader.ID, "position");
-glEnableVertexAttribArray(posAttrib);
-glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);</code></pre>
+					<pre><code>shaderProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);</code></pre>
 				</section>
 				<section>
 					<p>Because we are also going to create a lamp cube, we want to generate a new VAO specifically for the lamp.</p>
-					<p>We could also represent a lamp using the same VAO and then simply do some transformations on the model matrix, but in the upcoming tutorials we'll be changing the vertex data and attribute pointers of the container object quite often and we don't want these changes to propagate to the lamp object (we only care about the lamp's vertex positions), so we'll create a new VAO.</p>
+					<p>We could also represent a lamp using the same VAO and then simply do some transformations on the model matrix, but in the upcoming classes we'll be changing the vertex data and attribute pointers of the container object quite often and we don't want these changes to propagate to the lamp object (we only care about the lamp's vertex positions), so we'll create a new VAO.</p>
 				</section>
 				<section>
-					<pre><code>unsigned int lightVAO;
-glGenVertexArrays(1, &lightVAO);
-glBindVertexArray(lightVAO);
-// we only need to bind to the VBO, the container's VBO's data already contains the correct data.
+					<pre><code>// First, configure the cube VAO and VBO
+GLuint vao;
+glGenVertexArrays(1, &vao);
+glBindVertexArray(vao);
+
+GLuint vbo;
+glGenBuffers(1, &vbo);
 glBindBuffer(GL_ARRAY_BUFFER, vbo);
-// set the vertex attributes (only position data for our lamp)
-glEnableVertexAttribArray(posAttrib);
-glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);</code></pre>
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);	
+
+shaderProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+// Second, configure the light's vao (vbo stays the same; the vertices are the same for the light object which is also a 3D cube)
+GLuint lightCubeVao;
+glGenVertexArrays(1, &lightCubeVao);
+glBindVertexArray(lightCubeVao);
+
+// we only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need (it's already bound, but we do it again for educational purposes)
+glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+lightingShader.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);</code></pre>
 				</section>
 				<section>
 					<p>Now that we created both the container and the lamp cube there is one thing left to define and that is the fragment shader:</p>
@@ -229,7 +240,7 @@ void main()
 				</section>
 				<section>
 					<p>Let's set the object's color to the last section's coral color with a white light:</p>
-					<pre><code>Shader lightingShader{ "vertexShaderLight.glsl", "reflectedColorFragmentShader.glsl" };
+					<pre><code>Shader lightingShader("shaders/vertex_shader.glsl", "shaders/reflectedColor_fragment_shader.glsl");
 // don't forget to 'use' the corresponding shader program first (to set the uniform)
 lightingShader.use();
 lightingShader.set3Float("objectColor", 1.0f, 0.5f, 0.31f);
@@ -238,7 +249,7 @@ lightingShader.set3Float("lightColor", 1.0f, 1.0f, 1.0f);
 				</section>
 				<section>
 					<p>One thing left to note is that when we start to change the vertex and fragment shaders, the lamp cube will change as well and this is not what we want.</p>
-					<p>We don't want the lamp object's color to be affected by the lighting calculations in the upcoming tutorials, but rather keep the lamp isolated from the rest.</p>
+					<p>We don't want the lamp object's color to be affected by the lighting calculations in the upcoming classes, but rather keep the lamp isolated from the rest.</p>
 					<p>We want the lamp to have a constant bright color, unaffected by other color changes (this makes it look like the lamp really is the source of the light).</p>
 				</section>
 				<section>
@@ -290,55 +301,72 @@ glDrawArrays(GL_TRIANGLES, 0, 36);
 				</section>
 				<section>
 					<p>Initialization code:</p>
-					<pre><code>unsigned int lightVAO;
-glGenVertexArrays(1, &lightVAO);
-glBindVertexArray(lightVAO);
-// we only need to bind to the VBO, the container's VBO's data already contains the correct data.
-glBindBuffer(GL_ARRAY_BUFFER, VBO);
-// set the vertex attributes (only position data for our lamp)
-glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-glEnableVertexAttribArray(0);
+					<pre><code>// First, configure the cube VAO and VBO
+GLuint vao;
+glGenVertexArrays(1, &vao);
+glBindVertexArray(vao);
+
+GLuint vbo;
+glGenBuffers(1, &vbo);
+glBindBuffer(GL_ARRAY_BUFFER, vbo);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);	
+
+shaderProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+// Second, configure the light's vao (vbo stays the same; the vertices are the same for the light object which is also a 3D cube)
+GLuint lightCubeVao;
+glGenVertexArrays(1, &lightCubeVao);
+glBindVertexArray(lightCubeVao);
+
+// we only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need (it's already bound, but we do it again for educational purposes)
+glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 // don't forget to 'use' the corresponding shader program first (to set the uniform)
 lightingShader.use();
-lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+lightingShader.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+// be sure to activate shader when setting uniforms/drawing objects
+shaderProgram.use();
+shaderProgram.set3Float("objectColor", 1.0f, 0.5f, 0.31f);
+shaderProgram.set3Float("lightColor", 1.0f, 1.0f, 1.0f);
 
 glm::vec3 lightPos(1.2f, 1.0f, 0.0f);</code></pre>
 				</section>
 				<section>
 					<p>Game loop code:</p>
-					<pre><code>glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+					<pre><code>glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);						
+shaderProgram.use();
 
-lightingShader.use();
-lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+glBindVertexArray(vao);	
+
+view = camera.getViewMatrix();
+projection = glm::perspective(glm::radians(camera.getFov()), screenWidth / screenHeight, 0.1f, 100.0f);
+
+shaderProgram.setMat4("view", view);
+shaderProgram.setMat4("projection", projection);
 
 // view/projection transformations
-glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 100.0f);
-glm::mat4 view = glm::lookAt(glm::vec3(1.0, 2.0, 3.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-lightingShader.setMat4("projection", projection);
-lightingShader.setMat4("view", view);
+shaderProgram.setMat4("projection", projection);
+shaderProgram.setMat4("view", view);
 
 // world transformation
 glm::mat4 model = glm::mat4(1.0f);
-lightingShader.setMat4("model", model);
+shaderProgram.setMat4("model", model);
 
 // render the cube
-glBindVertexArray(VAO);
+glBindVertexArray(vao);
 glDrawArrays(GL_TRIANGLES, 0, 36);
 
-
 // also draw the lamp object
-lampShader.use();
-lampShader.setMat4("projection", projection);
-lampShader.setMat4("view", view);
+lightingShader.use();
+lightingShader.setMat4("projection", projection);
+lightingShader.setMat4("view", view);
 model = glm::mat4(1.0f);
 model = glm::translate(model, lightPos);
 model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
-lampShader.setMat4("model", model);
+lightingShader.setMat4("model", model);
 
-glBindVertexArray(lightVAO);
+glBindVertexArray(lightCubeVao);
 glDrawArrays(GL_TRIANGLES, 0, 36);</code></pre>
 				</section>
 			</div>
