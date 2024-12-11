@@ -119,12 +119,12 @@
 						<pre class="fragment"><code style="font-size:20px;">// MyClass.h
 class MyClass {
 public:
-MyClass();
-~MyClass();
-void doSomething();
+	MyClass();
+	~MyClass();
+	void doSomething();
 private:
-struct Impl;  // Forward declaration
-Impl* pimpl;  // Pointer to implementation
+	struct Impl;  // Forward declaration
+	Impl* pimpl;  // Pointer to implementation
 };</code></pre>
 							<p class="fragment"><b>Step 2: Implementation File</b></p>
 							<ul>
@@ -136,16 +136,16 @@ Impl* pimpl;  // Pointer to implementation
 #include &lt;iostream>
 
 struct MyClass::Impl {
-void doSomethingInternal() {
-	std::cout &lt;&lt; "Doing something!" &lt;&lt; std::endl;
-}
+	void doSomethingInternal() {
+		std::cout &lt;&lt; "Doing something!" &lt;&lt; std::endl;
+	}
 };
 
 MyClass::MyClass() : pimpl(new Impl()) {}
 MyClass::~MyClass() { delete pimpl; }
 
 void MyClass::doSomething() {
-pimpl->doSomethingInternal();
+	pimpl->doSomethingInternal();
 }</code></pre>	
 					</section>
 				</section>
