@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>The Pimpl Pattern in C++</title>
+
+		<meta name="description" content="Classes">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+		<style type="text/css">
+			.output{
+				font-size:20px;
+				background-color:black;
+				color:lightgrey;
+			}
+		</style>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>The Pimpl Pattern in C++</h1>
+					<h3>Hiding Implementation Details for Better Encapsulation</h3>
+					<h5>Gustavo Reis</h5>
+				</section>
+				<section>
+					<section>
+						<h1>What is the Pimpl Pattern?</h1>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment"><b>Definition:</b></li>
+							<p class="fragment">The Pimpl (Pointer to Implementation) pattern is a design technique in C++ that separates the interface of a class from its implementation by using a pointer to an opaque implementation class.</p>
+							<li class="fragment"><b>Core Idea:</b></li>
+							<p class="fragment">Hide "how things work" behind a clean, stable public interface.</p>
+							<li class="fragment"><b>Analogy:</b></li>
+							<p class="fragment">Think of a remote control.</p>
+							<p class="fragment"> The user presses buttons (<b>public interface</b>), but they don't see or care about the internal circuits (<b>implementation</b>).</p>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Why Use the Pimpl Pattern?</h2>
+					</section>
+					<section>
+						<ol type="1">
+							<li class="fragment"><b>Encapsulation:</b></li>
+							<ul>
+								<li class="fragment">Hides implementation details in the <code>.cpp</code> file.</li>
+								<li class="fragment">Keeps the header clean and minimal.</li>
+							</ul>
+							<li class="fragment"><b>Reduced Compile-Time Dependencies:</b></li>
+							<ul>
+								<li class="fragment">Prevents including large or complex headers in user code.</li>
+								<li class="fragment">Speeds up compilation.</li>
+							</ul>
+							<li class="fragment"><b>Modularity and Flexibility:</b></li>
+							<ul>
+								<li class="fragment">Easy to swap out internal implementations (e.g., SDL to GLFW) without affecting user code.</li>
+							</ul>
+						</ol>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>When to Use the Pimpl Pattern?</h2>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment"><b>Good Scenarios:</b></li>
+							<ol type = "1">
+								<li class="fragment">When the class relies on large, unstable, or third-party libraries (e.g., SDL, database libraries).</li>
+								<li class="fragment">When internal details are subject to frequent changes.</li>
+								<li class="fragment">When hiding proprietary or sensitive implementation logic.</li>
+								<li class="fragment">When building libraries or APIs consumed by external developers.</li>
+							</ol>
+							<li class="fragment"><b>Avoid Pimpl When:</b></li>
+							<ol type = "1">
+								<li class="fragment">Performance is extremely critical (Pimpl adds pointer indirection and dynamic allocation).</li>
+								<li class="fragment">The class is simple and unlikely to change.</li>
+								<li class="fragment">Overengineering adds unnecessary complexity.</li>
+							</ol>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>How Does Pimpl Work?</h2>
+					</section>
+					<section>
+						<p class="fragment"><b>Step 1: Public Header (Class Declaration)</b></p>
+						<ul>
+							<li class="fragment">Forward declare an internal <code>Impl</code> struct.</li>
+							<li class="fragment">Add a pointer to the <code>Impl</code> in the class.</li>
+						</ul>
+						<pre class="fragment"><code style="font-size:20px;">// MyClass.h
+class MyClass {
+public:
+MyClass();
+~MyClass();
+void doSomething();
+private:
+struct Impl;  // Forward declaration
+Impl* pimpl;  // Pointer to implementation
+};</code></pre>
+							<p class="fragment"><b>Step 2: Implementation File</b></p>
+							<ul>
+								<li class="fragment">Define the <code>Impl</code> struct in the <code>.cpp</code> file.</li>
+								<li class="fragment">Implement all the logic there.</li>
+							</ul>
+							<pre class="fragment"><code style="font-size:20px;">// MyClass.cpp
+#include "MyClass.h"
+#include &lt;iostream>
+
+struct MyClass::Impl {
+void doSomethingInternal() {
+	std::cout &lt;&lt; "Doing something!" &lt;&lt; std::endl;
+}
+};
+
+MyClass::MyClass() : pimpl(new Impl()) {}
+MyClass::~MyClass() { delete pimpl; }
+
+void MyClass::doSomething() {
+pimpl->doSomethingInternal();
+}</code></pre>	
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Advantages of Pimpl</h2>
+					</section>
+					<section>
+						<p class="fragment"><b>Without Pimpl:</b></p>
+						<ul>
+							<li class="fragment">Public header exposes dependencies (e.g., SDL types).</li>
+							<li class="fragment">Any change to implementation details forces recompilation of dependent code.</li>
+						</ul>
+						<p class="fragment"><b>With Pimpl:</b></p>
+						<ul>
+							<li class="fragment">Changes in implementation affect only the .cpp file.</li>
+							<li class="fragment">Headers are minimal and stable.</li>
+							<li class="fragment">Reduced compilation times.</li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Practical Example: Game Engine</h2>
+					</section>
+					<section>
+						<ul>
+							<li><b>Scenario:</b></li>
+							<p class="fragment">A <code>Window</code> class in a game engine.</p>
+							<p class="fragment">The engine starts with SDL but might switch to GLFW or another library later.</p>
+						</ul>
+					</section>
+					<section>
+						<p>Before and After Pimple:</p>
+						<pre><code style="font-size:20px;">#include &lt;string>
+class Window
+{
+public:
+	Window(std::string title);
+	~Window();
+private:
+	struct SDL_Window* window;
+
+	friend class RenderTarget;
+};</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">#include &lt;string>
+#include &lt;memory>
+class Window
+{
+public:
+	Window(std::string title);
+	~Window();
+
+	void* get_native_window() const; // returns a pointer to the native window object
+
+private:
+	struct WindowImpl;
+	std::unique_ptr&lt;WindowImpl> pimpl;
+
+	friend class RenderTarget;
+};</code></pre>
+	
+					</section>
+					<section>
+					<p>Before and After Pimple:</p>
+						<pre><code style="font-size:20px;">#include "Window.h"
+#include "SDL.h"
+
+Window::Window(std::string title)
+{
+	window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+}
+
+Window::~Window()
+{
+	SDL_DestroyWindow(window);
+}</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">#include "Window.h"
+#include "SDL.h"
+
+struct Window::WindowImpl {
+	SDL_Window* window;
+};
+
+Window::Window(std::string title): pimpl{std::make_unique &lt;Window::WindowImpl>()}
+{
+	pimpl->window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+}
+
+Window::~Window()
+{
+	SDL_DestroyWindow(pimpl->window);
+}</code></pre>
+	
+					</section>
+					<section>
+						<h3>Benefits of This Approach</h3>
+						<ul>
+							<li class="fragment"><b>Minimal Headers:</b> No SDL includes in Window.h.</li>
+							<li class="fragment"><b>Encapsulation:</b> Users don’t see or rely on SDL_Window.</li>
+							<li class="fragment"><b>Flexibility:</b> Internals can change without breaking user code.</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Evolution</h3>
+						<ul>
+							<li class="fragment">Demonstrate how this design allows you to swap SDL for another library (e.g., GLFW):</li>
+							<ul>
+								<li class="fragment">Modify <code>Impl</code> in <code>Window.cpp</code> to use <code>GLFWwindow</code> instead of <code>SDL_Window</code>.</li>
+								<li class="fragment">Keep <code>Window.h</code> unchanged.</li>
+							</ul>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>When Not to Use Pimpl?</h2>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment"><b>Performance Costs:</b></li>
+							<ul>
+								<li class="fragment">Adds a level of pointer indirection.</li>
+								<li class="fragment">Requires dynamic memory allocation.</li>
+							</ul>
+							<li class="fragment"><b>Unnecessary Complexity:</b></li>
+							<ul>
+								<li class="fragment">If the implementation is unlikely to change, Pimpl may add more complexity than benefit.</li>
+							</ul>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Summary</h2>
+					</section>
+					<section>
+						<ol type = "1">
+							<li class="fragment">The Pimpl pattern is about <b>encapsulation</b> and <b>flexibility</b>.</li>
+							<li class="fragment">It’s ideal for APIs, libraries, or large systems where internal details may change.</li>
+							<li class="fragment">It has a trade-off: <b>performance overhead</b> vs. <b>modular design</b>.</li>
+							<li class="fragment">Use it when stability and hiding implementation details are priorities.</li>
+
+						</ol>
+					</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				width: 1920,
+				height: 1080,
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				transition: 'convex',
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
