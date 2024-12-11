@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Smart Pointers in Modern C++</title>
+
+		<meta name="description" content="Classes">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+		<style type="text/css">
+			.output{
+				font-size:20px;
+				background-color:black;
+				color:lightgrey;
+			}
+		</style>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h2>Smart Pointers in Modern C++</h2>
+					<h3>Managing Resources Safely with Smart Pointers</h3>
+					<h5>Gustavo Reis</h5>
+				</section>
+				<section>
+					<section>
+						<h2>Smart Pointers</h2>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment"><b>What are Smart Pointers?</b></li>
+							<ul>
+								<li class="fragment">Smart pointers are C++ objects that manage the lifetime of dynamically allocated memory.</li>
+								<li class="fragment">They ensure proper resource cleanup, reducing the risk of memory leaks and dangling pointers.</li>
+							</ul>
+							<li class="fragment"><b>Why Use Smart Pointers?</b></li>
+							<ul>
+								<li class="fragment">Manual memory management with <code>new</code> and <code>delete</code> is error-prone.</li>
+								<li class="fragment">Smart pointers encapsulate ownership and cleanup logic.</li>
+								<li class="fragment">Improve safety, clarity, and maintainability in modern C++.</li>
+							</ul>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Types of Smart Pointers</h2>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment"><b>Three Primary Smart Pointers:</b></li>
+							<ol type = "1">
+								<li class="fragment"><code>std::unique_ptr</code></li>
+								<li class="fragment"><code>std::shared_ptr</code></li>
+								<li class="fragment"><code>std::weak_ptr</code></li>
+							</ol>
+							<li class="fragment"><b>Header File:</b></li>
+							<ol type = "1">
+								<li class="fragment">All smart pointers are included in <code>&lt;memory></code></li>
+							</ol>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>std::unique_ptr</h2>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment"><b>Key Characteristics:</b></li>
+							<ul>
+								<li class="fragment">Exclusive ownership of a dynamically allocated resource.</li>
+								<li class="fragment">Automatically deletes the resource when it goes out of scope.</li>
+								<li class="fragment">Non-copyable but moveable.</li>
+							</ul>
+							<li class="fragment"><b>Syntax Example:</b></li>
+							<pre class="fragment"><code style="font-size:20px;">#include &lt;memory>
+
+std::unique_ptr<int> ptr = std::make_unique&lt;int>(10);
+std::cout &lt;&lt; *ptr &lt;&lt; std::endl;  // Output: 10</code></pre>
+							<li class="fragment"><b>Usage:</b></li>
+							<ul>
+								<li class="fragment">Managing unique resources like file handles, single objects, or dynamically allocated arrays.</li>
+							</ul>
+							<li class="fragment"><b>Best Practices:</b></li>
+							<ul>
+								<li class="fragment">Always use <code>std::make_unique</code> for safer and more efficient initialization.</li>
+							</ul>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>std::shared_ptr</h2>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment"><b>Key Characteristics:</b></li>
+							<ul>
+								<li class="fragment">Shared ownership of a resource.</li>
+								<li class="fragment">Keeps a reference count to track how many <code>std::shared_ptr</code> instances share the resource.</li>
+								<li class="fragment">Deletes the resource when the last <code>std::shared_ptr</code> goes out of scope.</li>
+							</ul>
+							<li class="fragment"><b>Syntax Example:</b></li>
+							<pre class="fragment"><code style="font-size:20px;">#include &lt;memory>
+
+std::shared_ptr&lt;int> sp1 = std::make_shared&lt;int>(20);
+std::shared_ptr&lt;int> sp2 = sp1;  // Shared ownership
+
+std::cout &lt;&lt; *sp1 &lt;&lt; std::endl;  // Output: 20
+std::cout &lt;&lt; sp2.use_count() &lt;&lt; std::endl;  // Output: 2</code></pre>
+							<li class="fragment"><b>Usage:</b></li>
+							<ul>
+								<li class="fragment">Managing shared resources, such as objects used by multiple parts of a program.</li>
+							</ul>
+							<li class="fragment"><b>Best Practices:</b></li>
+							<ul>
+								<li class="fragment">Avoid circular references (use std::weak_ptr to break cycles).</li>
+							</ul>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>std::weak_ptr</h2>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment"><b>Key Characteristics:</b></li>
+							<ul>
+								<li class="fragment">A non-owning reference to a resource managed by <code>std::shared_ptr</code>.</li>
+								<li class="fragment">Does not contribute to the reference count.</li>
+								<li class="fragment">Used to avoid circular references in <code>std::shared_ptr</code>.</li>
+							</ul>
+							<li class="fragment"><b>Syntax Example:</b></li>
+							<pre class="fragment"><code style="font-size:20px;">#include &lt;memory>
+
+std::shared_ptr&lt;int> sp = std::make_shared&lt;int>(30);
+std::weak_ptr&lt;int> wp = sp;  // Non-owning reference
+
+if (auto shared = wp.lock()) {  // Check if the resource is still available
+	std::cout &lt;&lt; *shared &lt;&lt; std::endl;  // Output: 30
+}</code></pre>
+							<li class="fragment"><b>Usage:</b></li>
+							<ul>
+								<li class="fragment">Breaking cycles in <code>std::shared_ptr</code> references (e.g., observer patterns).</li>
+							</ul>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Comparisons</h2>
+					</section>
+					<section>
+						<table>
+							<thead>
+								<tr>
+									<th><strong>Pointer Type</strong></th><th><strong>Ownership</strong></th><th><strong>Reference Counting</strong></th><th><strong>Use Case</strong></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr><td><code>std::unique_ptr</code></td><td>Exclusive</td><td>No</td><td>Managing unique resources.</td></tr>
+								<tr><td><code>std::shared_ptr</code></td><td>Shared</td><td>Yes</td><td>Shared ownership of resources.</td></tr>
+								<tr><td><code>std::weak_ptr</code></td><td>Non-owning (shared)</td><td>No</td><td>Breaking reference cycles in <code>shared_ptr</code>.</td></tr>
+							</tbody>
+						</table>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Common Mistakes</h2>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment">
+								<strong>Forgetting to use <code>std::make_unique</code> or <code>std::make_shared</code>:</strong>
+								<ul>
+									<li class="fragment">Risk of exceptions causing memory leaks with <code>new</code>.</li>
+								</ul>
+							</li>
+							<li class="fragment"><strong>Misusing <code>std::shared_ptr</code> when <code>std::unique_ptr</code> is sufficient:</strong>
+								<ul>
+									<li class="fragment">Shared ownership has a performance cost (reference counting).</li>
+								</ul>
+							</li>
+							<li class="fragment">
+								<strong>Neglecting circular dependencies in <code>std::shared_ptr</code>:</strong>
+								<ul>
+									<li class="fragment">Leads to memory leaks if not broken with <code>std::weak_ptr</code>.</li>
+								</ul>
+							</li>
+						</ul>
+					</section>					
+				</section>
+				<section>
+					<section>
+						<h2>When to Use Each Smart Pointer</h2>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment"><strong>Use <code>std::unique_ptr</code>:</strong>
+								<ul>
+									<li class="fragment">When a resource has a single owner.</li>
+									<li class="fragment">Example: Managing file handles, sockets, or database connections.</li>
+								</ul>
+							</li>
+							<li class="fragment"><strong>Use <code>std::shared_ptr</code>:</strong>
+								<ul>
+									<li class="fragment">When multiple objects share ownership of a resource.</li>
+									<li class="fragment">Example: A shared game object in a physics simulation.</li>
+								</ul>
+							</li>
+							<li class="fragment"><strong>Use <code>std::weak_ptr</code>:</strong>
+								<ul>
+									<li class="fragment">To avoid circular references with <code>std::shared_ptr</code>.</li>
+									<li class="fragment">Example: Implementing an observer pattern.</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Advanced Features</h2>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment"><strong>Custom Deleters:</strong></li>
+								<ul>
+									<li class="fragment">Define custom cleanup logic for smart pointers.</li>
+								</ul>
+								<pre class="fragment"><code style="font-size:20px;">std::unique_ptr&lt;FILE, decltype(&fclose)> file(fopen("example.txt", "r"), &fclose);</code></pre>	
+						
+							<li class="fragment"><strong>Aliased <code>std::shared_ptr</code>:</strong>
+								<ul>
+									<li class="fragment">Allow a <code>shared_ptr</code> to manage one object but provide a pointer to part of it.</li>
+								</ul>
+							</li>
+							<pre class="fragment"><code style="font-size:20px;">auto sp = std::make_shared&lt;std::vector&lt;int>>(10);
+std::shared_ptr&lt;int> alias = std::shared_ptr&lt;int>(sp, &(*sp)[0]);</code></pre>								
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Summary</h2>
+					</section>
+					<section>
+						<ul>
+							<li class="fragment"><strong>Smart pointers are essential in modern C++</strong> for managing dynamically allocated resources.</li>
+							<li class="fragment">Always prefer smart pointers over raw pointers unless absolutely necessary.</li>
+							<li class="fragment">Match the pointer type (<code>unique_ptr</code>, <code>shared_ptr</code>, <code>weak_ptr</code>) to the ownership model.</li>
+						</ul>
+					</section>					
+				</section>
+				<section>
+					<section>
+						<h2>Example:</h2>
+						<h3>How <code>std::unique_ptr</code> Works Internally</h3>
+					</section>
+					<section>
+						<h3>Custom Implementation of <code>std::unique_ptr</code></h3>
+						<p class="fragment">To truly understand how <code>std::unique_ptr</code> works, let's write our own simplified version.</p>
+						<p class="fragment">This will demonstrate the key concepts: ownership, move semantics, and automatic cleanup.</p>
+					</section>					
+					<section>
+						<pre><code style="font-size:20px;">#include &lt;iostream>
+
+// Simplified implementation of unique_ptr
+template &lt;typename T>
+class unique_ptr {
+	T* mPtr{}; // Raw pointer to manage
+
+public:
+	// Default constructor
+	unique_ptr() = default;
+
+	// Constructor to take ownership of a raw pointer
+	unique_ptr(T* ptr) : mPtr{ptr} {}
+
+	// Deleted copy constructor and assignment operator (no copying allowed)
+	unique_ptr(const unique_ptr&) = delete;
+	unique_ptr& operator=(const unique_ptr&) = delete;
+
+	// Move constructor to transfer ownership
+	unique_ptr(unique_ptr&& src) : mPtr{src.mPtr} {
+		src.mPtr = nullptr; // Reset source pointer
+	}
+
+	// Move assignment operator to transfer ownership
+	unique_ptr& operator=(unique_ptr&& src) {
+		if (this != &src) {
+			delete mPtr;       // Clean up current resource
+			mPtr = src.mPtr;   // Take ownership
+			src.mPtr = nullptr; // Reset source pointer
+		}
+		return *this;
+	}
+
+	// Destructor to clean up the resource
+	~unique_ptr() {
+		static_assert(sizeof(T) >= 0, "Cannot delete an incomplete type.");
+		delete mPtr; // Automatically clean up
+	}
+
+	// Overload arrow operator to access the resource
+	T* operator->() const { return mPtr; }
+};</code></pre>
+					</section>
+					<section>
+						<pre><code style="font-size:20px;">int main() {
+	// Create a unique_ptr managing a dynamically allocated int
+	unique_ptr&lt;int> ptr1(new int(42));
+	std::cout &lt;&lt; "Value: " &lt;&lt; *ptr1.operator->() &lt;&lt; std::endl; // Access value: 42
+
+	// Transfer ownership to another unique_ptr
+	unique_ptr&lt;int> ptr2 = std::move(ptr1);
+	if (!ptr1.operator->()) {
+		std::cout &lt;&lt; "ptr1 is now empty." &lt;&lt; std::endl; // Ownership transferred
+	}
+	std::cout &lt;&lt; "Value: " &lt;&lt; *ptr2.operator->() &lt;&lt; std::endl; // Access value: 42
+
+	// ptr2 goes out of scope and cleans up the resource automatically
+	return 0;
+}</code></pre>
+					</section>
+					<section>
+						<h3>Template Declaration</h3>
+						<ul>
+							<li class="fragment"><code>std::unique_ptr</code> is a templated class that manages a pointer of type <code>T</code>.</li>
+							<li class="fragment">The core data member is:</li>
+							<pre class="fragment"><code style="font-size:20px;">T* mPtr{};</code></pre>
+							<ul>
+								<li class="fragment"><code>mPtr</code> is the raw pointer to the dynamically allocated resource being managed.</li>
+							</ul>
+						</ul>
+					</section>
+					<section>
+						<h3>Constructor</h3>
+						<ul>
+							<li class="fragment"><b>Default Constructor:</b></li>
+							<ul>								
+								<li class="fragment">Initializes <code>mPtr</code> to <code>nullptr</code>.</li>
+							</ul>
+						</ul>
+						<pre class="fragment"><code style="font-size:20px;">unique_ptr&lt;int> ptr;  // Does not point to anything yet</code></pre>
+						<ul>
+							<li class="fragment"><b>Pointer Constructor:</b></li>
+							<ul>
+								<li class="fragment">Takes ownership of a raw pointer.</li>
+							</ul>
+						</ul>
+						<pre class="fragment"><code style="font-size:20px;">unique_ptr&lt;int> ptr(new int(42));</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">unique_ptr(T* ptr)
+: mPtr{ptr}
+{}</code></pre>
+					</section>
+					<section>						
+						<h3>Deleted Copy Constructor and Assignment</h3>
+						<ul>
+							<li class="fragment"><b>Why Deleted?</b></li>
+							<ul>
+								<li class="fragment"><code>unique_ptr</code> enforces <em>exclusive ownership</em> of the resource.</li>
+								<li class="fragment">Copying would create two <code>unique_ptr</code> instances managing the same resource, which could lead to double deletion.</li>
+							</ul>
+							<pre class="fragment"><code style="font-size:20px;">unique_ptr(const unique_ptr&) = delete;
+unique_ptr& operator=(const unique_ptr&) = delete;</code></pre>
+							<li class="fragment"><b>Example of Compilation Error:</b></li>
+							<pre class="fragment"><code style="font-size:20px;">unique_ptr&lt;int> a(new int(42));
+unique_ptr&lt;int> b = a;  // Error: copy constructor is deleted</code></pre>
+						</ul>
+					</section>
+					<section>
+						<h3>Move Constructor and Move Assignment</h3>
+						<ul>
+							<li class="fragment"><p><strong>Move Constructor:</strong></p>
+								<ul>
+									<li class="fragment">Transfers ownership of the resource from one <code>unique_ptr</code> to another.</li>
+									<li class="fragment">Sets the source's <code>mPtr</code> to <code>nullptr</code> to prevent double deletion.</li>
+								</ul>
+								<pre class="fragment"><code style="font-size:20px;">unique_ptr(unique_ptr&amp;&amp; src)
+: mPtr{src.mPtr}
+{
+	src.mPtr = nullptr;
+}</code></pre>
+							</li>
+							<li class="fragment"><p><strong>Move Assignment Operator:</strong></p>
+								<ul><li class="fragment">Deletes the current resource (if any).</li>
+									<li class="fragment">Takes ownership of the resource managed by the source.</li>
+									<li class="fragment">Example:</li>
+									<pre class="fragment"><code style="font-size:20px;">unique_ptr&lt;int> a(new int(42));
+unique_ptr&lt;int> b = std::move(a);  // Ownership transferred to b</code></pre>
+							</ul>
+							<pre class="fragment"><code style="font-size:20px;">unique_ptr& operator=(unique_ptr&& src)
+{
+	delete mPtr;        // Clean up current resource
+	mPtr = src.mPtr;    // Take ownership
+	src.mPtr = nullptr; // Reset source
+	return *this;
+}</code></pre>
+					</section>
+					<section>
+						<h3>Destructor</h3>
+						<ul>
+							<li class="fragment">Automatically deletes the managed resource when the unique_ptr goes out of scope.</li>
+							<li class="fragment">Includes a <code>static_assert</code> to ensure the resource type <code>T</code> is complete at the time of deletion.</li>
+						</ul>
+						<pre class="fragment"><code style="font-size:20px;">~unique_ptr()
+{
+	static_assert(sizeof(T) >= 0, "cannot delete an incomplete type");
+	delete mPtr;  // Free the memory
+}</code></pre>
+					</section>
+					<section>
+						<h3>Operator Overload</h3>
+						<ul>
+							<li class="fragment"><b>Arrow Operator (<code>-></code>)</b></li>
+							<ul>
+								<li class="fragment">Provides access to the managed object.</li>
+								<li class="fragment">Example:</li>
+							</ul>
+						</ul>
+						<pre class="fragment"><code style="font-size:20px;">unique_ptr&lt;std::vector&lt;int>> vec = std::make_unique&lt;std::vector&lt;int>>();
+vec->push_back(42);</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">T* operator->() { return mPtr; }</code></pre>
+					</section>
+					<section>
+						<h3>Summary</h3>
+						<p class="fragment">This minimal implementation shows how <code>std::unique_ptr</code>:</p>
+						<ol type="1">
+							<li class="fragment">Manages a raw pointer through ownership transfer (<code>move</code> semantics).</li>
+							<li class="fragment">Prevents copying for exclusive ownership.</li>
+							<li class="fragment">Automatically deletes the resource when it's no longer needed.</li>
+						</ol>
+					</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				width: 1920,
+				height: 1080,
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				transition: 'convex',
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
