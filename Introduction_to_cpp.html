@@ -30,7 +30,7 @@
 		</script>
 		<style type="text/css">
 			.output{
-				font-size:larger;
+				font-size:20px;;
 				background-color:black;
 				color:lightgrey;
 			}
@@ -137,7 +137,7 @@
 					<section>
 						<h1>Hello World</h1>
 						<p class="fragment">The minimal C++ program is:</p>
-						<pre class="fragment"><code style="font-size:larger;">int main() { } // the minimal C++ program</code></pre>
+						<pre class="fragment"><code style="font-size:20px;;">int main() { } // the minimal C++ program</code></pre>
 						<p class="fragment">This defines a function called <code>main</code>, which takes no arguments and does nothing.</p>
 						<p class="fragment">Curly braces, <code>{ }</code>, express grouping in C++;</p>
 						<p class="fragment">Double slash, <code>//</code>, begins a comment that extends to the end of the line</p>
@@ -148,7 +148,7 @@
 					<section>
 						<p class="fragment">Typically, a program produces some output</p>
 						<p class="fragment">Here is a program that writes <code>Hello, World!</code>:</p>
-						<pre class="fragment"><code style="font-size:larger;">#include &lt;iostream&gt;
+						<pre class="fragment"><code style="font-size:20px;;">#include &lt;iostream&gt;
 
 int main()
 {
@@ -164,7 +164,7 @@ int main()
 						<p class="fragment">In a string literal, the backslash character <code>\</code> followed by another character denotes a single "special character"</p>
 						<p class="fragment">In this case, <code>\n</code> is the newline character, so that the characters written are Hello, World! followed by a newline.</p>
 						<p class="fragment">This is similar to:</p>
-						<pre class="fragment"><code style="font-size:larger;">#include &lt;iostream&gt;
+						<pre class="fragment"><code style="font-size:20px;;">#include &lt;iostream&gt;
 
 int main()
 {
@@ -174,7 +174,7 @@ int main()
 					<section>
 						<p class="fragment">The <code>std::</code> specifies that the name <code>cout</code> is to be found in the standard-library namespace</p>
 						<p class="fragment">This is similar to:</p>
-						<pre class="fragment"><code style="font-size:larger">#include &lt;iostream&gt;
+						<pre class="fragment"><code style="font-size:20px;">#include &lt;iostream&gt;
 using namespace std;
 
 int main()
@@ -184,7 +184,7 @@ int main()
 					</section>
 					<section>
 						<p class="fragment">Essentially, all executable code is placed in functions and called directly or indirectly from <code>main()</code></p>
-						<pre class="fragment"><code style="font-size:larger;">#include &lt;iostream&gt;
+						<pre class="fragment"><code style="font-size:20px;;">#include &lt;iostream&gt;
 using namespace std;
 
 double square(double x)
@@ -209,7 +209,7 @@ int main()
 						<h1>Types, Variables and Arithmetic</h1>
 						<p class="fragment">Every name and every expression has  a type that determines the operations that may be performed on it</p>
 						<p class="fragment">For example, the declaration</p>
-						<pre class="fragment"><code style="font-size:larger">int inch;</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">int inch;</code></pre>
 						<p class="fragment">specifies that <code>inch</code> is of type <code>int</code>; that is, <code>inch</code> is an integer variable.</p>
 						<p class="fragment">A declaration is a statement that introduces a name into the program</p>
 						<p class="fragment">It specifies a type for the named entity:</p>
@@ -222,7 +222,7 @@ int main()
 					</section>
 					<section>
 						<p class="fragment">C++ offers a variety of fundamental types. For example:</p>
-						<pre class="fragment"><code style="font-size:larger">bool		// Boolean, possible values are true or false
+						<pre class="fragment"><code style="font-size:20px;">bool		// Boolean, possible values are true or false
 char		// character, for example, 'a', 'z' and '9'
 int 		// integer, for example, -273, 42 and 1066
 double		// double-precision floating-point number, for example, -273.15, 3.14, and 299793.0
@@ -304,7 +304,7 @@ unsigned	// non-negative integer, for example, 0, 1, and 999</code></pre>
 						</table>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">#include &lt;iostream&gt;
+						<pre><code style="font-size:20px;">#include &lt;iostream&gt;
 
 int main() {
   using std::cout;
@@ -320,7 +320,7 @@ int main() {
 					</section>
 					<section>
 						<p>The arithmetic operators can be used for appropriate combinations of these types:</p>
-						<pre><code style="font-size:larger">x+y     // plus
+						<pre><code style="font-size:20px;">x+y     // plus
 +x      // unary plus
 x−y     // minus
 -x      // unary minus
@@ -330,7 +330,7 @@ x%y     // remainder (modulus) for integers</code></pre>
 					</section>
 					<section>
 						<p>So can the comparison operators:</p>
-						<pre><code style="font-size:larger">x==y    // equal
+						<pre><code style="font-size:20px;">x==y    // equal
 x!=y    // not equal
 x&lt;y     // less than
 x&gt;y     // greater than
@@ -339,7 +339,7 @@ x>=y    // greater than or equal</code></pre>
 					</section>
 					<section>
 						<p>Logical operators are also provided:</p>
-						<pre><code style="font-size:larger">x&y     // bitwise and
+						<pre><code style="font-size:20px;">x&y     // bitwise and
 x|y     // bitwise or
 x^y     // bitwise exclusive or
 ~x      // bitwise complement
@@ -348,7 +348,7 @@ x||y    // logical or</code></pre>
 					</section>
 					<section>
 						<p>In assignments and in arithmetic operations, C++ performs all meaningful conversions between the basic types so that they can be mixed freely:</p>
-						<pre><code style="font-size:larger">void some_function()  //function that doesn't return a value
+						<pre><code style="font-size:20px;">void some_function()  //function that doesn't return a value
 {
     double d = 2.2;   // initialise floating point number
     int i = 7;        // initialise integer
@@ -358,7 +358,7 @@ x||y    // logical or</code></pre>
 					</section>
 					<section>
 						<p>C++ offers a variety of notations for expressing initialisation, such as the <code>=</code> used on previous slide, and an universal form based on curly-brace-delimited initialiser lists:</p>
-						<pre><code style="font-size:larger">double d1 = 2.3;            // initialize d1 to 2.3
+						<pre><code style="font-size:20px;">double d1 = 2.3;            // initialize d1 to 2.3
 double d2 {2.3};            // initialize d2 to 2.3
 complex&lt;double&gt; z1 = 1;     // a complex number with double-precision floating-point scalars
 complex&lt;double&gt; z2 {d1,d2};
@@ -367,13 +367,13 @@ complex&lt;double&gt; z3 = {1,2}; // the = is optional with {...}</code></pre>
 					<section>
 						<p class="fragment">The <code>=</code> form is traditional and dates back to C, but if in doubt, use the general {}-list form.</p>
 						<p class="fragment">This saves from conversions that lose information:</p>
-						<pre class="fragment"><code style="font-size:larger">int i1 = 7.2;   // i1 becomes 7
+						<pre class="fragment"><code style="font-size:20px;">int i1 = 7.2;   // i1 becomes 7
 int i2 {7.2};   // error: floating-point to integer conversion
 int i3 = {7.2}; // error: floating-point to integer conversion (the = is redundant)</code></pre>
 					</section>
 					<section>
 						<p>When defining a variable, you don’t actually need to state its type explicitely when it can be deduced from the initialiser:</p>
-						<pre><code style="font-size:larger">auto b = true;     // a bool
+						<pre><code style="font-size:20px;">auto b = true;     // a bool
 auto ch = 'x';     // a char
 auto i = 123;      // an int
 auto d = 1.2;      // a double
@@ -391,7 +391,7 @@ auto z = sqrt(y);  // z has the type of whatever sqrt(y) returns</code></pre>
 					</section>
 					<section>
 						<p>C++ also offers more specific operators for modifying a variable:</p>
-						<pre><code style="font-size:larger">x+=y;  // x = x + y
+						<pre><code style="font-size:20px;">x+=y;  // x = x + y
 ++x;   // increment: x = x + 1
 x-=y;  // x = x - y
 --x;   // decrement: x = x - 1
@@ -432,7 +432,7 @@ x%=y;  // x = x % y</code></pre>
 					</section>
 					<section>
 						<p class="fragment">In addition, you can have objects without names, such as temporaries and objects created using <code>new</code>:</p>
-						<pre class="fragment"><code  style="font-size:larger">vector&lt;int&gt; vec;  // vec is global (a global vector of integers)
+						<pre class="fragment"><code  style="font-size:20px;">vector&lt;int&gt; vec;  // vec is global (a global vector of integers)
 struct Record{
     string name;  // name is a member (a string member)
     // ...
@@ -457,7 +457,7 @@ void fct(int arg) // fct is global (a global function declaration)
 					<section>
 						<h1>Static Local Variables</h1>
 						<p class="fragment">The <code>static</code> local variables are exactly like global variables, only they have local scope, as shown in the following code:</p>
-						<pre class="fragment"><code style="font-size:larger">void testFunc() {
+						<pre class="fragment"><code style="font-size:20px;">void testFunc() {
     static int runCount = 0; // this only runs ONCE, even on
     // subsequent calls to testFunc()
     cout << "Ran this function " << ++runCount << " times" << endl;
@@ -468,7 +468,7 @@ int main()
     testFunc();
     testFunc();
 }</code></pre>
-						<pre class="fragment"><div style="font-size:larger; background-color:black; color:white;" >Ran this function 1 times
+						<pre class="fragment"><div style="font-size:20px;; background-color:black; color:white;" >Ran this function 1 times
 Ran this function 2 times</div></pre>
 					</section>
 					<section>
@@ -497,7 +497,7 @@ Ran this function 2 times</div></pre>
 						</ul>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">const int dmv = 17;                      // dmv is a named constant
+						<pre><code style="font-size:20px;">const int dmv = 17;                      // dmv is a named constant
 int var = 17;                            // var is not a constant
 
 constexpr double max1 = 1.4*square(dmv); // OK if square(17) is a constant expression
@@ -511,7 +511,7 @@ constexpr double s2 = sum(v);            // error: sum(v) not constant expressio
 					</section>
 					<section>
 						<p class="fragment">For a function to be usable in a <b>constant expression</b>, that is, in an expression that will be evaluated by the compiler, it must be <code>defined constexpr</code>:</p>
-						<pre class="fragment"><code style="font-size:larger">constexpr double square(double x) { return x*x; }</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">constexpr double square(double x) { return x*x; }</code></pre>
 						<p class="fragment">To be <code>constexpr</code>, a function must be rather simple: just a return-statement computing a value.</p>
 						<p class="fragment">A <code>constexpr</code> function can be used for non-constant arguments, but when that is done the result is not a constant expression.</p>
 						<p class="fragment">We allow a <code>constexpr</code> function to be called with non-constant-expression arguments in contexts that do not require constant expressions, so that we don’t have to define essentially the same function twice: once for constant expressions and once for variables.</p>
@@ -524,13 +524,13 @@ constexpr double s2 = sum(v);            // error: sum(v) not constant expressio
 					<section>
 						<h1>Arrays</h1>
 						<p class="fragment">An array of elements of type char can be declared like this:</p>
-						<pre class="fragment"><code style="font-size:larger">char v[6]; // array of 6 characters</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">char v[6]; // array of 6 characters</code></pre>
 						<p class="fragment">In declarations, <code>[]</code> means “array of”.</p>
 						<p class="fragment">All arrays have 0 as their lower bound, so <code>v</code> has six elements: <code>v</code>[0] to <code>v</code>[5].</p>
 						<p class="fragment">The size of an array must be a <u>constant expression</u>.</p>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">int v[5] {1, 2, 3, 4, 5};
+						<pre><code style="font-size:20px;">int v[5] {1, 2, 3, 4, 5};
 
 for(int i = 0; i < 5; ++i) {
     cout << v[i] << endl;
@@ -545,7 +545,7 @@ for(int i = 0; i < 5; ++i) {
 					</section>
 					<section>
 						<p>C++ also offers a simpler for-statement, called range-for-statement, for loops that traverse a sequence in the simplest way:</p>
-						<pre class="fragment"><code style="font-size:larger">int v[5] {1, 2, 3, 4, 5};
+						<pre class="fragment"><code style="font-size:20px;">int v[5] {1, 2, 3, 4, 5};
 
 for(auto x : v) {
     cout << x << endl;
@@ -559,7 +559,7 @@ for(auto x : v) {
 </div></pre>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">int v[5] {1, 2, 3, 4, 5};
+						<pre><code style="font-size:20px;">int v[5] {1, 2, 3, 4, 5};
 
 for(auto x : v) {
     cout << x << endl;
@@ -580,14 +580,14 @@ for(auto x : v) {
 					</section>
 					<section>
 						<p>A pointer can be declared like this:</p>
-						<pre class="fragment"><code style="font-size:larger">int* p;</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">int* p;</code></pre>
 						<p class="fragment">A pointer variable holds the address of an object of the appropriate type:</p>
-						<pre class="fragment"><code style="font-size:larger">int* p = &v[4]; // p points to v's fifth element
+						<pre class="fragment"><code style="font-size:20px;">int* p = &v[4]; // p points to v's fifth element
 int x = *p;     // *p is the object that p points to</code></pre>
 						<span class="fragment"><img src="cpp/pointer.png" class="plain" width="30%"></span>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">int a = 27; // a = 27
+						<pre><code style="font-size:20px;">int a = 27; // a = 27
 
 int* p;
 p = &a;     // p stores the address of a
@@ -603,7 +603,7 @@ Since p pointer is also a variable, it is stored at 0x7ff5fbff730 memory address
 						<span class="fragment"><img src="cpp/memoryAddresses.png" class="plain"></span>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">void swap(int a, int b)
+						<pre><code style="font-size:20px;">void swap(int a, int b)
 {
     int aux = a;
     a = b;
@@ -621,7 +621,7 @@ int main()
 After swap a = 3 b = 2</code></pre>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">void swap(int *a, int *b)
+						<pre><code style="font-size:20px;">void swap(int *a, int *b)
 {
     int aux = *a;
     *a = *b;
@@ -647,13 +647,13 @@ After swap a = 2 b = 3</code></pre>
 					</section>
 					<section>
 						<p>There is only one <code>nullptr</code> shared by all pointer types:</p>
-						<pre class="fragment"><code style="font-size:larger">double* pd = nullptr;
+						<pre class="fragment"><code style="font-size:20px;">double* pd = nullptr;
 Link&lt;Record&gt;* lst = nullptr; // pointer to a Link to a Record
 int x = nullptr;             // error: nullptr is a pointer and not an integer</code></pre>
 					</section>
 					<section>
 						<p>It is often wise to check that a pointer argument that is supposed to point to something, actually points to something:</p>
-					<pre class="fragment"><code style="font-size:larger">int count_x(char* p, char x)
+					<pre class="fragment"><code style="font-size:20px;">int count_x(char* p, char x)
 // count the number of occurrences of x in p[]
 // p is assumed to point to a zero-terminated array of char (or to nothing)
 {
@@ -678,27 +678,27 @@ int x = nullptr;             // error: nullptr is a pointer and not an integer</
 					</section>
 					<section>
 						<p>References are particularly useful for specifying function arguments:</p>
-						<pre class="fragment"><code style="font-size:larger">void sort(vector&lt;double&gt;& v);</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">void sort(vector&lt;double&gt;& v);</code></pre>
 						<p class="fragment">By using a reference, we ensure that for a call <code>sort(my_vec)</code>, we do not copy <code>my_vec</code> and that it really is my_vec that is sorted and not a copy of it.</p>
 						<p class="fragment">When we don’t want to modify an argument, but still don’t want the cost of copying, we use a <code>const</code> reference:</p>
-						<pre class="fragment"><code  style="font-size:larger">double sum(const vector&lt;double&gt;& v);</code></pre>
+						<pre class="fragment"><code  style="font-size:20px;">double sum(const vector&lt;double&gt;& v);</code></pre>
 					</section>
 					<section>
 						<p>Recall this example:</p>
-						<pre class="fragment"><code style="font-size:larger">int v[5] {1, 2, 3, 4, 5};
+						<pre class="fragment"><code style="font-size:20px;">int v[5] {1, 2, 3, 4, 5};
 
 for(auto x : v) {
     cout << x << endl;
 }</code></pre>
 						<p class="fragment">If we didn’t want to copy the values from <code>v</code> into the variable <code>x</code>, but rather just have <code>x</code> refer to an element, we could write:</p>
-						<pre class="fragment"><code style="font-size:larger">int v[5] {1, 2, 3, 4, 5};
+						<pre class="fragment"><code style="font-size:20px;">int v[5] {1, 2, 3, 4, 5};
 
 for(auto& x : v) {
     cout << x << endl;
 }</code></pre>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">int v[] = {0,1,2,3,4,5,6,7,8,9};
+						<pre><code style="font-size:20px;">int v[] = {0,1,2,3,4,5,6,7,8,9};
 for (auto& x : v)
     ++x;
 
@@ -718,7 +718,7 @@ for(auto& x : v)
 </div></pre>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">void swap(int a, int b)
+						<pre><code style="font-size:20px;">void swap(int a, int b)
 {
     int aux = a;
     a = b;
@@ -738,7 +738,7 @@ After swap: a = 3 b = 2
 </div></pre>
 					</section>
 										<section>
-						<pre><code style="font-size:larger">void swap(int *a, int *b)
+						<pre><code style="font-size:20px;">void swap(int *a, int *b)
 {
     int aux = *a;
     *a = *b;
@@ -758,7 +758,7 @@ After swap: a = 2 b = 3
 </div></pre>
 					</section>
 										<section>
-						<pre><code style="font-size:larger">void swap(int &a, int &b)
+						<pre><code style="font-size:20px;">void swap(int &a, int &b)
 {
     int aux = a;
     a = b;
@@ -792,7 +792,7 @@ After swap: a = 2 b = 3
 					<section>
 						<h1>Structures</h1>
 						<p class="fragment">The first step to build a new type is often to organize the elements it need into a data structure, a struct:</p>
-						<pre class="fragment"><code style="font-size:larger">struct Player {
+						<pre class="fragment"><code style="font-size:20px;">struct Player {
     string name;
     int hp;
 };
@@ -801,7 +801,7 @@ After swap: a = 2 b = 3
 						<p class="fragment">The player has a <code>string</code> for his <code>name</code> and an <code>integer</code> for his hp <code>value</code>.</p>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">struct Player {
+						<pre><code style="font-size:20px;">struct Player {
     string name;
     int hp;
 };
@@ -818,7 +818,7 @@ int main()
 					</section>
 					<section>
 						<p class="fragment">We use <code>.</code> (dot) to access struct members through a name (and through a reference) and <code>-></code> to access <code>struct</code> members through a pointer:</p>
-						<pre class="fragment"><code style="font-size:larger">void func(Player p, Player& rp, Player* pp)
+						<pre class="fragment"><code style="font-size:20px;">void func(Player p, Player& rp, Player* pp)
 {
     int i1 = p.hp;
     int i2 = rp.hp;
@@ -839,7 +839,7 @@ int main()
 						<p class="fragment"><code>private</code> members are accessible only through that interface</p>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">class Vector {
+						<pre><code style="font-size:20px;">class Vector {
 public:
     Vector (int s): elem{new double[s]}, sz{s} {} // construct a Vector
     double &operator[](int i) {return elem[i];}
@@ -850,7 +850,7 @@ private:
 };
 </code></pre>
 						<p class="fragment">We can define a variable of type <code>Vector</code>:</p>
-						<pre class="fragment"><code style="font-size:larger">Vector v(6);</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">Vector v(6);</code></pre>
 						<span class="fragment"><img class="plain" src="cpp/Vector6.png" width="80%"></span>
 					</section>
 					<section>
@@ -861,7 +861,7 @@ private:
 						<p class="fragment">This is the basic technique for handling varying amounts of information in C++: a fixed-size handle referring to a variable amount of data "elsewhere".</p>			
 					</section>
 					<section>
-						<pre><code style="font-size:larger">class Vector {
+						<pre><code style="font-size:20px;">class Vector {
 public:
     Vector (int s): elem{new double[s]}, sz{s} {} // construct a Vector
     double &operator[](int i) {return elem[i];}
@@ -875,12 +875,12 @@ private:
 						<p class="fragment">In particular, it states that it needs an integer to do that.</p>
 						<p class="fragment">That integer is used as the number of elements.</p>
 						<p class="fragment">The constructor initializes the <code>Vector</code> members using a member initializer list:</p>
-						<pre class="fragment"><code style="font-size:larger">elem{new double[s]}</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">elem{new double[s]}</code></pre>
 						<p class="fragment">That is, we first initialize elem with a pointer to s elements of type <code>double</code> manually allocated.</p>
 						<p class="fragment">Then, we initialize <code>sz</code> to <code>s</code>.</p>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">class Vector {
+						<pre><code style="font-size:20px;">class Vector {
 public:
     Vector (int s): elem{new double[s]}, sz{s} {} // construct a Vector
     double &operator[](int i) {return elem[i];}
@@ -897,7 +897,7 @@ private:
 						<p class="fragment">There is no mechanism to free the array of doubles acquired by <code>new</code>.</p>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">class Vector {
+						<pre><code style="font-size:20px;">class Vector {
 public:
     Vector (int s): elem{new double[s]}, sz{s} {} // construct a Vector
     double &operator[](int i) {return elem[i];}
@@ -907,7 +907,7 @@ private:
     int sz;       // the number of elements
 };
 </code></pre>
-						<pre class="fragment"><code style="font-size:larger">double read_and_sum(int s) {
+						<pre class="fragment"><code style="font-size:20px;">double read_and_sum(int s) {
     Vector v(s);                          // make a vector of s elements
     for (int i=0; i!=v.size(); ++i)
         cin>>v[i];                        // read into elements
@@ -928,7 +928,7 @@ private:
 					<section>
 						<h1>Enumerations</h1>
 						<p class="fragment">Besides classes, C++ also supports a simple form of user-defined type for enumerating values:</p>
-						<pre class="fragment"><code style="font-size:larger">enum class Color{red, blue, green};
+						<pre class="fragment"><code style="font-size:20px;">enum class Color{red, blue, green};
 enum class Traffic_light {green, yellow, red};
 
 Color col = Color::red;
@@ -943,20 +943,20 @@ Traffic_light light = Traffic_light::red;</code></pre>
 						<p class="fragment">The <code>class</code> after the <code>enum</code> specifies that an enumeration is strongly typed and that its enumerators are scoped.</p>
 						<p class="fragment">Being separate types, <code>enum classes</code> help prevent accidental misuses of constants.</p>
 						<p class="fragment">In particular, we cannot mix <code>Color</code> and <code>Traffic_light</code> values:</p>
-						<pre class="fragment"><code style="font-size:larger">Color x = red;                // error : which red?
+						<pre class="fragment"><code style="font-size:20px;">Color x = red;                // error : which red?
 Color y = Traffic_light::red; // error: that red is not a Color
 Color z = Color::red;         // OK
 </code></pre>
 					</section>
 					<section>
 						<p class="fragment">Similarly, it is not possible to mix <code>Color</code> and <code>integer</code> values:</p>
-						<pre class="fragment"><code style="font-size:larger">int i = Color::red; // error: Color::red is not an int
+						<pre class="fragment"><code style="font-size:20px;">int i = Color::red; // error: Color::red is not an int
 Color c = 2;        // error: 2 is not a Color
 </code></pre>
 						<p class="fragment">If you don’t want to explicitly qualify enumerator names and want enumerator values to be ints (without the need for an explicit conversion), you can remove the class from enum class to get a "plain enum". </p>
 						<p class="fragment">By default, an enum class has only assignment, initialization, and comparisons (e.g., == and <) defined.</p>
 						<p class="fragment">However, an enumeration is a user-defined type so we can define operators for it:</p>
-						<pre class="fragment"><code style="font-size:larger">Traffic_light& operator++(Traffic_light& t)
+						<pre class="fragment"><code style="font-size:20px;">Traffic_light& operator++(Traffic_light& t)
  	// prefix increment ++
 {
     switch(t) {
@@ -980,7 +980,7 @@ Traffic_light next = ++light; // next becomes Traffic_light::green
 					</section>
 					<section>
 						<p class="fragment">Consider the following example:</p>
-						<pre class="fragment"><code style="font-size:larger">enum Type {str, num};
+						<pre class="fragment"><code style="font-size:20px;">enum Type {str, num};
 
 struct Entry {
     char *name;
@@ -999,13 +999,13 @@ void f(Entry* p)
 						<p class="fragment">This can be easily recovered by specifying that both should be member of an <code>union</code>.</p>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">union Value {
+						<pre><code style="font-size:20px;">union Value {
     char *s;
     int i;
 };</code></pre>
 						<p class="fragment">The language doesn’t keep track of which kind of value is held by a <code>union</code>.</p>
 						<p class="fragment">Therefore, the programmer must do the following:</p>
-						<pre class="fragment"><code style="font-size:larger">enum Type {str, num};
+						<pre class="fragment"><code style="font-size:20px;">enum Type {str, num};
 
 struct Entry {
     char *name;
@@ -1037,7 +1037,7 @@ void f(Entry* p)
 						<p class="fragment">A declaration specifies all that’s needed to use a function or a type.</p>
 					</section>
 					<section>
-						<pre><code style="font-size:larger">double sqrt(double);  // the square root of function takes a double and returns a double
+						<pre><code style="font-size:20px;">double sqrt(double);  // the square root of function takes a double and returns a double
 
 class Vector{
 public:
@@ -1049,11 +1049,11 @@ private:
     int sz;
 };</code></pre>
 						<p class="fragment">The key point here is that the function bodies and the function definitions are in separate locations.</p>
-						<pre class="fragment"><code style="font-size:larger">double sqrt(double d) // definition of sqrt
+						<pre class="fragment"><code style="font-size:20px;">double sqrt(double d) // definition of sqrt
 {
 // ...  algorithm is found in math textbook
 }</code></pre>
-						<pre class="fragment"><code style="font-size:larger">Vector::Vector(int s)		// definition of the constructor
+						<pre class="fragment"><code style="font-size:20px;">Vector::Vector(int s)		// definition of the constructor
   :elem{new double[s]}, sz{s} 	// initialize members
 {
 }
@@ -1078,7 +1078,7 @@ int Vector::size() {
 						<p class="fragment">Typically, we place the declarations that specify the interface to a module in a file with a name indicating its intended use.</p>
 					</section>
 					<section>
-						<pre class="fragment"><code style="font-size:larger">// Vector.hpp:
+						<pre class="fragment"><code style="font-size:20px;">// Vector.hpp:
 class Vector {
     public:
         Vector(int s);
@@ -1088,7 +1088,7 @@ class Vector {
         double* elem; // elem points to an array of sz doubles
         int sz;
 };</code></pre>
-					<pre class="fragment"><code style="font-size:larger">// user.cpp:
+					<pre class="fragment"><code style="font-size:20px;">// user.cpp:
 #include "Vector.hpp"	// get Vector’s interface
 #include &lt;cmath&gt;	// get the the standard-library math function interface including sqrt()
 using namespace std;	// make std members visible
@@ -1098,7 +1098,7 @@ double sqrt_sum(Vector& v) {
     for (int i=0; i!=v.size(); ++i) // sum of square roots
         sum+=sqrt(v[i]);
     return sum;
-}</code></pre><pre class="fragment"><code style="font-size:larger">// Vector.cpp:
+}</code></pre><pre class="fragment"><code style="font-size:20px;">// Vector.cpp:
 #include "Vector.hpp" // get the interface
 
 Vector::Vector(int s)
@@ -1126,7 +1126,7 @@ int Vector::size()
 					<p class="fragment">The simplest way to access a name in another namespace is to qualify it with the namespace name (e.g., std::cout).</p>
 					<p class="fragment">The <code>main()</code> function is defined in the global namespace, that is, not local to a defined namespace, class, or function.</p>
 					<p class="fragment">To gain access to names in the standard-library namespace, we can use a using-directive:</p>
-					<pre class="fragment"><code style="font-size:larger">using namespace std;</code></pre>
+					<pre class="fragment"><code style="font-size:20px;">using namespace std;</code></pre>
 					<p class="fragment">Namespaces are primarily used to organize larger program components, such as libraries.</p>
 					<p class="fragment">They simplify the composition of a program out of separately developed parts.</p>
 				</section>
@@ -1145,7 +1145,7 @@ int Vector::size()
 						<p class="fragment">The solution is for the <code>Vector</code> implementer to detect the attempted out-of-range access and then tell the user about it.</p>
 						<p class="fragment">The user can then take an appropriate action.</p>
 						<p class="fragment">For example, <code>Vector::operator[]()</code> can detect an attempted out-of-range access and throw an out_of_range exception:</p>
-						<pre class="fragment"><code style="font-size:larger">double& Vector::operator[](int i)
+						<pre class="fragment"><code style="font-size:20px;">double& Vector::operator[](int i)
 {
     if (i<0 || size()<=i) throw out_of_range{"Vector::operator[]"};
     return elem[i];
@@ -1154,7 +1154,7 @@ int Vector::size()
 					<section>
 						<p class="fragment">The <code>throw</code> transfers control to a handler for exceptions of type <code>out_of_range</code> in some function that directly or indirectly called <code>Vector::operator[]()</code>.</p>
 						<p class="fragment">To do that, the implementation will unwind the function call stack as needed to get back to the context of that caller.</p>
-						<pre class="fragment"><code style="font-size:larger">void f(Vector& v)
+						<pre class="fragment"><code style="font-size:20px;">void f(Vector& v)
 {
     // ...
     try { 			// exceptions here are handled by the handler defined below
@@ -1187,10 +1187,10 @@ int Vector::size()
 						<p class="fragment">Such a statement of what <u>is assumed to be true for a class is called a</u> <b>class invariant</b>, or simply an <b>invariant</b>.</p>
 						<p class="fragment">It is the job of a constructor to establish the invariant for its class (so that the member functions can rely on it) and for the member functions to make sure that the invariant holds when they exit.</p>
 						<p class="fragment">Our <code>Vector</code> constructor only partially did its job: it properly initialized the <code>Vector</code> members, but it failed to check that the arguments passed to it made sense:</p>
-						<pre class="fragment"><code style="font-size:larger">Vector v(-27);</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">Vector v(-27);</code></pre>
 					</section>
 					<section>
-						<pre class="fragment"><code style="font-size:larger">Vector::Vector(int s) {
+						<pre class="fragment"><code style="font-size:20px;">Vector::Vector(int s) {
    if (s<0) throw length_error{};
    elem = new double[s];
    sz = s;
@@ -1199,7 +1199,7 @@ int Vector::size()
 						<p class="fragment">We use the standard-library exception <code>length_error</code> to report a non-positive number of elements because some standard-library operations use that exception to report problems of this kind.</p>
 						<p class="fragment">If operator new can’t find memory to allocate, it throws a <code>std::bad_alloc</code>.</p>
 						<p class="fragment">This way, we can write:</p>
-						<pre class="fragment"><code style="font-size:larger">void test() {
+						<pre class="fragment"><code style="font-size:20px;">void test() {
     try {
         Vector v(−27);
     }
@@ -1223,13 +1223,13 @@ int Vector::size()
 						<p class="fragment">Exceptions report errors found at run time.</p>
 						<p class="fragment">If an error can be found at compile time, it is usually preferable to do so.</p>
 						<p class="fragment">We can perform simple checks on properties that are known at compile time and report failures as compiler error messages:</p>
-						<pre class="fragment"><code style="font-size:larger">static_assert(4<=sizeof(int), "integers are too small"); // check integer size</code></pre>
+						<pre class="fragment"><code style="font-size:20px;">static_assert(4<=sizeof(int), "integers are too small"); // check integer size</code></pre>
 							<p class="fragment">This will write "<b>integers are too small</b>" <code>if 4<=sizeof(int)</code> does not hold, that is, if an int on this system does not have at least 4 bytes.</p>
 							<p class="fragment">We call such statements of expectations <b>assertions</b>.</p>
 					</section>
 					<section>
 						<p class="fragment">The static_assert mechanism can be used for anything that can be expressed in terms of constant expressions.</p>
-						<pre class="fragment"><code style="font-size:larger">constexpr double C = 299792.458; // km/s
+						<pre class="fragment"><code style="font-size:20px;">constexpr double C = 299792.458; // km/s
 
 void f(double speed) {
     const double local_max = 160.0/(60∗60); // 160 km/h == 160.0/(60*60) km/s
