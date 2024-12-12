@@ -190,8 +190,6 @@ public:
 	~Window();
 private:
 	struct SDL_Window* window;
-
-	friend class RenderTarget;
 };</code></pre>
 						<pre class="fragment"><code style="font-size:20px;">#include &lt;string>
 #include &lt;memory>
@@ -204,8 +202,6 @@ public:
 private:
 	class WindowImpl;
 	std::unique_ptr&lt;WindowImpl> pimpl;
-
-	friend class RenderTarget;
 };</code></pre>
 	
 					</section>
