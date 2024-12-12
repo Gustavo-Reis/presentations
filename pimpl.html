@@ -229,6 +229,7 @@ Window::~Window()
 class Window::WindowImpl {
 	SDL_Window* window;
 	
+public:
 	WindowImpl(std::string title) {
 		window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
 	}
