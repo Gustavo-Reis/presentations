@@ -201,10 +201,8 @@ public:
 	Window(std::string title);
 	~Window();
 
-	void* get_native_window() const; // returns a pointer to the native window object
-
 private:
-	struct WindowImpl;
+	class WindowImpl;
 	std::unique_ptr&lt;WindowImpl> pimpl;
 
 	friend class RenderTarget;
@@ -228,18 +226,25 @@ Window::~Window()
 						<pre class="fragment"><code style="font-size:20px;">#include "Window.h"
 #include "SDL.h"
 
-struct Window::WindowImpl {
+class Window::WindowImpl {
 	SDL_Window* window;
+	
+	WindowImpl(std::string title) {
+		window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+	}
+
+	~WindowImpl()
+	{
+		SDL_DestroyWindow(window);
+	}
 };
 
-Window::Window(std::string title): pimpl{std::make_unique &lt;Window::WindowImpl>()}
+Window::Window(std::string title) : pimpl{std::make_unique&lt;WindowImpl>(title)}
 {
-	pimpl->window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
 }
 
 Window::~Window()
-{
-	SDL_DestroyWindow(pimpl->window);
+{	
 }</code></pre>
 	
 					</section>
