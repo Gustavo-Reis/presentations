@@ -345,7 +345,7 @@ lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 					<p>Since the light color directly influences what colors the object can reflect (as you might remember from the Colors class) it has a significant impact on the visual output.  </p>
 				</section>
 				<section>
-					<p> We can easily change the light's colors over time by changing the light's ambient and diffuse colors via <fun>sin</fun> and <fun><function id='47'>glfwGetTime</function></fun>: </p>
+					<p> We can easily change the light's colors over time by changing the light's ambient and diffuse colors via <fun>sin</fun> and <fun><function id='47'>SDL_GetTicks</function></fun>: </p>
 
 <pre><code>
 glm::vec3 lightColor;
