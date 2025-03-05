@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Problem-Solving Through Search (68 slides)</title>
+
+		<meta name="description" content="Problem-Solving Through Search (68 slides)">
+		<meta name="author" content="Gustavo Reis">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+	</head>    
+    <body>
+    
+    <div class="reveal">
+      <div class="slides">
+    
+        <!-- SLIDE 1 -->
+    <section>
+        <h1>Solving Problems by Searching I</h1>
+        <h3>Gustavo Reis</h3>
+        <p style="text-align:center">Based on chapters 3 &amp; 4 of "Artificial Intelligence: A Modern Approach"</p>
+                  <p style="text-align:center">Collaboration:</p>
+                  <ul style="text-align: left;">
+                      <li>Carlos Grilo</li>
+                      <li>Catarina Silva</li>
+                      <li>Pedro Gago</li>
+                  </ul>          
+    </section>
+  
+      <!-- SLIDE 2: Problem Examples -->
+      <section>
+        <h2>Sample Problems</h2>
+        <p class="fragment">In AI, many problems can be viewed as search tasks. Examples include:</p>
+        <ul>
+          <li class="fragment"><strong>Cryptarithmetic:</strong> e.g. FORTY + TEN + TEN = SIXTY</li>
+          <li class="fragment"><strong>The 8-Puzzle</strong></li>
+          <li class="fragment"><strong>N-Queens</strong></li>
+          <li class="fragment"><strong>Missionaries &amp; Cannibals</strong></li>
+          <li class="fragment"><strong>Timetabling &amp; Scheduling</strong></li>
+          <li class="fragment"><strong>Space Optimization</strong></li>
+          <li class="fragment"><strong>Traveling Salesman Problem (TSP)</strong></li>
+          <li class="fragment"><strong>VLSI Design Layout</strong></li>
+          <li class="fragment"><strong>Pathfinding (e.g. route planning on maps)</strong></li>
+        </ul>
+      </section>
+  
+      <!-- SLIDE 3: Two Problem Types -->
+      <section>
+        <h2>Two Major Problem Types</h2>
+        <p class="fragment">
+          <strong>Type 1:</strong> The agent starts from an initial state and seeks a sequence of actions that leads to a goal state.
+          <br>(Examples: 8-Puzzle, Missionaries &amp; Cannibals, Pathfinding)
+        </p>
+        <p class="fragment">
+          <strong>Type 2:</strong> The agent is searching for a specific configuration of the problem itself. We only need the final “state,” not the sequence of actions.
+          <br>(Examples: N-Queens, VLSI, Timetabling)
+        </p>
+        <p class="fragment">
+          In Type 2 problems, we often use <em>iterative improvement</em> approaches that start with a complete configuration and refine it until we find a satisfactory solution.
+        </p>
+      </section>
+  
+      <!-- SLIDE 4: Iterative Improvement -->
+      <section>
+        <h2>Iterative Improvement</h2>
+        <p class="fragment">
+          Iterative improvement algorithms keep a complete configuration of the problem (sometimes called a <em>solution</em>) and change it incrementally to seek better solutions.
+        </p>
+        <ul>
+          <li class="fragment">These algorithms are also known as <strong>local search methods</strong>.</li>
+          <li class="fragment">Unlike standard tree/graph searches, they don’t build paths from start to goal; rather, they refine a single state.</li>
+          <li class="fragment">Examples include Hill-Climbing, Simulated Annealing, Beam Search, Tabu Search, Evolutionary Algorithms, etc.</li>
+        </ul>
+      </section>
+  
+      <!-- SLIDE 5: The “Landscape” Analogy -->
+      <section>
+        <h2>The “Landscape” Analogy</h2>
+        <p class="fragment">We can imagine each possible solution as a point in a “landscape.”</p>
+        <ul>
+          <li class="fragment">The height/elevation of that point represents the quality (value) of the solution.</li>
+          <li class="fragment">Our goal: find the “global maximum” (best solution) in this landscape.</li>
+        </ul>
+        <p class="fragment">
+          Challenges: local maxima, plateaus, and ridges can trap simple algorithms like naïve Hill-Climbing.
+        </p>
+      </section>
+  
+      <!-- SLIDE 6: Hill-Climbing -->
+      <section>
+        <h2>Hill-Climbing</h2>
+        <ol>
+          <li class="fragment">Start with a random solution.</li>
+          <li class="fragment">Evaluate all “neighboring” solutions (small modifications).</li>
+          <li class="fragment">Move to the neighbor with the best improvement.</li>
+          <li class="fragment">Repeat until no better neighbor exists.</li>
+        </ol>
+        <p class="fragment"><em>Weaknesses:</em> it can get stuck on local maxima, plateaus, or ridges.</p>
+        <p class="fragment">Common remedy: restart from another random solution whenever progress stalls.</p>
+      </section>
+  
+      <!-- SLIDE 7: Simulated Annealing -->
+      <section>
+        <h2>Simulated Annealing</h2>
+        <p class="fragment">A modified form of Hill-Climbing that occasionally accepts worse moves.</p>
+        <ul>
+          <li class="fragment">New solutions are always accepted if they are better.</li>
+          <li class="fragment">Worse solutions are sometimes accepted (with a probability that decreases over time).</li>
+          <li class="fragment">A “temperature” parameter T controls how likely we are to accept worse moves.</li>
+        </ul>
+        <p class="fragment">
+          By allowing occasional bad moves, Simulated Annealing can “escape” local maxima, but it requires careful tuning of the “cooling schedule.”
+        </p>
+      </section>
+  
+      <!-- SLIDE 8: Beam Search -->
+      <section>
+        <h2>Beam Search</h2>
+        <p class="fragment">An iterative improvement method that keeps a population of solutions:</p>
+        <ul>
+          <li class="fragment">Maintain <em>n</em> current solutions.</li>
+          <li class="fragment">Generate successors for each solution (e.g., <em>k</em> new variants per solution).</li>
+          <li class="fragment">Select the best <em>n</em> among all generated successors to form the new population.</li>
+        </ul>
+        <p class="fragment">Similar to a “multi-track” Hill-Climbing, but still can get trapped in local maxima if the population converges prematurely.</p>
+      </section>
+  
+      <!-- SLIDE 9: Other Iterative Methods -->
+      <section>
+        <h2>Other Iterative Improvement Methods</h2>
+        <ul>
+          <li class="fragment"><strong>Tabu Search:</strong> Maintains a memory of recently visited solutions to avoid revisiting them.</li>
+          <li class="fragment"><strong>Evolutionary Algorithms (Genetic Algorithms):</strong> Based on selection, crossover, and mutation to evolve better solutions over generations.</li>
+          <li class="fragment"><strong>Ant Colony Optimization:</strong> Uses paths and pheromone trails for combinatorial optimization.</li>
+          <li class="fragment"><strong>Particle Swarm Optimization:</strong> Models solutions as moving “particles” that guide each other via velocity and position updates.</li>
+          <li class="fragment"><strong>Bees Algorithm:</strong> Mimics honeybee foraging strategies.</li>
+        </ul>
+      </section>
+  
+      <!-- SLIDE 10: Conclusion -->
+      <section>
+        <h2>Conclusion</h2>
+        <p class="fragment">
+          We’ve seen two main types of problems in AI:
+          <br><strong>(1)</strong> Sequence-of-actions problems.
+          <br><strong>(2)</strong> Configuration or iterative-improvement problems.
+        </p>
+        <p class="fragment">Iterative improvement offers a powerful way to handle large or complex search spaces, especially when a single end-state is needed instead of a full path.</p>
+        <p class="fragment"><em>Key takeaway:</em> Choosing the right search algorithm depends on the problem type, the size of the space, and the nature of the objective function.</p>
+      </section>
+  
+      <!-- SLIDE 11: References -->
+      <section>
+        <h2>References &amp; Further Reading</h2>
+        <ul>
+          <li class="fragment">Stuart Russell &amp; Peter Norvig, <em>Artificial Intelligence: A Modern Approach</em></li>
+          <li class="fragment">Wikipedia: 
+            <ul>
+              <li class="fragment">“Hill Climbing”</li>
+              <li class="fragment">“Simulated Annealing”</li>
+              <li class="fragment">“Beam Search”</li>
+            </ul>
+          </li>
+          <li class="fragment">Additional slides by Gustavo Reis</li>
+        </ul>
+      </section>
+  
+    </div>
+  </div>   
+   
+  <script src="js/reveal.js"></script>
+
+  <script>
+      // More info about config & dependencies:
+      // - https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+          width: 1920,
+          height: 1080,
+          controls: true,
+          progress: true,
+          center: true,
+          hash: true,
+          transition: 'convex',
+          math: {
+              // mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+              config: 'TeX-AMS_HTML-full',
+              TeX: {
+                  Macros: {
+                      R: '\\mathbb{R}',
+                      set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+                  }
+              }
+          },
+          dependencies: [
+              { src: 'plugin/markdown/marked.js' },
+              { src: 'plugin/markdown/markdown.js' },					
+              { src: 'plugin/highlight/highlight.js', async: true },
+              { src: 'plugin/notes/notes.js', async: true },
+              { src: 'plugin/zoom-js/zoom.js', async: true },
+              { src: 'plugin/math/math.js', async: true }
+          ]
+      });
+  </script>
+    
+    </body>
+    
+
+
+
+
+</html>
