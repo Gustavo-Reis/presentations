@@ -62,14 +62,9 @@
     
         <!-- SLIDE 3 -->
         <section>
-          <h2>Problem Formulation (1)</h2>
+          <h2>Problem Formulation</h2>
           <p class="fragment"><strong>Initial State:</strong> The agent's starting point.</p>
           <p class="fragment"><strong>Operators (Actions):</strong> What the agent can do. Each operator describes which state is reached by applying that action to a current state.</p>
-        </section>
-    
-        <!-- SLIDE 4 -->
-        <section>
-          <h2>Problem Formulation (2)</h2>
           <p class="fragment"><strong>Goal Test:</strong> Determines if a given state is a goal state (or belongs to a set of goal states, or has a certain property).</p>
           <p class="fragment"><strong>Path Cost:</strong> A function to compute the cost of getting from one state to another (often the sum of the costs of each action along the path).</p>
         </section>
@@ -93,6 +88,7 @@
             <li class="fragment"><strong>Goal Test:</strong> A specific target configuration.</li>
             <li class="fragment"><strong>Path Cost:</strong> Typically the path length (number of moves).</li>
           </ul>
+          <div class="fragment"><img src="aiag/search/8-puzzle.png" class="plain" width="40%"></div>
         </section>
     
         <!-- SLIDE 7 -->
@@ -133,18 +129,25 @@
           <h2>Search Methods: The Search Tree</h2>
           <p class="fragment">A search typically constructs a tree rooted at the initial state. Leaf nodes are unexpanded or have no successors.</p>
           <p class="fragment">The set of unexpanded nodes is called the <strong>frontier</strong>.</p>
+          <div class="fragment"><img src="aiag/search/tree.png" class="plain" width="40%"></div>
         </section>
     
         <!-- SLIDE 10 -->
         <section>
           <h2>Search Methods (Visualization)</h2>
-          <img src="https://via.placeholder.com/500x300?text=Search+Tree+Visualization" alt="Search Tree Placeholder">
+          <img src="aiag/search/map.png" class="plain" width="70%">
         </section>
     
         <!-- SLIDE 11 -->
         <section>
           <h2>Search Methods: Strategy</h2>
+          <div class="fragment"><img src="aiag/search/search-map.png" class="plain" width="60%"></div>
+        </section>
+
+        <section>
+          <h2>Search Methods: Strategy</h2>
           <p class="fragment">Each search method has a strategy to decide which node from the frontier is expanded next. Often, this is handled by storing nodes in a data structure (stack, queue, priority queue) that enforces the chosen ordering.</p>
+          <div class="fragment"><img src="aiag/search/search-method.png" class="plain" width="50%"></div>
         </section>
     
         <!-- SLIDE 12 -->
@@ -195,7 +198,7 @@
       1. Initialize the frontier with a node for the initial state.
       2. Create an empty explored set.
       3. If frontier is empty, fail.
-      4. Remove a node n from frontier.
+      4. Remove the first node n from frontier.
       5. If n is a goal, return success (path from n to initial).
       6. Add state of n to explored set.
       7. Expand n, generating successors. If a successor is not in frontier or explored, add it.
@@ -227,6 +230,7 @@
           <h2>Breadth-First Search (1)</h2>
           <p class="fragment">Expands nodes level by level: first all states at depth n, then depth n+1.</p>
           <p class="fragment">Uses a <strong>queue</strong> for the frontier.</p>
+          <div class="fragment"><img src="aiag/search/breadth-first.png" class="plain" width="50%"></div>
         </section>
     
         <!-- SLIDE 20 -->
@@ -235,7 +239,7 @@
           <ul>
             <li class="fragment"><strong>Complete:</strong> Yes (if branching factor b is finite).</li>
             <li class="fragment"><strong>Optimal:</strong> Yes, if each action has the same cost.</li>
-            <li class="fragment"><strong>Time &amp; Space Complexity:</strong> O(b^d), where d is the solution depth.</li>
+            <li class="fragment"><strong>Time &amp; Space Complexity:</strong> $O(b^d)$, where d is the solution depth.</li>
             <li class="fragment">Can become infeasible if b is large or if the needed depth is big.</li>
           </ul>
         </section>
@@ -247,6 +251,8 @@
             <em>Drawback:</em> Explores a vast number of nodes if the solution is far (many steps).  
             For large branching factors, BFS can become prohibitively expensive in both time and memory.
           </p>
+          <div class="fragment"><img src="aiag/search/breadth-first-table.png" class="plain" width="50%"></div>
+          <p class="fragment">$b = 10$; 1 million nodes per second; 1000 bytes per node</p>
         </section>
     
         <!-- SLIDE 22 -->
@@ -265,15 +271,22 @@
             <li class="fragment"><strong>Frontier:</strong> priority queue ordered by <code>f(n)=g(n)</code>.</li>
             <li class="fragment"><strong>Complete:</strong> Yes (assuming finite step costs &gt; 0).</li>
             <li class="fragment"><strong>Optimal:</strong> Yes, finds the least-cost solution.</li>
-            <li class="fragment"><strong>Time &amp; Space Complexity:</strong> O(b^m), with m as the max depth if costs are small.</li>
+            <li class="fragment"><strong>Time &amp; Space Complexity:</strong> $O(b^m)$, with m as the max depth if costs are small.</li>
           </ul>
         </section>
+
+        <section>
+          <h2>Uniform-Cost Search</h2>
+          <img src="aiag/search/uniform.png" class="plain" width="80%">
+        </section>
+    
     
         <!-- SLIDE 24 -->
         <section>
           <h2>Depth-First Search (1)</h2>
           <p class="fragment">Expands the deepest unexpanded node first, backtracking when it hits a dead end or a goal.</p>
           <p class="fragment">Uses a <strong>stack</strong> for the frontier.</p>
+          <div class="fragment"><img src="aiag/search/depth-first.png" class="plain" width="50%"></div>
         </section>
     
         <!-- SLIDE 25 -->
@@ -282,8 +295,8 @@
           <ul>
             <li class="fragment"><strong>Complete in finite spaces:</strong> eventually explores all states.</li>
             <li class="fragment"><strong>Not optimal:</strong> may find a longer path when a shorter one exists.</li>
-            <li class="fragment"><strong>Time Complexity:</strong> O(b^n) in the worst case (n is max depth).</li>
-            <li class="fragment"><strong>Space Complexity:</strong> Typically O(b * n) or O(b^n) if we consider all expansions. Usually less memory than BFS.</li>
+            <li class="fragment"><strong>Time Complexity:</strong> $O(b^n)$ in the worst case (n is max depth).</li>
+            <li class="fragment"><strong>Space Complexity:</strong> Typically $O(b \times n)$ or $O(b^n)$ if we consider all expansions. Usually less memory than BFS.</li>
           </ul>
         </section>
     
@@ -291,20 +304,21 @@
         <section>
           <h2>Depth-Limited Search</h2>
           <p>
-            Performs DFS but only down to a predefined depth limit <em>l</em>.  
-            <strong>Complete</strong> if <em>l ≥ d</em>, where d is the actual solution depth.
+            Performs DFS but only down to a predefined depth limit $l$.  
+            <strong>Complete</strong> if $l \geq d$, where d is the actual solution depth.
           </p>
           <ul>
             <li class="fragment"><strong>Not optimal.</strong></li>
-            <li class="fragment"><strong>Time Complexity:</strong> O(b^l).</li>
-            <li class="fragment"><strong>Space Complexity:</strong> O(b*l).</li>
+            <li class="fragment"><strong>Time Complexity:</strong> $O(b^l)$.</li>
+            <li class="fragment"><strong>Space Complexity:</strong> $O(b*l)$.</li>
           </ul>
         </section>
     
         <!-- SLIDE 27 -->
         <section>
           <h2>Iterative Deepening Search (IDS) (1)</h2>
-          <p>Runs DLS repeatedly with increasing depth limits: 0, 1, 2, … until it finds a goal.</p>
+          <p class="fragment">Runs DLS repeatedly with increasing depth limits: $0, 1, 2, …$ until it finds a goal.</p>
+          <div class="fragment"><img src="aiag/search/iterative-deepening.png" class="plain" width="80%"></div>
         </section>
     
         <!-- SLIDE 28 -->
@@ -313,8 +327,8 @@
           <ul>
             <li class="fragment"><strong>Complete:</strong> Yes, eventually tries every depth.</li>
             <li class="fragment"><strong>Optimal:</strong> Yes (like BFS) if step costs are uniform.</li>
-            <li class="fragment"><strong>Time Complexity:</strong> O(b^d), same as BFS for solution depth d.</li>
-            <li class="fragment"><strong>Space Complexity:</strong> O(b*d), because it’s essentially DFS memory usage repeated.</li>
+            <li class="fragment"><strong>Time Complexity:</strong> $O(b^d)$, same as BFS for solution depth d.</li>
+            <li class="fragment"><strong>Space Complexity:</strong> $O(b \times d)$, because it’s essentially DFS memory usage repeated.</li>
           </ul>
           <p class="fragment">IDS combines BFS’s optimality with DFS’s low memory usage.</p>
         </section>
@@ -322,6 +336,14 @@
         <!-- SLIDE 29 -->
         <section>
           <h2>Iterative Deepening: Repeated Expansions</h2>
+          <p class="fragment">
+            <strong>Depth-first:</strong> $$1 + b + b^2 + b^3 + b^4 + b^5 = $$
+            $$1 + 10 + 100 + 1000 + 10000 + 100000 = 111.111$$
+          </p>
+          <p class="fragment">
+            <strong>Iterative Deepening:</strong> $$(d + 1) \times 1 + d \times b + (d – 1) b^2 + ... + 1 \times b^5 =$$
+            $$6 + 50 + 400 + 3000 + 20000 + 100000 = 123.456$$
+          </p>
           <p class="fragment">
             Although nodes are re-expanded multiple times, the overhead is not massive if the branching factor is large and the goal depth is not extreme. Typically, it's still quite efficient.
           </p>
@@ -331,6 +353,7 @@
         <section>
           <h2>Bidirectional Search (1)</h2>
           <p class="fragment">Simultaneously searches forward from the initial state and backward from the goal, halting when the two frontiers meet.</p>
+          <div class="fragment"><img src="aiag/search/bidirectional-search.png" class="plain" width="80%"></div>
         </section>
     
         <!-- SLIDE 31 -->
@@ -339,7 +362,7 @@
           <ul>
             <li class="fragment"><strong>Complete:</strong> Yes, if both directions eventually cover all states.</li>
             <li class="fragment"><strong>Optimal:</strong> Yes, if both searches expand uniform-cost or BFS for unweighted edges.</li>
-            <li class="fragment"><strong>Time &amp; Space Complexity:</strong> O(b^(d/2)), a huge improvement over O(b^d).</li>
+            <li class="fragment"><strong>Time &amp; Space Complexity:</strong> $O(b^\frac{d}{2})$, a huge improvement over $O(b^d)$.</li>
           </ul>
         </section>
     

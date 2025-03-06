@@ -3,9 +3,9 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>Problem-Solving Through Search (68 slides)</title>
+		<title>Problem-Solving Through Search</title>
 
-		<meta name="description" content="Problem-Solving Through Search (68 slides)">
+		<meta name="description" content="Problem-Solving Through Search">
 		<meta name="author" content="Gustavo Reis">
 
 		<meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,7 +37,7 @@
     
         <!-- SLIDE 1 -->
     <section>
-        <h1>Solving Problems by Searching I</h1>
+        <h1>Solving Problems by Searching</h1>
         <h3>Gustavo Reis</h3>
         <p style="text-align:center">Based on chapters 3 &amp; 4 of "Artificial Intelligence: A Modern Approach"</p>
                   <p style="text-align:center">Collaboration:</p>
@@ -53,8 +53,8 @@
         <h2>Sample Problems</h2>
         <p class="fragment">In AI, many problems can be viewed as search tasks. Examples include:</p>
         <ul>
-          <li class="fragment"><strong>Cryptarithmetic:</strong> e.g. FORTY + TEN + TEN = SIXTY</li>
           <li class="fragment"><strong>The 8-Puzzle</strong></li>
+          <li class="fragment"><strong>Cryptarithmetic:</strong> e.g. FORTY + TEN + TEN = SIXTY</li>
           <li class="fragment"><strong>N-Queens</strong></li>
           <li class="fragment"><strong>Missionaries &amp; Cannibals</strong></li>
           <li class="fragment"><strong>Timetabling &amp; Scheduling</strong></li>
@@ -63,6 +63,55 @@
           <li class="fragment"><strong>VLSI Design Layout</strong></li>
           <li class="fragment"><strong>Pathfinding (e.g. route planning on maps)</strong></li>
         </ul>
+      </section>
+      
+      <section>
+        <h3>8-Puzzle</h3>
+        <img src="aiag/search/8-puzzle.png" class="plain" width="50%">
+      </section>
+
+      <section>
+        <h3>Cryptametric</h3>
+        <pre><code>FORTY       29786
++ TEN       + 850
++ TEN       + 850
+--------   --------
+SIXTY       31586</code></pre>
+      </section>
+
+      <section>
+        <h3>N-Queens</h3>
+        <img src="aiag/search/n-queens.png" class="plain" width="40%">
+      </section>
+
+      <section>
+        <h3>Missionaires and Cannibals</h3>
+        <img src="aiag/search/missionaires-cannibals.png" class="plain" width="40%">
+      </section>
+
+      <section>
+        <h3>Timetabling</h3>
+        <img src="aiag/search/timetables.png" class="plain" width="70%">
+      </section>
+
+      <section>
+        <h3>Space Optimization</h3>
+        <img src="aiag/search/space-optimization.png" class="plain" width="70%">
+      </section>
+
+      <section>
+        <h3>Traveling Salesman Problem</h3>
+        <img src="aiag/search/tsp.png" class="plain" width="40%">
+      </section>
+
+      <section>
+        <h3>VLSI Design Layout</h3>
+        <img src="aiag/search/vlsi.png" class="plain" width="70%">
+      </section>
+
+      <section>
+        <h3>Path Finding</h3>
+        <img src="aiag/search/path-finding.png" class="plain" width="80%">
       </section>
   
       <!-- SLIDE 3: Two Problem Types -->
@@ -85,6 +134,19 @@
       <section>
         <h2>Iterative Improvement</h2>
         <p class="fragment">
+          In this type of problem, the solution consists in a state with some specific properties and not a sequence of actions (operators) that allows the agent to reach a goal state departing from an initial state.
+        </p>
+        <p class="fragment">
+          The algorithms used in these problems start with a complete configuration of the problem (state) and proceed by making modifications to that configuration in order to improve it.
+        </p>
+        <p class="fragment">
+          These algorithms belong to a class of algorithms called <strong>iterative improvement</strong> search.
+        </p>
+      </section>
+
+      <section>
+        <h2>Iterative Improvement</h2>
+        <p class="fragment">
           Iterative improvement algorithms keep a complete configuration of the problem (sometimes called a <em>solution</em>) and change it incrementally to seek better solutions.
         </p>
         <ul>
@@ -92,6 +154,18 @@
           <li class="fragment">Unlike standard tree/graph searches, they don’t build paths from start to goal; rather, they refine a single state.</li>
           <li class="fragment">Examples include Hill-Climbing, Simulated Annealing, Beam Search, Tabu Search, Evolutionary Algorithms, etc.</li>
         </ul>
+      </section>
+
+      <section>
+        <h2>Nomenclature</h2>
+        <p class="fragment">
+          In the two previous slides, you may have noticed that the therms <span style="color:blue">state</span>, <span style="color:red">configuration</span> and <span style="color:green">solution</span> are used reciprocally.
+        </p>
+        <p class="fragment">
+          Depending on the algorithm or the context, the therms <span style="color:orange">node</span> and individual are also used with the same meaning.
+        <p class="fragment">
+          In these slides we will use the therm <span style="color:green">solution</span>.
+        </p>
       </section>
   
       <!-- SLIDE 5: The “Landscape” Analogy -->
@@ -105,6 +179,80 @@
         <p class="fragment">
           Challenges: local maxima, plateaus, and ridges can trap simple algorithms like naïve Hill-Climbing.
         </p>
+        <div class="fragment"><img src="aiag/search/landscape.png" class="plain" width="40%"></div>
+      </section>
+
+      <section>
+        <h2>Iterative Improvement</h2>
+        <p class="fragment">
+          Let us consider a function $y = f(x_1, x_2, \dots  , x_n)$
+        </p>
+        <ul>
+          <li class="fragment">$y$ may represent, for example, profit, nº of produced units, etc.</li>
+          <li class="fragment">$x_1, x_2, \dots  , x_n$ may represent, for example, the pressure level, temperature, etc.</li>
+        </ul>
+        <p class="fragment">
+          Suppose that we want to know the compination of $x_1, x_2, \dots, x_n$ values that maximize the value of $y$.
+        </p>
+        <ul>
+          <li class="fragment">Please, notice the combination $x_1, x_2, \dots, x_n$ represents a possible solution.</li>
+        </ul>
+        <p class="fragment">
+          <strong>Question:</strong> How can we do this?
+        </p>
+        <p class="fragment">
+          We will call <strong>evaluation function</strong> to f since it evaluates the quality of the solution (it is also called the <strong>objective function</strong>).
+        </p>
+      </section>
+
+      <section>
+        <h2>Solution Space</h2>
+        <p class="fragment">
+          <strong>Solution space:</strong> set of possible combinations of the $x_1, x_2, \dots, x_n$ values
+        </p>
+        <p class="fragment">
+          The solution space is also called <strong>search space:</strong>
+        </p>
+        <div class="fragment"><img src="aiag/search/solution-space.png" class="plain" width="40%"></div>
+        <div class="fragment"><img src="aiag/search/search-space.png" class="plain" width="40%"></div>
+      </section>
+
+      <section>
+        <h2>Exhaustive search</h2>
+        <p class="fragment">
+          <strong>Approach 1:</strong> exhaustive analysis of the solution space.
+        </p>
+        <p class="fragment">
+          <strong>Problem:</strong> the solution space is often too large or even infinite, whereby it is not possible to exhaustively analyse it.
+        </p>
+      </section>
+
+      <section>
+        <h2>Random Search</h2>
+        <p class="fragment">
+          <strong>Approach 2:</strong> search the solution space randomly.
+        </p>
+        <p class="fragment">
+          <strong>Problems:</strong>
+        </p>
+        <ul>
+          <li class="fragment">Extremely inefficient.</li>
+          <li class="fragment">It doesn’t take into account any information about already explored solutions.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Differential calculus</h2>
+        <p class="fragment">
+          <strong>Approach 3:</strong> differential calculus.
+        </p>
+        <p class="fragment">
+          <strong>Problems:</strong>
+        </p>
+        <ul>
+          <li class="fragment">What if $f(x_1, x_2, \dots, x_n)$ is descontinuous, as it is common in real problems?</li>
+          <li class="fragment">Local maxima.</li>
+        </ul>
       </section>
   
       <!-- SLIDE 6: Hill-Climbing -->
@@ -118,6 +266,12 @@
         </ol>
         <p class="fragment"><em>Weaknesses:</em> it can get stuck on local maxima, plateaus, or ridges.</p>
         <p class="fragment">Common remedy: restart from another random solution whenever progress stalls.</p>
+      </section>
+
+      <section>
+        <h2>Hill-Climbing</h2>
+        <img src="aiag/search/hill-climbing.png" class="plain" width="40%">
+        <p class="fragment">A local maximum is a point in the space $x$ for which the value of $f$ is the highest in the neighbourhood of $x$, existing, however, another point outside the neighbourhood of $x$ for which the value of $f$ is largest.</p>
       </section>
   
       <!-- SLIDE 7: Simulated Annealing -->
