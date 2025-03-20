@@ -436,13 +436,24 @@
           <ul>
             <li class="fragment"><strong>Complete in finite state spaces.</strong></li>
             <li class="fragment"><strong>Not optimal</strong> – easily fooled by local minima or ridges in the heuristic.</li>
-            <li class="fragment"><strong>Time &amp; Space Complexity:</strong> O(b^m) in worst case.</li>
+            <li class="fragment"><strong>Time &amp; Space Complexity:</strong> $O(b^m)$ in worst case.</li>
           </ul>
+        </section>
+
+        <section>
+          <h2>“Best-First” / Greedy Search</h2>
+          <img src="aiag/search/hurisitc_city_map.png" class="plain" width="70%">
+          <p class="fragment">Values of $h_SLD$ - straight line distances to Bucharest</p>
+        </section>
+
+        <section>
+          <h2>“Best-First” / Greedy Search</h2>
+          <img src="aiag/search/BEST-FIRST-SEARCH.png" class="plain" width="50%">
         </section>
     
         <!-- SLIDE 39 -->
         <section>
-          <h2>A* Search (1)</h2>
+          <h2>A* Search</h2>
           <p class="fragment">
             Chooses node with smallest <code>g(n) + h(n)</code>, combining cost so far plus estimated cost to goal.
           </p>
@@ -451,7 +462,7 @@
     
         <!-- SLIDE 40 -->
         <section>
-          <h2>A* Search (2)</h2>
+          <h2>A* Search</h2>
           <ul>
             <li class="fragment">If <code>h(n)</code> never overestimates the true cost, it is <strong>admissible</strong>.</li>
             <li class="fragment">A* is <strong>complete</strong> and <strong>optimal</strong> if <code>h</code> is admissible (and consistent in graphs).</li>
@@ -462,11 +473,19 @@
         <section>
           <h2>A*: Consistency</h2>
           <p class="fragment">
-            A heuristic is <em>consistent</em> if for every node n<sub>i</sub> and successor n<sub>j</sub>,  
-            <code>h(n<sub>i</sub>) ≤ c(n<sub>i</sub>, n<sub>j</sub>) + h(n<sub>j</sub>)</code>,  
-            where <code>c(n<sub>i</sub>, n<sub>j</sub>)</code> is the step cost between those nodes.
+            A heuristic is <em>consistent</em> if for every node $n_i$ and successor $n_j$, $h(n_i) \leq c(n_i, n_j) + h(n_j)$, where $c(n_i, n_j)$ is the step cost between those nodes.
           </p>
           <p class="fragment">If consistent, the first time A* finds a path to any node is the cheapest path to that node.</p>
+        </section>
+
+        <section>
+          <h2>A* Search</h2>
+          <img src="aiag/search/a-star-1.png" class="plain" width="50%">
+        </section>
+
+        <section>
+          <h2>A* Search</h2>
+          <img src="aiag/search/a-star-2.png" class="plain" width="50%">
         </section>
     
         <!-- SLIDE 42 -->
@@ -626,14 +645,7 @@
             Often, the hardest part is engineering or learning a good heuristic function that effectively drives the search toward the goal without excessive expansions.
           </p>
         </section>
-    
-        <!-- SLIDE 60 -->
-        <section>
-          <h2>Practical Example: Romania Map</h2>
-          <p>Typical demonstration is to navigate from Arad to Bucharest. Straight-line distances to Bucharest are used as <code>h(n)</code>.</p>
-          <img src="https://via.placeholder.com/500x300?text=Romania+Map+Example" alt="Romania Map Placeholder">
-        </section>
-    
+        
         <!-- SLIDE 61 -->
         <section>
           <h2>Complexities by Depth</h2>
@@ -699,8 +711,7 @@
           <h2>References &amp; Closing</h2>
           <ul>
             <li class="fragment">Russell, S. &amp; Norvig, P. <em>Artificial Intelligence: A Modern Approach</em></li>
-            <li class="fragment">Slides by Carlos Grilo, revised by C. Silva &amp; P. Gago</li>
-            <li class="fragment">Translated &amp; adapted into 68 slides for Reveal.js</li>
+            <li class="fragment">Slides by Gustavo Reis, revised by Carlos Grilo, C. Silva &amp; P. Gago</li>
           </ul>
           <p><em>End of Presentation</em></p>
         </section>
