@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>Artificial Intelligence Applied to Games</title>
+
+		<meta name="description" content="Artificial Intelligence Applied to Games">
+		<meta name="author" content="Gustavo Reis, Carlos Grilo, Catarina Silva, Pedro Gago">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/obsidian.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Artificial Intelligence Applied to Games</h1>
+					<h3>Game Theory, Search Algorithms, and Advanced Techniques</h3>
+                    <h4>Gustavo Reis</h4>
+                    <p style="text-align:center">Collaboration:</p>
+					<ul style="text-align: left;">
+						<li>Carlos Grilo</li>
+						<li>Catarina Silva</li>
+						<li>Pedro Gago</li>
+					</ul>          
+                </section>
+                
+                <section>
+				<section>
+					<h2>Introduction to AI in Games</h2>
+					<p class="fragment">Games provide idealized worlds where opponents actively try to diminish the welfare of our agent</p>
+                    <p class="fragment">The presence of opponents introduces uncertainty into decision-making, as we cannot predict with 100% certainty what they will do</p>
+                </section>
+				<section>
+                    <h2>Challenges in Game AI</h2>
+                    <p class="fragment">Game search spaces are typically very large, making complete exploration impossible</p>
+                    <p class="fragment">Time constraints limit our ability to evaluate all possibilities</p>
+                    <p class="fragment">These limitations create uncertainty about the consequences of our decisions</p>
+                </section>
+            </section>
+            
+				<section>
+                    <h2>Why Study Games in AI?</h2>
+					<p class="fragment">Games have clear, well-defined rules and boundaries</p>
+					<p class="fragment">They offer enormous state spaces, making them ideal for testing search algorithms</p>
+					<p class="fragment">Game AI techniques can be transferred to other domains (robotics, planning, optimization)</p>
+                    <p class="fragment">They provide controlled environments for developing and testing new AI approaches</p>
+                </section>
+                
+                <section>
+                <section>
+                    <h2>Key Characteristics of Games</h2>
+                    <p class="fragment"><strong>Environmental Access:</strong> Complete or partial information about the game state</p>
+                    <p class="fragment"><strong>Contingency:</strong> The opponent can disrupt our plans</p>
+                    <ul>
+						<li class="fragment">An agent may formulate a winning strategy but cannot guarantee its execution</li>
+						<li class="fragment">This often requires developing new plans in response to opponent moves</li>
+					</ul>
+                </section>
+                <section>
+                    <h2>Additional Game Characteristics</h2>
+                    <p class="fragment"><strong>Large State Spaces:</strong> Chess has approximately 10^43 legal positions</p>
+                    <p class="fragment"><strong>Time Constraints:</strong> Decisions must be made within specific time limits</p>
+                    <p class="fragment"><strong>Randomness:</strong> Some games include elements of chance (dice, cards)</p>
+                </section>
+                </section>
+                
+                <section>
+                    <h2>Formal Definition of a Game</h2>
+                    <ul>
+                        <li class="fragment"><strong>Initial State:</strong></li>
+                        <ul>
+                            <li class="fragment">Starting configuration of the game</li>
+                            <li class="fragment">Determination of which player moves first</li>
+                        </ul>
+                        <li class="fragment"><strong>Actions(state):</strong> Returns valid operators in a state or resulting states</li>
+                        <li class="fragment"><strong>Terminal_Test(state):</strong> Returns true if the state is an end game position</li>
+                        <li class="fragment"><strong>Utility_Function(state):</strong> Returns a numeric value for terminal states</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <section>
+                        <h2>Max and Min Players</h2>
+                        <p class="fragment">In two-player games, we refer to the players as <strong>Max</strong> and <strong>Min</strong></p>
+                        <p class="fragment"><strong>Max</strong> represents our AI agent (trying to maximize the score)</p>
+                        <p class="fragment"><strong>Min</strong> represents the opponent (trying to minimize the score)</p>
+                    </section>
+                    <section>
+                        <h2>The Challenge of Game AI</h2>
+                        <p class="fragment">In standard search problems, <strong>Max</strong> seeks a sequence of moves leading to victory</p>
+                        <p class="fragment">In adversarial games, <strong>Min</strong> actively counters our strategy</p>
+                        <p class="fragment"><strong>Max</strong> must find a strategy that leads to victory regardless of <strong>Min's</strong> actions</p>
+                    </section>
+                    <section>
+                        <h2>Game Tree Representation</h2>
+                        <img class="plain" src="aiag/games/minimaxtree.png" alt="Minimax Tree">
+                        <p class="fragment">Alternating layers represent Max's and Min's turns</p>
+                    </section>
+                </section>
+                
+                <section>
+                    <section>
+                        <h2>The Minimax Algorithm</h2>
+                        <p class="fragment">Minimax determines the optimal strategy by assuming both players play perfectly</p>
+                        <p class="fragment">It works by analyzing the entire game tree to find the best possible move</p>
+                        <p class="fragment">The algorithm recursively evaluates positions from the perspective of alternating players</p>
+                    </section>
+                    <section>
+                        <h2>Minimax Characteristics</h2>
+                        <p class="fragment"><strong>Principle:</strong> Generate the complete game tree and determine the best move for Max</p>
+                        <p class="fragment"><strong>Complexity Analysis:</strong></p>
+                        <ul>
+                            <li class="fragment">Space complexity: $O(b \times m)$</li>
+                            <li class="fragment">Time complexity: $O(b^{m})$</li>
+                        </ul>
+                        <p class="fragment">Where $b$ = branching factor (number of legal moves) and $m$ = maximum tree depth</p>
+                    </section>
+                    <section>
+                        <h2>Minimax Procedure</h2>
+                        <ol>
+                            <li class="fragment">Generate the complete game tree down to terminal nodes</li>
+                            <li class="fragment">Apply the utility function to evaluate all terminal positions</li>
+                            <li class="fragment">Propagate values upward according to player type:</li>
+                            <ul>
+                                <li class="fragment"><strong>Max nodes:</strong> Take the maximum value from child nodes</li>
+                                <li class="fragment"><strong>Min nodes:</strong> Take the minimum value from child nodes</li>
+                            </ul>
+                            <li class="fragment">Continue propagation until the root node</li>
+                            <li class="fragment">Select the move that leads to the highest value for Max</li>
+                        </ol>
+                    </section>
+                    <section>
+                        <h2>Minimax Example</h2>
+                        <img class="plain" src="aiag/games/minimax_example1.png" alt="Minimax Example">
+                        <p class="fragment">Values propagate upward based on player type (Max or Min)</p>
+                    </section>
+                    <section>
+                        <h2>Minimax Implementation</h2>
+                        <pre>
+<b>function</b> MINIMAX-DECISION(state) returns an action
+    max_value = -∞
+    best_action = null
+    <b>for each</b> action in ACTIONS(state) <b>do</b>
+        v = MIN-VALUE(RESULT(state, action))
+        <b>if</b> v > max_value <b>then</b>
+            max_value = v
+            best_action = action
+    <b>return</b> best_action
+
+<b>function</b> MAX-VALUE(state) returns a utility value
+    <b>if</b> TERMINAL-TEST(state) <b>then return</b> UTILITY(state)
+    v = -∞
+    <b>for each</b> action in ACTIONS(state) <b>do</b>
+        v = max(v, MIN-VALUE(RESULT(state, action)))
+    <b>return</b> v
+
+<b>function</b> MIN-VALUE(state) returns a utility value
+    <b>if</b> TERMINAL-TEST(state) <b>then return</b> UTILITY(state)
+    v = +∞
+    <b>for each</b> action in ACTIONS(state) <b>do</b>
+        v = min(v, MAX-VALUE(RESULT(state, action)))
+    <b>return</b> v
+                        </pre>
+                    </section>
+                </section>
+                
+                <section>
+                    <h2>Minimax in Multi-Player Games</h2>
+                    <img class="plain" src="aiag/games/minimax_nplayer.png" alt="N-player Minimax">
+                    <p class="fragment">With more than two players, each level of the tree represents a different player's turn</p>
+                    <p class="fragment">Each player attempts to maximize their own utility value</p>
+                </section>
+                
+                <section>
+                    <section>
+                        <h2>The Alpha-Beta Pruning Algorithm</h2>
+                        <p class="fragment">Minimax is effective but computationally expensive for real games</p>
+                        <p class="fragment">For example, in chess (branching factor ≈ 35), examining 150,000 positions allows looking only 3-4 moves ahead</p>
+                        <p class="fragment">Human chess players can typically plan 7-8 moves ahead</p>
+                        <p class="fragment">Alpha-Beta pruning dramatically improves efficiency while preserving optimality</p>
+                    </section>
+                    <section>
+                        <h2>Alpha-Beta Pruning Concept</h2>
+                        <p class="fragment">Alpha-Beta computes the same result as Minimax but avoids exploring branches that cannot affect the final decision</p>
+                        <p class="fragment">It maintains two bounds during the search:</p>
+                        <ul>
+                            <li class="fragment"><strong>Alpha (α):</strong> Best value found so far for Max (starts at -∞)</li>
+                            <li class="fragment"><strong>Beta (β):</strong> Best value found so far for Min (starts at +∞)</li>
+                        </ul>
+                        <p class="fragment">When α ≥ β, we can safely prune (skip) the remaining branches</p>
+                    </section>
+                    <section>
+                        <h2>Alpha-Beta Pruning Illustration</h2>
+                        <img class="plain" src="aiag/games/alphabeta1.png" alt="Alpha-Beta Pruning">
+                        <p class="fragment">Crossed-out branches are pruned without evaluation</p>
+                    </section>
+                    <section>
+                        <h2>Alpha-Beta Implementation</h2>
+                        <pre>
+<b>function</b> ALPHA-BETA-DECISION(state) returns an action
+    max_value = -∞
+    best_action = null
+    <b>for each</b> action in ACTIONS(state) <b>do</b>
+        v = MIN-VALUE(RESULT(state, action), -∞, +∞)
+        <b>if</b> v > max_value <b>then</b>
+            max_value = v
+            best_action = action
+    <b>return</b> best_action
+
+<b>function</b> MAX-VALUE(state, α, β) returns a utility value
+    <b>if</b> TERMINAL-TEST(state) <b>then return</b> UTILITY(state)
+    v = -∞
+    <b>for each</b> action in ACTIONS(state) <b>do</b>
+        v = max(v, MIN-VALUE(RESULT(state, action), α, β))
+        <b>if</b> v ≥ β <b>then return</b> v
+        α = max(α, v)
+    <b>return</b> v
+
+<b>function</b> MIN-VALUE(state, α, β) returns a utility value
+    <b>if</b> TERMINAL-TEST(state) <b>then return</b> UTILITY(state)
+    v = +∞
+    <b>for each</b> action in ACTIONS(state) <b>do</b>
+        v = min(v, MAX-VALUE(RESULT(state, action), α, β))
+        <b>if</b> v ≤ α <b>then return</b> v
+        β = min(β, v)
+    <b>return</b> v
+                        </pre>
+                    </section>
+                </section>
+                
+                <section>
+                    <h2>Optimizing Alpha-Beta Performance</h2>
+                    <p class="fragment">Alpha-Beta's efficiency heavily depends on the order in which moves are examined</p>
+                    <p class="fragment"><strong>Best-case time complexity:</strong> $O(b^{\frac{d}{2}})$ with optimal move ordering</p>
+                    <p class="fragment"><strong>Average-case time complexity:</strong> $O(b^{\frac{3d}{4}})$ with random move ordering</p>
+                    <p class="fragment">With optimal ordering, Alpha-Beta can effectively examine trees twice as deep as Minimax</p>
+                </section>
+                
+                <section>
+                    <h2>Search Optimization Techniques</h2>
+                    <ul>
+                        <li class="fragment"><strong>Move Ordering:</strong> Examine most promising moves first</li>
+                        <ul>
+                            <li class="fragment">In chess: captures first, then threats, then developing moves</li>
+                            <li class="fragment">Use iterative deepening to inform move ordering at deeper levels</li>
+                        </ul>
+                        <li class="fragment"><strong>Transposition Tables:</strong></li>
+                        <ul>
+                            <li class="fragment">Hash tables that store previously evaluated positions</li>
+                            <li class="fragment">Avoid redundant evaluation of positions reached via different move sequences</li>
+                            <li class="fragment">Particularly valuable in games with symmetries or multiple paths to the same state</li>
+                        </ul>
+                    </ul>                    
+                </section>
+                
+                <section>
+                    <section><h2>Practice Exercises</h2></section>
+                    <section>
+                        <h3>Exercise 1: Apply Minimax</h3>
+                        <img class="plain" src="aiag/games/exercise1.png" alt="Exercise 1">
+                        <p class="fragment">Apply the Minimax algorithm to this game tree to determine the optimal move</p>
+                    </section>
+                    <section>
+                        <h3>Exercise 2: Apply Alpha-Beta Pruning</h3>
+                        <img class="plain" src="aiag/games/exercise2.png" alt="Exercise 2">
+                        <p class="fragment">Apply Alpha-Beta pruning to this tree and identify which branches can be pruned</p>
+                    </section>
+                </section>
+                
+                <section>
+                <section>
+                    <h2>Practical Limitations and Solutions</h2>
+                    <p class="fragment">Even with Alpha-Beta pruning, searching to terminal nodes is often impossible in complex games</p>
+                    <p class="fragment">Solution: Limit search depth and apply heuristic evaluation functions to non-terminal nodes</p>
+                </section>
+                    <section>
+                        <h2>Modifications to Basic Algorithms</h2>
+                        <ul>
+                            <li class="fragment">Two key adaptations to Minimax/Alpha-Beta for practical implementation:</li>
+                            <ul>
+                                <li class="fragment">Replace the <strong>utility function</strong> with a <strong>heuristic evaluation function</strong></li>
+                                <li class="fragment">Replace <strong>terminal test</strong> with a <strong>depth limit test</strong></li>
+                            </ul>
+                        </ul>
+                </section>
+                </section>
+                
+                <section>
+                <section>
+                    <h2>Heuristic Evaluation Functions</h2>
+                    <p class="fragment">A heuristic evaluation function estimates the expected utility of a non-terminal position</p>
+                    <p class="fragment">The quality of this function significantly impacts an AI's performance</p>
+                    <p class="fragment">Poor evaluation functions can lead the AI into seemingly advantageous but actually disadvantageous positions</p>
+                </section>
+                <section>
+                    <h2>Designing Effective Evaluation Functions</h2>
+                    <p class="fragment">Key criteria for high-quality evaluation functions:</p>
+                    <ul>
+                        <li class="fragment">Must match the actual utility function on terminal nodes</li>
+                        <li class="fragment">Must be computationally efficient (fast to calculate)</li>
+                        <li class="fragment">Must accurately reflect winning probabilities</li>
+                        <li class="fragment">Should capture important strategic and tactical elements of the game</li>
+                    </ul>
+                </section>
+                </section>
+                
+                <section>
+                <section>
+                    <h2>Linear Weighted Functions</h2>
+                    <p class="fragment">Many game AI systems use linear weighted functions of the form:</p>
+                    $$w_1 f_1 + w_2 f_2 + \cdots + w_n f_n $$
+                    <p class="fragment">Where:</p>
+                    <ul>
+                        <li class="fragment">$f_i$ represents features/characteristics of the game position</li>
+                        <li class="fragment">$w_i$ represents the weight (importance) of each feature</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Example: Chess Evaluation</h2>
+                    <ul>
+                        <li class="fragment">Common features in chess evaluation:</li>
+                        <ul>
+                            <li class="fragment">$f_1$ = material balance (e.g., number of pawns)</li>
+                            <li class="fragment">$f_2$ = piece activity and mobility</li>
+                            <li class="fragment">$f_3$ = king safety</li>
+                            <li class="fragment">$f_4$ = pawn structure</li>
+                        </ul>
+                        <li class="fragment">Traditional piece values: pawn=1, knight=3, bishop=3, rook=5, queen=9</li>
+                        <li class="fragment">Challenge: How to determine optimal weights?</li>
+                        <ul>
+                            <li class="fragment">Expert knowledge, machine learning, self-play</li>
+                        </ul>
+                    </ul>
+                </section>
+                </section>
+                
+                <section>
+                    <h2>Non-linear Evaluation Functions</h2>
+                    <p class="fragment">Linear functions assume independence between features, which is rarely true in complex games</p>
+                    <p class="fragment">Examples of feature interactions in chess:</p>
+                    <ul>
+                        <li class="fragment">Two bishops are often worth more than twice one bishop</li>
+                        <li class="fragment">A bishop's value increases as the board opens up</li>
+                        <li class="fragment">Knight pairs are less valuable than bishop pairs in open positions</li>
+                    </ul>
+                    <p class="fragment">Non-linear functions (neural networks, decision trees) can capture these complex relationships</p>
+                </section>
+                
+                <section>
+                    <h2>Search Depth Management</h2>
+                    <p class="fragment">Several approaches to managing search depth:</p>
+                    <ul>
+                        <li class="fragment"><strong>Fixed depth:</strong> Search to a predetermined depth limit</li>
+                        <li class="fragment"><strong>Time-based:</strong> Search as deeply as possible within a time constraint</li>
+                        <li class="fragment"><strong>Iterative deepening:</strong> Progressively increase search depth until time runs out</li>
+                        <ul>
+                            <li class="fragment">Used by most modern chess engines (e.g., Deep Blue)</li>
+                            <li class="fragment">Provides good move ordering information for deeper searches</li>
+                        </ul>
+                    </ul>
+                </section>
+                
+                <section>
+                <section>
+                    <h2>Horizon Effect and Quiescence Search</h2>
+                    <p class="fragment"><strong>Problem:</strong> A position may appear favorable but lead to disaster just beyond the search depth</p>
+                    <p class="fragment"><strong>Solution - Quiescence Search:</strong></p>
+                    <ul>
+                        <li class="fragment">Apply evaluation function only to "quiet" positions (stable states)</li>
+                        <li class="fragment">For unstable positions (e.g., during captures or checks), continue searching beyond the depth limit</li>
+                        <li class="fragment">This helps avoid the "horizon effect" where problems are pushed just beyond the search depth</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>The Horizon Effect Illustrated</h2>
+                    <p class="fragment">Chess example: An AI might postpone an inevitable loss by making pointless moves</p>
+                    <img class="plain" src="aiag/games/chess.png" alt="Chess Position">
+                    <p class="fragment">Without quiescence search, the AI might not see the impending mate beyond its search depth</p>
+                </section>
+                </section>
+                
+                <section>
+                    <h2>Forward Pruning</h2>
+                    <p class="fragment">Unlike Alpha-Beta pruning (which maintains optimality), forward pruning sacrifices optimality for efficiency</p>
+                    <p class="fragment">It involves selectively ignoring certain branches deemed unlikely to be optimal</p>
+                    <p class="fragment">Common approaches:</p>
+                    <ul>
+                        <li class="fragment"><strong>Beam search:</strong> Examine only the N most promising moves at each level</li>
+                        <li class="fragment"><strong>Null-move pruning:</strong> Skip a player's turn to quickly identify strong positions</li>
+                        <li class="fragment"><strong>Futility pruning:</strong> Ignore moves unlikely to improve the position</li>
+                    </ul>
+                    <p class="fragment"><strong>Risk:</strong> May inadvertently prune the optimal move</p>
+                </section>
+                
+                <section>
+                    <h2>Games with Randomness</h2>
+                    <img class="plain" src="aiag/games/gammon.png" alt="Backgammon" width="40%">
+                    <p class="fragment">Stochastic games include elements of chance (dice, cards, etc.)</p>
+                    <p class="fragment">Search trees must incorporate chance nodes in addition to Max and Min nodes</p>
+                    <p class="fragment">Expectiminimax algorithm handles randomness by calculating expected values</p>
+                </section>
+                
+                <section>
+                <section>
+                    <h2>Expectiminimax Algorithm</h2>
+                    <p class="fragment">Extends Minimax to handle stochastic games by adding chance nodes:</p>
+                    <ul>
+                        <li class="fragment">If Terminal-Test(state) = true, return Utility(state)</li>
+                        <li class="fragment">If Player(state) = Max, return maximum of successors' values</li>
+                        <li class="fragment">If Player(state) = Min, return minimum of successors' values</li>
+                        <li class="fragment">If Player(state) = Chance, return weighted average of successors' values</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Expectiminimax Example</h2>
+                    <img class="plain" src="aiag/games/chance.png" alt="Expectiminimax Example">
+                    <p class="fragment">Circular nodes represent chance events with their probabilities</p>
+                </section>
+                </section>
+                
+                <section>
+                    <h2>Importance of Absolute Values</h2>
+                    <img class="plain" src="aiag/games/absolute_value.png" width="60%" alt="Absolute Value Importance">
+                    <p class="fragment">In games with chance, the magnitude of evaluation values matters, not just their relative ordering</p>
+                    <ul>
+                        <li class="fragment">The behavior is preserved only for positive linear transformations of the evaluation function</li>
+                        <li class="fragment">Values must be proportional to the expected utility</li>
+                        <li class="fragment">Risk assessment becomes important in decision-making</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <section>
+                        <h2>Complexity in Stochastic Games</h2>
+                        <p class="fragment">Randomness significantly increases the branching factor:</p>
+                        <ul>
+                            <li class="fragment"><strong>Backgammon example:</strong></li>
+                            <ul>
+                                <li class="fragment">21 possible dice roll combinations</li>
+                                <li class="fragment">Approximately 20 possible moves per position</li>
+                                <li class="fragment">For a 4-ply search: $20 \times (21 \times 20)^{2} = 1.2 \times 10^{9}$ nodes</li>
+                            </ul>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Practical Approaches</h2>
+                        <ul>
+                            <li class="fragment">The advantage of looking ahead diminishes more quickly in stochastic games</li>
+                            <li class="fragment">Alpha-beta pruning is less effective due to the chance nodes</li>
+                            <li class="fragment"><strong>TD-Gammon example:</strong></li>
+                            <ul>
+                                <li class="fragment">Searches only 2-3 plies ahead</li>
+                                <li class="fragment">Uses a sophisticated neural network evaluation function</li>
+                                <li class="fragment">Trained through temporal difference learning</li>
+                                <li class="fragment">Plays at world champion level despite shallow search</li>
+                            </ul>
+                        </ul>
+                    </section>
+                </section>
+                
+                <section>
+                    <h2>Games with Imperfect Information</h2>
+                    <p class="fragment">In games like poker, bridge, or Stratego, players lack complete information about the game state</p>
+                    <p class="fragment">Approaches to handling imperfect information:</p>
+                    <ul>
+                        <li class="fragment"><strong>Probabilistic models:</strong> Calculate probabilities of different hidden states</li>
+                        <li class="fragment"><strong>Determinization:</strong> Sample possible game states and analyze each one</li>
+                        <li class="fragment"><strong>Information set search:</strong> Search over sets of indistinguishable states</li>
+                        <li class="fragment"><strong>Opponent modeling:</strong> Infer information from opponent behavior</li>
+                    </ul>
+                    <p class="fragment">These games often involve psychological elements (bluffing, deception)</p>
+                </section>
+                
+                <section>
+                    <section>
+                        <h2>Real-World Applications of Game AI</h2>
+                        <p class="fragment">Dana S. Nau: "AI games techniques: are they useful for anything other than games?"</p>
+                        <p class="fragment">Alpha-beta search research established the foundation for AI theories of heuristic search, applicable in many domains</p>
+                    </section>
+                    <section>
+                        <h2>Knowledge Transfer from Games</h2>
+                        <p class="fragment">Schaeffer's CHINOOK (checkers) research led to parallel algorithms for information storage and retrieval now used in DNA sequencing</p>
+                        <p class="fragment">Tesauro's TD-Gammon inspired reinforcement learning applications in:</p>
+                        <ul>
+                            <li class="fragment">NASA space shuttle job-shop scheduling</li>
+                            <li class="fragment">Elevator dispatch control systems</li>
+                            <li class="fragment">Cellular network channel assignment</li>
+                            <li class="fragment">Manufacturing optimization</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Modern AI Game Advances</h2>
+                        <p class="fragment">Recent breakthroughs continue to advance AI techniques:</p>
+                        <ul>
+                            <li class="fragment">DeepMind's AlphaGo/AlphaZero: Deep reinforcement learning + Monte Carlo Tree Search</li>
+                            <li class="fragment">OpenAI Five (Dota 2): Multi-agent reinforcement learning</li>
+                            <li class="fragment">Pluribus (Poker): Counterfactual regret minimization</li>
+                        </ul>
+                        <p class="fragment">These advances are being applied to protein folding, drug discovery, robotics, and more</p>
+                    </section>
+                </section>
+                
+                <section>
+                    <h2>References and Further Reading</h2>
+                    <ul>
+                        <li class="fragment">Russell, S. & Norvig, P. "Artificial Intelligence: A Modern Approach"</li>
+                        <li class="fragment">Millington, I. & Funge, J. "Artificial Intelligence for Games"</li>
+                        <li class="fragment">Silver, D. et al. "Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm"</li>
+                        <li class="fragment">Schaeffer, J. et al. "Checkers Is Solved"</li>
+                        <li class="fragment">Tesauro, G. "Temporal Difference Learning and TD-Gammon"</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <h2>Summary</h2>
+                    <ul>
+                        <li class="fragment">Games provide idealized environments for developing and testing AI algorithms</li>
+                        <li class="fragment">Key algorithms include Minimax, Alpha-Beta pruning, and Expectiminimax</li>
+                        <li class="fragment">Practical implementations rely on heuristic evaluation functions and search depth limits</li>
+                        <li class="fragment">Advanced techniques handle special cases like quiescence search and transposition tables</li>
+                        <li class="fragment">Game AI techniques have diverse applications beyond gaming</li>
+                    </ul>
+                    <p class="fragment">The field continues to advance with machine learning and neural network approaches</p>
+                </section>
+                
+                <section>
+                    <h2>Questions?</h2>
+                    <p>Thank you for your attention</p>
+                </section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				width: 1920,
+				height: 1080,
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				math: {
+					// mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+					config: 'TeX-AMS_HTML-full',
+					TeX: {
+						Macros: {
+							R: '\\mathbb{R}',
+							set: [ '\\left\\{#1 \\; ; \\; #2\\right\\}', 2 ]
+						}
+					}
+				},
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },					
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>

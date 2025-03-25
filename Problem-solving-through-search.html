@@ -396,11 +396,11 @@
     
         <!-- SLIDE 35 -->
         <section>
-          <h2>Heuristic Function h(n)</h2>
+          <h2>Heuristic Function $h(n)$</h2>
           <ul>
-            <li class="fragment"><code>h(n) &gt;= 0</code> if n is not a goal.</li>
-            <li class="fragment"><code>h(n) = 0</code> if n is a goal.</li>
-            <li class="fragment"><code>h(n) = ∞</code> if the goal cannot be reached from n.</li>
+            <li class="fragment">$h(n) \geq 0$ if n is not a goal.</li>
+            <li class="fragment">$h(n) = 0$ if n is a goal.</li>
+            <li class="fragment">$h(n) = ∞$ if the goal cannot be reached from n.</li>
           </ul>
         </section>
     
@@ -430,8 +430,8 @@
         <section>
           <h2>“Best-First” / Greedy Search</h2>
           <p class="fragment">
-            Expands the node that appears to be closest to the goal (lowest <code>h(n)</code>).
-            <br><code>f(n) = h(n)</code>
+            Expands the node that appears to be closest to the goal (lowest $h(n)$).
+            <br>$f(n) = h(n)$
           </p>
           <ul>
             <li class="fragment"><strong>Complete in finite state spaces.</strong></li>
@@ -455,17 +455,17 @@
         <section>
           <h2>A* Search</h2>
           <p class="fragment">
-            Chooses node with smallest <code>g(n) + h(n)</code>, combining cost so far plus estimated cost to goal.
+            Chooses node with smallest $g(n) + h(n)$, combining cost so far plus estimated cost to goal.
           </p>
-          <p class="fragment"><code>f(n) = g(n) + h(n)</code></p>
+          <p class="fragment">$f(n) = g(n) + h(n)$</p>
         </section>
     
         <!-- SLIDE 40 -->
         <section>
           <h2>A* Search</h2>
           <ul>
-            <li class="fragment">If <code>h(n)</code> never overestimates the true cost, it is <strong>admissible</strong>.</li>
-            <li class="fragment">A* is <strong>complete</strong> and <strong>optimal</strong> if <code>h</code> is admissible (and consistent in graphs).</li>
+            <li class="fragment">If $h(n)$ never overestimates the true cost, it is <strong>admissible</strong>.</li>
+            <li class="fragment">A* is <strong>complete</strong> and <strong>optimal</strong> if $h$ is admissible (and consistent in graphs).</li>
           </ul>
         </section>
     
